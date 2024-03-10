@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom'
 import Login from './Login'
 
 function App() {
-
   return (
     <>
       <Routes>
