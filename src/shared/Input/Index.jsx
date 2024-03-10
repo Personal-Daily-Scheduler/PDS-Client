@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Input = ({ label, type, placeholder, description }) => {
+const Input = ({ label, type, placeholder, description, value, onChange }) => {
   return (
     <InputContainer>
       <InputLabel>{label}</InputLabel>
-      <StyledInput type={type} placeholder={placeholder} />
+      <StyledInput type={type} placeholder={placeholder} value={value} onChange={onChange}/>
       {description && <InputDescription>{description}</InputDescription>}
     </InputContainer>
   );
