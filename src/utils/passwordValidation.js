@@ -1,8 +1,8 @@
 const isPasswordValid = (password) => {
   const isLengthValid = password.length >= 6;
-  const isAlphabeticValid = /[A-Za-z]/.test(password);
+  const isIncludeAlphabet = /[A-Za-z]/.test(password);
 
-  return isLengthValid && isAlphabeticValid;
+  return isLengthValid && isIncludeAlphabet;
 };
 
 export default isPasswordValid;
