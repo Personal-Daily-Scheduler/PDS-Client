@@ -19,9 +19,9 @@ const fetchSignUp = async (username, email, password) => {
 
     const responseJson = await response.json();
 
-    alert(responseJson.message);
+    return responseJson;
   } catch (error) {
-    console.error(error);
+    return { result: false, message: error.message };
   }
 };
 

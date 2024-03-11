@@ -8,10 +8,7 @@ import CommonTitle from '../../shared/Title';
 import Input from '../../shared/Input/Index';
 import ErrorMessage from '../../shared/ErrorMessage';
 import googleLogoImage from '../../assets/google_logo.png';
-import generateURI from '../../utils/generateURI';
 import fetchSignUp from '../../services/signup';
-
-const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
 function Login() {
   const [selectedOption, setSelectedOption] = useState('signIn');
@@ -23,7 +20,7 @@ function Login() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [passwordValid, setPasswordValid] = useState(false);
-  const [signUpError, setSignUpError] = useState('');
+  const [signUpError, setSignUpError] = useState({ message: '', visible: false });
 
   const navigate = useNavigate();
   const handleButtonClick = (option) => {
@@ -69,8 +66,9 @@ function Login() {
 
   const isSignUpFormValid = () => {
     if (!username || !email || !password || !confirmPassword) {
+      console.log('필수 항목 입력 에러');
       setSignUpError({
-        children: '모든 필수 항목을 입력하세요.',
+        message: '모든 필수 항목을 입력하세요.',
         visible: true,
       });
       return false;
@@ -78,7 +76,7 @@ function Login() {
 
     if (password.length < 6) {
       setSignUpError({
-        children: '비밀 번호는 반드시 6자 이상이어야 합니다.',
+        message: '비밀 번호는 반드시 6자 이상이어야 합니다.',
         visible: true,
       });
       return false;
@@ -86,7 +84,7 @@ function Login() {
 
     if (!passwordValid) {
       setSignUpError({
-        children: '대 소문자를 포함해야 합니다.',
+        message: '대 소문자를 포함해야 합니다.',
         visible: true,
       });
       return false;
@@ -94,7 +92,7 @@ function Login() {
 
     if (password !== confirmPassword) {
       setSignUpError({
-        children: '비밀번호가 서로 일치하지 않습니다.',
+        message: '비밀번호가 서로 일치하지 않습니다.',
         visible: true,
       });
 
@@ -106,15 +104,22 @@ function Login() {
 
   const handleClickSignUpButton = async () => {
     if (isSignUpFormValid()) {
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setSignUpError({ children: '', visible: false });
+      setSignUpError({ message: '', visible: false });
 
-      await fetchSignUp(username, email, password);
+      const response = await fetchSignUp(username, email, password);
 
-      navigate('/users');
+      if (response.result) {
+        alert(response.message);
+
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+
+        navigate('/users');
+      }
+
+      alert(response.message);
     }
   };
 
@@ -160,9 +165,8 @@ function Login() {
       {signUpError.visible && (
         <ErrorMessage
           setMessage={setSignUpError}
-        >
-          signUpError.children
-        </ErrorMessage>
+          content={signUpError.message}
+        />
       )}
     </div>
   );
@@ -213,7 +217,6 @@ function Login() {
           <>
             <DescriptionWrapper>
               아직 아이디어가 없으세요?
-              {' '}
               <ButtonText onClick={() => handleButtonClick('signUp')}>회원 가입 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
@@ -224,7 +227,6 @@ function Login() {
           <>
             <DescriptionWrapper>
               이미 계정이 있으신가요?
-              {' '}
               <ButtonText onClick={() => handleButtonClick('signIn')}>로그인 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickSignUpButton}>
@@ -234,7 +236,6 @@ function Login() {
         )}
         <GoogleSignInContainer>
           Or sign in with
-          {' '}
           <Link to="*">Google</Link>
           <GoogleLogo src={googleLogoImage} alt="Google Logo" />
         </GoogleSignInContainer>
@@ -250,7 +251,7 @@ const DescriptionWrapper = styled.div`
 `;
 
 const LoginContentWrapper = styled.div`
-  height: 35%;
+  height: 40%;
 `;
 
 const ButtonText = styled.button`

@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const ErrorMessage = ({ children, setMessage }) => {
+function ErrorMessage({ content, setMessage }) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      setMessage({children:"", display:false});
+      setMessage({ message: '', visible: false });
     }, 1500);
 
     return () => {
@@ -12,9 +12,8 @@ const ErrorMessage = ({ children, setMessage }) => {
     };
   }, []);
 
-  return <ErrorMessageWrapper>{children}</ErrorMessageWrapper>;
-};
-
+  return <ErrorMessageWrapper>{content}</ErrorMessageWrapper>;
+}
 
 const fadeInOut = keyframes`
   0% {
