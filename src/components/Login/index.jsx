@@ -1,32 +1,37 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
-import isPasswordValid from "../../utils/passwordValidation";
-import CommonButton from "../../shared/Button";
-import CommonTitle from "../../shared/Title";
-import Input from "../../shared/Input/Index";
-import ErrorMessage from "../../shared/ErrorMessage";
-import googleLogoImage from "../../assets/google_logo.png"
+import isPasswordValid from '../../utils/passwordValidation';
+import CommonButton from '../../shared/Button';
+import CommonTitle from '../../shared/Title';
+import Input from '../../shared/Input/Index';
+import ErrorMessage from '../../shared/ErrorMessage';
+import googleLogoImage from '../../assets/google_logo.png';
+import generateURI from '../../utils/generateURI';
+import fetchSignUp from '../../services/signup';
+
+const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
 function Login() {
-  const [selectedOption, setSelectedOption] = useState("signIn");
-  const [loginId, setLoginId] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [selectedOption, setSelectedOption] = useState('signIn');
+  const [loginId, setLoginId] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [passwordValid, setPasswordValid] = useState(false);
-  const [signUpError, setSignUpError] = useState("");
+  const [signUpError, setSignUpError] = useState('');
 
+  const navigate = useNavigate();
   const handleButtonClick = (option) => {
     setSelectedOption(option);
   };
 
   const handleInputChange = (event, field) => {
-    const value = event.target.value;
+    const { value } = event.target;
 
     if (field === 'loginId') {
       setLoginId(value);
@@ -52,7 +57,7 @@ function Login() {
 
       setPasswordValid(isValidPassword);
     }
-    
+
     if (field === 'confirmPassword') {
       setConfirmPassword(value);
     }
@@ -60,7 +65,7 @@ function Login() {
 
   const handleClickLoginButton = () => {
     // 3/11 (월) 오후작성
-  }
+  };
 
   const isSignUpFormValid = () => {
     if (!username || !email || !password || !confirmPassword) {
@@ -70,7 +75,7 @@ function Login() {
       });
       return false;
     }
-  
+
     if (password.length < 6) {
       setSignUpError({
         children: '비밀 번호는 반드시 6자 이상이어야 합니다.',
@@ -78,7 +83,7 @@ function Login() {
       });
       return false;
     }
-  
+
     if (!passwordValid) {
       setSignUpError({
         children: '대 소문자를 포함해야 합니다.',
@@ -86,7 +91,7 @@ function Login() {
       });
       return false;
     }
-  
+
     if (password !== confirmPassword) {
       setSignUpError({
         children: '비밀번호가 서로 일치하지 않습니다.',
@@ -95,16 +100,21 @@ function Login() {
 
       return false;
     }
-  
+
     return true;
   };
 
-  const handleClickSignUpButton = () => {
+  const handleClickSignUpButton = async () => {
     if (isSignUpFormValid()) {
-      setSignUpError({
-        children: '',
-        visible: false,
-      });
+      setUsername('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setSignUpError({ children: '', visible: false });
+
+      await fetchSignUp(username, email, password);
+
+      navigate('/users');
     }
   };
 
@@ -116,7 +126,7 @@ function Login() {
       description="We need your email to start edit diary"
     >
     </Input>
-  )
+  );
   const renderSighUpForm = () => (
     <div>
       <Input
@@ -149,12 +159,13 @@ function Login() {
       />
       {signUpError.visible && (
         <ErrorMessage
-          children={signUpError.children}
           setMessage={setSignUpError}
-        />
+        >
+          signUpError.children
+        </ErrorMessage>
       )}
     </div>
-  )
+  );
   const renderUserForm = () => (
     <div>
       <Input
@@ -172,7 +183,7 @@ function Login() {
       >
       </Input>
     </div>
-  )
+  );
 
   return (
     <Container>
@@ -201,16 +212,20 @@ function Login() {
         {selectedOption !== 'signUp' ? (
           <>
             <DescriptionWrapper>
-              아직 아이디어가 없으세요? <ButtonText onClick={() => handleButtonClick('signUp')}>회원 가입 하기</ButtonText>
+              아직 아이디어가 없으세요?
+              {' '}
+              <ButtonText onClick={() => handleButtonClick('signUp')}>회원 가입 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
               Login
             </CommonButton>
           </>
-        ): (
+        ) : (
           <>
             <DescriptionWrapper>
-              이미 계정이 있으신가요? <ButtonText onClick={() => handleButtonClick('signIn')}>로그인 하기</ButtonText>
+              이미 계정이 있으신가요?
+              {' '}
+              <ButtonText onClick={() => handleButtonClick('signIn')}>로그인 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickSignUpButton}>
               SignUp
@@ -218,7 +233,9 @@ function Login() {
           </>
         )}
         <GoogleSignInContainer>
-          Or sign in with <Link to="*">Google</Link>
+          Or sign in with
+          {' '}
+          <Link to="*">Google</Link>
           <GoogleLogo src={googleLogoImage} alt="Google Logo" />
         </GoogleSignInContainer>
       </Wrapper>
@@ -230,7 +247,7 @@ const DescriptionWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-top: 20px;
-`
+`;
 
 const LoginContentWrapper = styled.div`
   height: 35%;
@@ -240,7 +257,7 @@ const ButtonText = styled.button`
   border: none;
   background-color: none;
   color: black;
-`
+`;
 const ButtonLine = styled.div`
   background-color: #E9F1FF;
   padding: 10px 5px;
@@ -250,7 +267,7 @@ const ButtonLine = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
-`
+`;
 
 const StyledButton = styled.button`
   padding: 10px;
@@ -278,7 +295,7 @@ const Container = styled.div`
 
     background-color: #84cd84;
   }
-`
+`;
 
 const Wrapper = styled.div`
   display: flex;
@@ -286,7 +303,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
-`
+`;
 
 const GoogleSignInContainer = styled.div`
   display: flex;
