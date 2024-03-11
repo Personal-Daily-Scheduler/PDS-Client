@@ -8,7 +8,8 @@ import CommonTitle from '../../shared/Title';
 import Input from '../../shared/Input/Index';
 import ErrorMessage from '../../shared/ErrorMessage';
 import googleLogoImage from '../../assets/google_logo.png';
-import fetchSignUp from '../../services/signup';
+import fetchSignUp from '../../services/signUp';
+import fetchLogin from '../../services/logIn';
 
 function Login() {
   const [selectedOption, setSelectedOption] = useState('signIn');
@@ -60,13 +61,24 @@ function Login() {
     }
   };
 
-  const handleClickLoginButton = () => {
-    // 3/11 (월) 오후작성
+  const handleClickLoginButton = async () => {
+    const response = await fetchLogin(loginId, loginPassword);
+
+    if (!response.result) {
+      alert(response.message);
+
+      throw new Error(response.message);
+    }
+
+    localStorage.setItem('PDSToken', response.token);
+
+    alert(response.message);
+
+    navigate('/users');
   };
 
   const isSignUpFormValid = () => {
     if (!username || !email || !password || !confirmPassword) {
-      console.log('필수 항목 입력 에러');
       setSignUpError({
         message: '모든 필수 항목을 입력하세요.',
         visible: true,
