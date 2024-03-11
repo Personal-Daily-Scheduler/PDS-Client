@@ -9,7 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "lint-staged": "lint-staged",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "lint-staged": {
     "**/*.{js,jsx}": [
