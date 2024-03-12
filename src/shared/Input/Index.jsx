@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 function Input({
-  label, type, placeholder, description, value, onChange, width,
+  label, type, placeholder, description, value, onChange, size,
 }) {
   return (
     <InputContainer>
@@ -12,7 +12,7 @@ function Input({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        width={width}
+        size={size}
       />
       {description && <InputDescription>{description}</InputDescription>}
     </InputContainer>
@@ -22,7 +22,7 @@ function Input({
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const InputLabel = styled.label`
@@ -33,8 +33,8 @@ const InputLabel = styled.label`
 `;
 
 const StyledInput = styled.input`
-  width: ${({ width }) => (width || '400px')};
-  height: 48px;
+  width: ${({ size }) => (size && size.width ? size.width : '400px')};
+  height: ${({ size }) => (size && size.height ? size.height : '48px')};
   padding: 5px 10px;
   margin-bottom: 5px;
   border: 1px solid #ccc;

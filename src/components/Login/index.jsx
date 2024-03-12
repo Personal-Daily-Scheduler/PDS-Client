@@ -276,7 +276,7 @@ const ButtonLine = styled.div`
   padding: 10px 5px;
   width: 400px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
@@ -286,7 +286,7 @@ const StyledButton = styled.button`
   padding: 10px;
   flex:1;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background-color: ${(props) => (props.selected ? 'lightblue' : '#E9F1FF')};
 `;
 

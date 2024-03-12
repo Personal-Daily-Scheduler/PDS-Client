@@ -82,12 +82,12 @@ const ToggleButton = styled.button`
   border: none;
   font-size: 1.5rem;
   font-weight: 800;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
 `;
 
 const MenuWrapper = styled.div`
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   margin-bottom: 10px;
   align-items: center;

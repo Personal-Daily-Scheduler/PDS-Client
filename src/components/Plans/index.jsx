@@ -59,7 +59,7 @@ function Plans() {
 const PlansContainer = styled.div`
   margin: 40px;
   border: 2px solid #ccc;
-  border-radius: 10px;
+  border-radius: 8px;
   width: 300px;
   display: flex;
   flex-direction: column;
