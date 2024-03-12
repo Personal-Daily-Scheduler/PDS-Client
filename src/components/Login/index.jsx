@@ -8,7 +8,7 @@ import CommonTitle from '../../shared/Title';
 import Input from '../../shared/Input/Index';
 import ErrorMessage from '../../shared/ErrorMessage';
 import googleLogoImage from '../../assets/google_logo.png';
-import fetchSignUp from '../../services/signUp';
+import fetchSignUp from '../../services/signup';
 import fetchLogin from '../../services/logIn';
 
 function Login() {

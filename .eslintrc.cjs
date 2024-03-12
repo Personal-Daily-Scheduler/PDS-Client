@@ -25,5 +25,6 @@ module.exports = {
     "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
     "no-underscore-dangle": "off",
     "react/jsx-no-target-blank": "off",
+    "react/no-unstable-nested-components": "off",
   },
 }
