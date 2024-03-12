@@ -26,5 +26,6 @@ module.exports = {
     "no-underscore-dangle": "off",
     "react/jsx-no-target-blank": "off",
     "react/no-unstable-nested-components": "off",
+    "consistent-return": "off",
   },
 }
