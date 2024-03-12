@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import closeButtonHover from '../../assets/close_button_hover.png';
+import closeButtonDefault from '../../assets/close_button.png';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -21,12 +23,30 @@ const ModalContent = styled.div`
   ${({ style }) => style && `left: ${style.left}px; top: ${style.top}px;`}
 `;
 
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  background: none;
+  background-image: url(${closeButtonDefault});
+  background-size: contain;
+  width: 15px;
+  height: 15px;
+  border: none;
+  transition: background-image 0.2s;
+
+  &:hover {
+    background-image: url(${closeButtonHover}) 
+  }
+`;
+
 function Modal({ onClose, children, style }) {
   return (
     <ModalOverlay>
       <ModalContent style={style}>
         {children}
-        <button onClick={onClose}>Close</button>
+        <CloseButton onClick={onClose}></CloseButton>
       </ModalContent>
     </ModalOverlay>
   );
