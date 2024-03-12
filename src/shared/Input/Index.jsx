@@ -1,15 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Input = ({ label, type, placeholder, description, value, onChange }) => {
+function Input({
+  label, type, placeholder, description, value, onChange, width,
+}) {
   return (
     <InputContainer>
       <InputLabel>{label}</InputLabel>
-      <StyledInput type={type} placeholder={placeholder} value={value} onChange={onChange}/>
+      <StyledInput
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        width={width}
+      />
       {description && <InputDescription>{description}</InputDescription>}
     </InputContainer>
   );
-};
+}
 
 const InputContainer = styled.div`
   display: flex;
@@ -17,19 +25,21 @@ const InputContainer = styled.div`
   margin-bottom: 20px;
 `;
 
+const InputLabel = styled.label`
+  display: flex;
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+`;
+
 const StyledInput = styled.input`
-  width: 400px;
+  width: ${({ width }) => (width || '400px')};
   height: 48px;
-  padding: 10px;
+  padding: 5px 10px;
   margin-bottom: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-`;
-
-const InputLabel = styled.label`
-  font-size: 14px;
-  margin-bottom: 5px;
 `;
 
 const InputDescription = styled.div`
