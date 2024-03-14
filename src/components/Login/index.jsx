@@ -2,42 +2,41 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import isPasswordValid from '../../utils/passwordValidation';
 import CommonButton from '../../shared/Button';
 import CommonTitle from '../../shared/Title';
 import Input from '../../shared/Input/Index';
 import ErrorMessage from '../../shared/ErrorMessage';
+
+import useUserStore from '../../store/user';
+
 import googleLogoImage from '../../assets/google_logo.png';
-import fetchSignUp from '../../services/signup';
-import fetchLogin from '../../services/logIn';
+import fetchSignUp from '../../services/fetchSignUp';
+import fetchLogin from '../../services/fetchLogin';
+import signUpValidate from '../../services/signupValidate';
+import loginValidate from '../../services/loginValidate';
 
 function Login() {
   const [selectedOption, setSelectedOption] = useState('signIn');
-  const [loginId, setLoginId] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [passwordValid, setPasswordValid] = useState(false);
   const [signUpError, setSignUpError] = useState({ message: '', visible: false });
 
+  const { setUser, setToken } = useUserStore();
+
   const navigate = useNavigate();
+
   const handleButtonClick = (option) => {
+    setUsername('');
+    setEmail('');
+    setUsername('');
+    setEmail('');
     setSelectedOption(option);
   };
 
   const handleInputChange = (event, field) => {
     const { value } = event.target;
-
-    if (field === 'loginId') {
-      setLoginId(value);
-    }
-
-    if (field === 'loginPassword') {
-      setLoginPassword(value);
-    }
 
     if (field === 'username') {
       setUsername(value);
@@ -50,10 +49,6 @@ function Login() {
     if (field === 'password') {
       setPassword(value);
       setConfirmPassword('');
-
-      const isValidPassword = isPasswordValid(value);
-
-      setPasswordValid(isValidPassword);
     }
 
     if (field === 'confirmPassword') {
@@ -61,89 +56,114 @@ function Login() {
     }
   };
 
-  const handleClickLoginButton = async () => {
-    const response = await fetchLogin(loginId, loginPassword);
+  const handleClickLoginButton = async (e) => {
+    e.preventDefault();
 
-    if (!response.result) {
-      alert(response.message);
+    if (selectedOption === 'signIn') {
+      const isSuccessValid = loginValidate({
+        email,
+        password,
+      }, setSignUpError);
 
-      throw new Error(response.message);
-    }
+      if (isSuccessValid) {
+        const response = await fetchLogin(email, password);
 
-    localStorage.setItem('PDSToken', response.token);
+        if (response.result) {
+          alert(response.message);
 
-    alert(response.message);
+          setUser({
+            userId: response.data.userId,
+            username: response.data.username,
+          });
 
-    navigate('/users');
-  };
+          setToken({
+            token: response.data.token,
+          });
 
-  const isSignUpFormValid = () => {
-    if (!username || !email || !password || !confirmPassword) {
-      setSignUpError({
-        message: '모든 필수 항목을 입력하세요.',
-        visible: true,
-      });
-      return false;
-    }
+          sessionStorage.setItem('authenticatedUser', JSON.stringify({
+            userId: response.data.userId,
+            username: response.data.username,
+            token: response.data.token,
+          }));
 
-    if (password.length < 6) {
-      setSignUpError({
-        message: '비밀 번호는 반드시 6자 이상이어야 합니다.',
-        visible: true,
-      });
-      return false;
-    }
+          navigate('/users');
+        }
 
-    if (!passwordValid) {
-      setSignUpError({
-        message: '대 소문자를 포함해야 합니다.',
-        visible: true,
-      });
-      return false;
-    }
-
-    if (password !== confirmPassword) {
-      setSignUpError({
-        message: '비밀번호가 서로 일치하지 않습니다.',
-        visible: true,
-      });
-
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleClickSignUpButton = async () => {
-    if (isSignUpFormValid()) {
-      setSignUpError({ message: '', visible: false });
-
-      const response = await fetchSignUp(username, email, password);
-
-      if (response.result) {
         alert(response.message);
+      }
+    }
 
-        setUsername('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
+    if (selectedOption === 'guest') {
+      if (!email) {
+        setSignUpError({
+          message: '아이디를 입력해주세요',
+          visible: true,
+        });
 
-        navigate('/users');
+        return false;
       }
 
-      alert(response.message);
+      if (!username) {
+        setSignUpError({
+          message: '닉네임을 입력해주세요',
+          visible: true,
+        });
+
+        return false;
+      }
+
+      setUser({ userId: email, username });
+
+      sessionStorage.setItem('guestUser', JSON.stringify({ userId: email, username }));
+
+      navigate('/users');
+    }
+
+    if (selectedOption === 'signUp') {
+      const isSuccessValid = signUpValidate({
+        username,
+        email,
+        password,
+        confirmPassword,
+      }, setSignUpError);
+
+      if (isSuccessValid) {
+        setSignUpError({ message: '', visible: false });
+
+        const response = await fetchSignUp(username, email, password);
+
+        if (response.result) {
+          alert(response.message);
+
+          navigate('/users');
+        }
+
+        alert(response.message);
+      }
     }
   };
 
   const renderGuestForm = () => (
-    <Input
-      label="Email"
-      type="email"
-      placeholder="Enter your email"
-      description="We need your email to start edit diary"
-    >
-    </Input>
+    <>
+      <Input
+        label="Email"
+        type="email"
+        value={email}
+        placeholder="Enter your email"
+        onChange={(e) => handleInputChange(e, 'email')}
+      >
+      </Input>
+      <Input
+        label="Nickname"
+        type="text"
+        value={username}
+        placeholder="Enter your Nickname"
+        onChange={(e) => handleInputChange(e, 'username')}
+      >
+      </Input>
+    </>
   );
+
   const renderSighUpForm = () => (
     <div>
       <Input
@@ -182,20 +202,21 @@ function Login() {
       )}
     </div>
   );
+
   const renderUserForm = () => (
     <div>
       <Input
         label="Email"
         type="email"
         placeholder="Enter your email"
-        onChange={(e) => handleInputChange(e, 'loginId')}
+        onChange={(e) => handleInputChange(e, 'email')}
       >
       </Input>
       <Input
         label="Password"
         type="password"
         placeholder="Enter your password"
-        onChange={(e) => handleInputChange(e, 'loginPassword')}
+        onChange={(e) => handleInputChange(e, 'password')}
       >
       </Input>
     </div>
@@ -241,7 +262,7 @@ function Login() {
               이미 계정이 있으신가요?
               <ButtonText onClick={() => handleButtonClick('signIn')}>로그인 하기</ButtonText>
             </DescriptionWrapper>
-            <CommonButton width="400px" height="48px" onClick={handleClickSignUpButton}>
+            <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
               SignUp
             </CommonButton>
           </>
@@ -271,6 +292,7 @@ const ButtonText = styled.button`
   background-color: none;
   color: black;
 `;
+
 const ButtonLine = styled.div`
   background-color: #E9F1FF;
   padding: 10px 5px;
