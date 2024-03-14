@@ -1,32 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styled from 'styled-components';
-import moment from 'moment';
+
+import usePlanStore from '../../store/plans';
+import useCalendarStore from '../../store/calender';
+
+import formatDateToYYYYMMDD from '../../utils/formatDate';
 
 function CustomCalendar() {
-  const [value, onChange] = useState(new Date());
+  const [markDate, setMarkDate] = useState([]);
 
-  const marks = [
-    '15-01-2022',
-    '03-01-2022',
-    '07-01-2022',
-    '13-01-2022',
-    '13-01-2022',
-    '15-01-2022',
-  ];
+  const { selectedDate, setSelectedDate } = useCalendarStore();
+  const { allDates } = usePlanStore();
+
+  const handleDateClick = (clickedDate) => {
+    const formatDate = formatDateToYYYYMMDD(clickedDate);
+
+    setSelectedDate(formatDate);
+  };
+
+  useEffect(() => {
+    setMarkDate([...allDates]);
+  }, [allDates]);
 
   return (
     <CalendarWrapper>
       <Calendar
-        onChange={onChange}
-        value={value}
+        onChange={handleDateClick}
+        value={selectedDate}
         locale="en-EN"
-        tileClassName={({ date, view }) => {
-          if (marks.find((x) => x === moment(date).format('DD-MM-YYYY'))) {
-            const highlightClass = 'highlight';
-
-            return highlightClass;
+        tileClassName={({ date }) => {
+          if (markDate.find((x) => x === formatDateToYYYYMMDD(date))) {
+            return 'highlight';
           }
         }}
       />
@@ -39,4 +45,5 @@ const CalendarWrapper = styled.div`
     background: #f3a95f;
   }
 `;
+
 export default CustomCalendar;
