@@ -1,53 +1,107 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Input from '../../shared/Input/Index';
+import { v4 as uuidv4 } from 'uuid';
+
 import TimeComponent from '../TimeSlots';
 import ColorPicker from '../ColorPicker';
+import Input from '../../shared/Input/Index';
 import CommonButton from '../../shared/Button';
+import ToastPopup from '../../shared/Toast';
+import IconTextButton from '../../shared/IconButton';
 
-function CreatePlanForm({ onSubmit }) {
-  const [planTitle, setPlanTitle] = useState('');
-  const [planDescription, setPlanDescription] = useState('');
+import usePlanStore from '../../store/plans';
+import useCalendarStore from '../../store/calender';
+
+import addIcon from '../../assets/add_icon.png';
+import removeIcon from '../../assets/close_button_hover.png';
+import fetchPostPlan from '../../services/fetchPostPlan';
+
+function PlanForm({ onSubmit: setPlanList }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [color, setColor] = useState('#b32aa9');
+  const [colorCode, setColorCode] = useState('#000000');
+  const [isClickedAddTime, setIsClickedAddTime] = useState(false);
+  const [toast, setToast] = useState({});
 
-  const handleInputChange = (field, value) => {
-    switch (field) {
-      case 'title':
-        setPlanTitle(value);
-        break;
-      case 'description':
-        setPlanDescription(value);
-        break;
-      case 'startTime':
-        setStartTime(value);
-        break;
-      case 'endTime':
-        setEndTime(value);
-        break;
-      default:
-        break;
+  const { setPlan } = usePlanStore();
+  const { selectedDate } = useCalendarStore();
+
+  const handleInputChange = (type, value) => {
+    if (type === 'title') {
+      setTitle(value);
+    }
+
+    if (type === 'description') {
+      setDescription(value);
+    }
+
+    if (type === 'startTime') {
+      setStartTime(value);
+    }
+
+    if (type === 'endTime') {
+      setEndTime(value);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
+    if (!title) {
+      setToast({ status: true, message: '제목을 반드시 입력해야 합니다.' });
 
-    onSubmit({
-      planTitle, planDescription, startTime, endTime,
-    });
+      return;
+    }
+
+    if ((!startTime && !endTime) || (startTime && endTime)) {
+      const planId = uuidv4();
+      const newPlanObject = {
+        planId, selectedDate, title, description, startTime, endTime, colorCode, completed: false,
+      };
+
+      setPlan(newPlanObject);
+
+      const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+      if (memberUser) {
+        await fetchPostPlan(newPlanObject, memberUser);
+      }
+
+      setPlanList(newPlanObject);
+
+      return;
+    }
+
+    if (!startTime) {
+      setToast({ status: true, message: '시작 시간이 비어있습니다.' });
+
+      return;
+    }
+
+    if (!endTime) {
+      setToast({ status: true, message: '종료 시간이 비어있습니다.' });
+    }
   };
 
-  const presetColors = ['#cd9323', '#1a53d8', '#9a2151', '#0d6416', '#8d2808'];
+  const handleClickTimeButton = (e, type) => {
+    e.preventDefault();
+
+    if (type === 'removeTime') {
+      setStartTime('');
+      setEndTime('');
+    }
+
+    setIsClickedAddTime(!isClickedAddTime);
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
+    <>
       <Input
         label="Title"
         type="text"
         placeholder="이벤트 이름을 입력하세요"
         onChange={(e) => handleInputChange('title', e.target.value)}
-        value={planTitle}
+        value={title}
         size={{ width: '235px', height: '32px' }}
       />
       <Input
@@ -55,24 +109,32 @@ function CreatePlanForm({ onSubmit }) {
         type="text"
         placeholder="이벤트 상세 내용을 입력하세요"
         onChange={(e) => handleInputChange('description', e.target.value)}
-        value={planDescription}
+        value={description}
         size={{ width: '235px', height: '32px' }}
       />
       <Label>Time</Label>
-      <TimeComponent></TimeComponent>
+      {isClickedAddTime ? (
+        <>
+          <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, 'removeTime')} />
+          <TimeComponent handleTimeChange={handleInputChange}></TimeComponent>
+        </>
+      ) : (
+        <IconTextButton iconSrc={addIcon} text="Add Time" onClick={(e) => handleClickTimeButton(e, 'addTime')} />
+      )}
       <Label>Color</Label>
       <ColorPicker
-        color={color}
-        onChange={setColor}
+        color={colorCode}
+        onChange={setColorCode}
       />
-      <CommonButton width="235px" height="25px" onClick={handleSubmit}>
+      <CommonButton width="235px" height="25px" onClick={handleSubmitForm}>
         Save Changes
       </CommonButton>
-    </form>
+      {toast.status && (
+        <ToastPopup setToast={setToast} message={toast.message}></ToastPopup>
+      )}
+    </>
   );
 }
-
-export default CreatePlanForm;
 
 const Label = styled.label`
   display: flex;
@@ -84,3 +146,5 @@ const Label = styled.label`
   margin-bottom: 5px;
   margin-left: 5px;
 `;
+
+export default PlanForm;
