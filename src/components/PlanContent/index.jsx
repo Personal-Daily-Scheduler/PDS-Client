@@ -5,16 +5,25 @@ import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';
 
 import fetchRemovePlan from '../../services/fetchRemovePlan';
+import fetchUpdatePlan from '../../services/fetchUpdatePlan';
+
 import checkedIcon from '../../assets/checked_icon.png';
 
 function Plan({ plan }) {
   const { selectedDate } = useCalendarStore();
   const { deletePlan, setCompleted } = usePlanStore();
 
-  const handleClickCompleted = (e) => {
+  const handleClickCompleted = async (e) => {
     e.preventDefault();
 
     setCompleted(selectedDate, plan.planId);
+
+    const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
+    if (memberUser) {
+      plan.completed = !plan.completed;
+      await fetchUpdatePlan(plan, memberUser);
+    }
   };
 
   const handleClickDeleteButton = async (e) => {
