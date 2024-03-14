@@ -28,5 +28,6 @@ module.exports = {
     "react/jsx-no-target-blank": "off",
     "react/no-unstable-nested-components": "off",
     "consistent-return": "off",
+    "guard-for-in": "off"
   },
 }

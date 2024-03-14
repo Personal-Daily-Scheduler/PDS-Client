@@ -1,14 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
+
 import Modal from '../../shared/Modal';
-import CreatePlanForm from '../PlanForm';
+import PlanForm from '../PlanForm';
+import Plan from '../PlanContent';
+
+import useCalendarStore from '../../store/calender';
+import usePlanStore from '../../store/plans';
 
 function Plans() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [plans, setPlans] = useState([]);
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
-  const [planTitle, setPlanTitle] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [planList, setPlanList] = useState([]);
+
+  const { selectedDate } = useCalendarStore();
+  const { byDates } = usePlanStore();
+
+  const getPlanContents = () => {
+    const eventList = [];
+    const dailyEvents = byDates[selectedDate];
+
+    if (dailyEvents) {
+      for (const planUid in dailyEvents) {
+        eventList.push(dailyEvents[planUid]);
+      }
+    }
+
+    return eventList;
+  };
+
+  useEffect(() => {
+    if (selectedDate && byDates[selectedDate]) {
+      const dailyPlanList = getPlanContents();
+
+      setPlanList([...dailyPlanList]);
+
+      return;
+    }
+
+    if (selectedDate && !byDates[selectedDate]) {
+      setPlanList([]);
+    }
+  }, [selectedDate, byDates]);
 
   const handleOpenModal = (e) => {
     setModalPosition({ left: e.clientX, top: e.clientY });
@@ -19,37 +53,27 @@ function Plans() {
     setIsModalOpen(false);
   };
 
-  const handleAddPlan = (planText) => {
-    setPlans([...plans, planText]);
+  const submitPlanForm = (planContent) => {
+    setPlanList([...planList, planContent]);
+
     handleCloseModal();
   };
 
   return (
     <PlansContainer>
       <h2>Daily Plans</h2>
-
       <AddButton onClick={handleOpenModal}>+</AddButton>
-
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition}>
           <h3>Add a Plan</h3>
-          <CreatePlanForm onSubmit={(e) => {
-            e.preventDefault();
-            handleAddPlan(planTitle);
-          }}
-          />
+          <PlanForm onSubmit={(e) => submitPlanForm(e)} />
         </Modal>
       )}
-
-      {plans.length > 0 && (
+      {planList.length > 0 && (
         <PlansList>
-          {plans.map((plan, index) => {
-            const randomKey = uuidv4();
-
-            return (
-              <PlanItem key={randomKey}>{plan}</PlanItem>
-            );
-          })}
+          {planList.map((plan) => (
+            <Plan key={uuidV4()} plan={plan} />
+          ))}
         </PlansList>
       )}
     </PlansContainer>
@@ -81,10 +105,8 @@ const AddButton = styled.button`
 const PlansList = styled.ul`
   list-style: none;
   padding: 0;
-`;
-
-const PlanItem = styled.li`
-  margin-bottom: 5px;
+  max-height: 600px;
+  overflow-y: scroll;
 `;
 
 export default Plans;
