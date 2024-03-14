@@ -1,19 +1,41 @@
 import React from 'react';
 import styled from 'styled-components';
-import PDSLogoImage from '../../assets/pds_logo.png';
+
+import useCalendarStore from '../../store/calender';
+
+import pdsLogo from '../../assets/pds_logo.png';
+import formatDateToYYYYMMDD from '../../utils/formatDate';
 
 function Header() {
+  const { selectedDate, setSelectedDate } = useCalendarStore();
+
+  const handleDateChange = (direction) => {
+    const currentDate = new Date(selectedDate);
+
+    if (direction === 'prev') {
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    if (direction === 'next') {
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    const formattedDate = formatDateToYYYYMMDD(currentDate);
+
+    setSelectedDate(formattedDate);
+  };
+
   return (
     <HeaderContainer>
       <Logo>
-        <PDSLogo src={PDSLogoImage} alt="PDS Logo" />
+        <PDSLogo src={pdsLogo} alt="PDS Logo" />
         <Title>P.D.S</Title>
       </Logo>
 
       <DateContainer>
-        <ArrowButton>{'<'}</ArrowButton>
-        <h2>Today Date</h2>
-        <ArrowButton>{'>'}</ArrowButton>
+        <ArrowButton onClick={() => handleDateChange('prev')}>{'<'}</ArrowButton>
+        <h2>{selectedDate}</h2>
+        <ArrowButton onClick={() => handleDateChange('next')}>{'>'}</ArrowButton>
       </DateContainer>
 
       <ViewModeSelect>
@@ -23,11 +45,6 @@ function Header() {
     </HeaderContainer>
   );
 }
-
-const PDSLogo = styled.img`
-  width: 40px;
-  height: 40px;
-`;
 
 const HeaderContainer = styled.header`
   color: black;
@@ -48,11 +65,9 @@ const Logo = styled.div`
   align-items: center;
 `;
 
-const Title = styled.h1`
-  margin-left: 10px;
-  font-family: 'Philosopher', sans-serif;
-  font-size: 35px;
-  font-weight: 700;
+const PDSLogo = styled.img`
+  width: 40px;
+  height: 40px;
 `;
 
 const DateContainer = styled.div`
@@ -67,6 +82,13 @@ const ArrowButton = styled.button`
   font-size: 2em;
   cursor: pointer;
   margin: 0 10px;
+`;
+
+const Title = styled.h1`
+  margin-left: 10px;
+  font-family: 'Philosopher', sans-serif;
+  font-size: 35px;
+  font-weight: 700;
 `;
 
 const ViewModeSelect = styled.select`
