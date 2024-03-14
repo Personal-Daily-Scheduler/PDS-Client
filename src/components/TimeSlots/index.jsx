@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidV4 } from 'uuid';
+
 import createTimeSlots from '../../utils/createTimeSlots';
 import sliceTimeSlots from '../../utils/sliceTimeSlots';
 import openedIcon from '../../assets/opened_icon.png';
 import closedIcon from '../../assets/closed_icon.png';
 
-function TimeComponent() {
+function TimeComponent({ handleTimeChange }) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [isClickedStartTime, setIsClickedStartTime] = useState(false);
   const [isClickedEndTime, setIsClickedEndTime] = useState(false);
 
-  const timeSlots = createTimeSlots();
-  const timeGroups = sliceTimeSlots(timeSlots, 4);
+  const timeGroups = sliceTimeSlots(createTimeSlots(), 4);
 
-  const handleTimeSlotClick = (e, type) => {
+  const handleClickTimeSlot = (e, type) => {
     e.preventDefault();
 
     const selectedTime = e.target.textContent;
@@ -23,20 +23,31 @@ function TimeComponent() {
     if (type === 'startTime') {
       if (endTime) {
         if (endTime < selectedTime) {
+          handleTimeChange('startTime', selectedTime);
+          handleTimeChange('endTime', '');
+
           setStartTime(selectedTime);
           setEndTime('');
         }
       }
 
+      handleTimeChange('startTime', selectedTime);
+
       setStartTime(selectedTime);
     }
+
     if (type === 'endTime') {
       if (startTime) {
         if (startTime > selectedTime) {
+          handleTimeChange('endTime', selectedTime);
+          handleTimeChange('startTime', '');
+
           setEndTime(selectedTime);
           setStartTime('');
         }
       }
+
+      handleTimeChange('endTime', selectedTime);
 
       setEndTime(selectedTime);
     }
@@ -114,7 +125,7 @@ function TimeComponent() {
                   const randomTimeKey = uuidV4();
 
                   return (
-                    <TimeButton key={randomTimeKey} onClick={(e) => handleTimeSlotClick(e, 'startTime')}>
+                    <TimeButton key={randomTimeKey} onClick={(e) => handleClickTimeSlot(e, 'startTime')}>
                       {time}
                     </TimeButton>
                   );
@@ -135,7 +146,7 @@ function TimeComponent() {
                   const randomTimeKey = uuidV4();
 
                   return (
-                    <TimeButton key={randomTimeKey} onClick={(e) => handleTimeSlotClick(e, 'endTime')}>
+                    <TimeButton key={randomTimeKey} onClick={(e) => handleClickTimeSlot(e, 'endTime')}>
                       {time}
                     </TimeButton>
                   );
@@ -152,10 +163,12 @@ function TimeComponent() {
 const TimeWrapper = styled.div`
   margin-bottom: 10px;
 `;
+
 const TimeSelectDivider = styled.div`
   font-size: 15px;
   font-weight: 700;
 `;
+
 const TimeSelectRow = styled.div`
   display: flex;
   align-items: center;
@@ -168,12 +181,13 @@ const TimeSelectRow = styled.div`
   justify-content: space-between;
   flex-direction: row;
 `;
+
 const TimeSelect = styled.button`
   display: flex;
   justify-content: flex-end;
   align-items: center;
   text-align: center;
-  box-sizing: 'border-box';
+  box-sizing: "border-box";
   background-color: #E9F1EF;
   color: #268AEF;
   border-radius: 8px;
@@ -221,6 +235,7 @@ const TimeSlotRow = styled.div`
   justify-content: space-between;
   flex-direction: row;
 `;
+
 const TimeSlotColumn = styled.div`
   display: flex;
   height: 80px;
@@ -230,4 +245,5 @@ const TimeSlotColumn = styled.div`
   border-bottom-right-radius:10px;
   border: #E9F1EF solid 0.5px;
 `;
+
 export default TimeComponent;

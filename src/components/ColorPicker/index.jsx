@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import styled from 'styled-components';
+
 import useClickOutside from '../../utils/useClickOutside';
 
 export function ColorPicker({ color, onChange }) {
@@ -8,6 +9,7 @@ export function ColorPicker({ color, onChange }) {
   const [isOpen, toggle] = useState(false);
 
   const close = useCallback(() => toggle(false), []);
+
   useClickOutside(popover, close);
 
   const handleColor = (e) => {
@@ -48,6 +50,7 @@ const Swatch = styled.div`
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 `;
+
 const PopupPalette = styled.div`
   position: absolute;
   top: calc(100% + 8px);

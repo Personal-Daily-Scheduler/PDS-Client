@@ -1,7 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import closeButtonHover from '../../assets/close_button_hover.png';
 import closeButtonDefault from '../../assets/close_button.png';
+
+function Modal({ onClose, children, style }) {
+  return (
+    <ModalOverlay>
+      <ModalContent style={style}>
+        {children}
+        <CloseButton onClick={onClose}></CloseButton>
+      </ModalContent>
+    </ModalOverlay>
+  );
+}
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -40,16 +52,5 @@ const CloseButton = styled.button`
     background-image: url(${closeButtonHover}) 
   }
 `;
-
-function Modal({ onClose, children, style }) {
-  return (
-    <ModalOverlay>
-      <ModalContent style={style}>
-        {children}
-        <CloseButton onClick={onClose}></CloseButton>
-      </ModalContent>
-    </ModalOverlay>
-  );
-}
 
 export default Modal;
