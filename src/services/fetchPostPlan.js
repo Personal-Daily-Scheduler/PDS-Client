@@ -18,6 +18,10 @@ const fetchPostPlans = async (plansObject, memberUser) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const responseJson = await response.json();
+
+    return responseJson;
   } catch (error) {
     console.error('Error saving plan to database:', error);
   }

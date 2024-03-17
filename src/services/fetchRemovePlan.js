@@ -18,6 +18,10 @@ const fetchRemovePlan = async (plansObject, memberUser) => {
     if (!response.ok) {
       console.error('Failed to delete plan from database');
     }
+
+    const responseJson = await response.json();
+
+    return responseJson;
   } catch (error) {
     console.error('Error deleting plan from database:', error);
   }

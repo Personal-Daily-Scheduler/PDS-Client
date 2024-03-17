@@ -29,4 +29,5 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
 `;
+
 export default App;

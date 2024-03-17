@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 
-const useClickOutside = (ref, eventHandler) => {
+const useClickOutside = (ref, eventHandler, isDisabled = false) => {
   useEffect(() => {
+    if (isDisabled) {
+      return;
+    }
+
     let startedInside = false;
     let startedWhenMounted = false;
 
