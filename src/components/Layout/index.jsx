@@ -8,9 +8,11 @@ import Sidebar from '../Sidebar';
 import useCalendarStore from '../../store/calender';
 import useUserStore from '../../store/user';
 import usePlanStore from '../../store/plans';
+import useScheduleStore from '../../store/schedules';
 
 import formatDateToYYYYMMDD from '../../utils/formatDate';
 import fetchUserPlans from '../../services/fetchGetPlans';
+import fetchUserSchedules from '../../services/fetchGetSchedules';
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -18,11 +20,22 @@ function Layout() {
   const { selectedDate, setSelectedDate } = useCalendarStore();
   const { setUser } = useUserStore();
   const { setPlan } = usePlanStore();
+  const { setSchedule } = useScheduleStore();
 
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const fetchSchedules = async (user) => {
+    const response = await fetchUserSchedules(user);
+
+    for (const dailySchedule of response.data) {
+      for (const scheduleObject of dailySchedule.schedules) {
+        setSchedule(scheduleObject);
+      }
+    }
   };
 
   const fetchPlans = async (user) => {
@@ -51,6 +64,7 @@ function Layout() {
         username: member.username,
       });
 
+      fetchSchedules(member);
       fetchPlans(member);
 
       return;
