@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -7,7 +7,7 @@ import sliceTimeSlots from '../../utils/sliceTimeSlots';
 import openedIcon from '../../assets/opened_icon.png';
 import closedIcon from '../../assets/closed_icon.png';
 
-function TimeComponent({ handleTimeChange }) {
+function TimeComponent({ handleTimeChange, time }) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [isClickedStartTime, setIsClickedStartTime] = useState(false);
@@ -67,6 +67,13 @@ function TimeComponent({ handleTimeChange }) {
     }
   };
 
+  useEffect(() => {
+    if (time) {
+      setStartTime(time.startTime);
+      setEndTime(time.endTime);
+    }
+  }, [time]);
+
   return (
     <TimeWrapper>
       <TimeSelectRow>
@@ -121,12 +128,12 @@ function TimeComponent({ handleTimeChange }) {
 
             return (
               <TimeSlotRow key={randomTimeWrapperKey}>
-                {group.map((time) => {
+                {group.map((timeString) => {
                   const randomTimeKey = uuidV4();
 
                   return (
                     <TimeButton key={randomTimeKey} onClick={(e) => handleClickTimeSlot(e, 'startTime')}>
-                      {time}
+                      {timeString}
                     </TimeButton>
                   );
                 })}
@@ -142,12 +149,12 @@ function TimeComponent({ handleTimeChange }) {
 
             return (
               <TimeSlotRow key={randomTimeWrapperKey}>
-                {group.map((time) => {
+                {group.map((timeString) => {
                   const randomTimeKey = uuidV4();
 
                   return (
                     <TimeButton key={randomTimeKey} onClick={(e) => handleClickTimeSlot(e, 'endTime')}>
-                      {time}
+                      {timeString}
                     </TimeButton>
                   );
                 })}
