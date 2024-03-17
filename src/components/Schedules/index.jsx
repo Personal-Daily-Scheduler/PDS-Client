@@ -1,47 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import Modal from '../../shared/Modal';
 import ScheduleForm from '../ScheduleForm';
 import TimeCells from '../TimeCells';
 
-import useCalendarStore from '../../store/calender';
-import usePlanStore from '../../store/plans';
+import useScheduleStore from '../../store/schedules';
 
 function Schedules() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [planList, setPlanList] = useState([]);
 
-  const { selectedDate } = useCalendarStore();
-  const { byDates } = usePlanStore();
-
-  const getPlanContents = () => {
-    const eventList = [];
-    const dailyEvents = byDates[selectedDate];
-
-    if (dailyEvents) {
-      for (const planUid in dailyEvents) {
-        eventList.push(dailyEvents[planUid]);
-      }
-    }
-
-    return eventList;
-  };
-
-  useEffect(() => {
-    if (selectedDate && byDates[selectedDate]) {
-      const dailyPlanList = getPlanContents();
-
-      setPlanList([...dailyPlanList]);
-
-      return;
-    }
-
-    if (selectedDate && !byDates[selectedDate]) {
-      setPlanList([]);
-    }
-  }, [selectedDate, byDates]);
+  const { setSchedule } = useScheduleStore();
 
   const handleOpenModal = (e) => {
     setModalPosition({ left: e.clientX, top: e.clientY });
@@ -52,28 +22,28 @@ function Schedules() {
     setIsModalOpen(false);
   };
 
-  const submitPlanForm = (planContent) => {
-    setPlanList([...planList, planContent]);
+  const submitScheduleForm = (newSchedule) => {
+    setSchedule(newSchedule);
 
     handleCloseModal();
   };
 
   return (
-    <PlansContainer>
+    <SchedulesContainer>
       <h2>Daily Do</h2>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition}>
           <h3>Add New Task</h3>
-          <ScheduleForm onSubmit={(e) => submitPlanForm(e)} />
+          <ScheduleForm onSubmit={(e) => submitScheduleForm(e)} />
         </Modal>
       )}
       <TimeCells></TimeCells>
-    </PlansContainer>
+    </SchedulesContainer>
   );
 }
 
-const PlansContainer = styled.div`
+const SchedulesContainer = styled.div`
   margin: 40px 0px;
   border: 2px solid #ccc;
   border-radius: 8px;
