@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,12 +8,14 @@ import Input from '../../shared/Input/Index';
 import CommonButton from '../../shared/Button';
 import ToastPopup from '../../shared/Toast';
 
+import fetchPostPlan from '../../services/fetchPostPlan';
+import fetchPostSchedule from '../../services/fetchPostSchedule';
+
 import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';
+import useScheduleStore from '../../store/schedules';
 
-import fetchPostPlan from '../../services/fetchPostPlan';
-
-function ScheduleForm({ onSubmit: setPlanList }) {
+function ScheduleForm({ onSubmit, schedule }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -22,7 +24,15 @@ function ScheduleForm({ onSubmit: setPlanList }) {
   const [toast, setToast] = useState({});
 
   const { setPlan } = usePlanStore();
+  const { setSchedule } = useScheduleStore();
   const { selectedDate } = useCalendarStore();
+
+  useEffect(() => {
+    if (schedule) {
+      setStartTime(schedule.startTime);
+      setEndTime(schedule.endTime);
+    }
+  }, [schedule]);
 
   const handleInputChange = (type, value) => {
     if (type === 'title') {
@@ -44,6 +54,7 @@ function ScheduleForm({ onSubmit: setPlanList }) {
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
+
     if (!title) {
       setToast({ status: true, message: '제목을 반드시 입력해야 합니다.' });
 
@@ -52,18 +63,28 @@ function ScheduleForm({ onSubmit: setPlanList }) {
 
     if ((!startTime && !endTime) || (startTime && endTime)) {
       const planId = uuidv4();
-      const newPlanObject = {
+
+      const newPlan = {
         planId, selectedDate, title, description, startTime, endTime, colorCode, completed: false,
       };
 
-      setPlan(newPlanObject);
+      const scheduleId = uuidv4();
+
+      const newSchedule = {
+        scheduleId, selectedDate, title, description, startTime, endTime, colorCode,
+      };
+
+      setPlan(newPlan);
+      setSchedule(newSchedule);
 
       const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
       if (memberUser) {
-        await fetchPostPlan(newPlanObject, memberUser);
+        await fetchPostSchedule(newSchedule, memberUser);
+        await fetchPostPlan(newPlan, memberUser);
       }
 
-      setPlanList(newPlanObject);
+      onSubmit(newPlan);
 
       return;
     }
@@ -82,7 +103,11 @@ function ScheduleForm({ onSubmit: setPlanList }) {
   return (
     <>
       <Label>Time</Label>
-      <TimeComponent handleTimeChange={handleInputChange}></TimeComponent>
+      {schedule ? (
+        <TimeComponent handleTimeChange={handleInputChange} time={{ startTime, endTime }} />
+      ) : (
+        <TimeComponent handleTimeChange={handleInputChange} />
+      )}
       <Input
         label="Title"
         type="text"
