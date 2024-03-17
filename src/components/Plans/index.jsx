@@ -15,11 +15,11 @@ function Plans() {
   const [planList, setPlanList] = useState([]);
 
   const { selectedDate } = useCalendarStore();
-  const { byDates } = usePlanStore();
+  const { planByDates } = usePlanStore();
 
   const getPlanContents = () => {
     const eventList = [];
-    const dailyEvents = byDates[selectedDate];
+    const dailyEvents = planByDates[selectedDate];
 
     if (dailyEvents) {
       for (const planUid in dailyEvents) {
@@ -31,7 +31,7 @@ function Plans() {
   };
 
   useEffect(() => {
-    if (selectedDate && byDates[selectedDate]) {
+    if (selectedDate && planByDates[selectedDate]) {
       const dailyPlanList = getPlanContents();
 
       setPlanList([...dailyPlanList]);
@@ -39,10 +39,10 @@ function Plans() {
       return;
     }
 
-    if (selectedDate && !byDates[selectedDate]) {
+    if (selectedDate && !planByDates[selectedDate]) {
       setPlanList([]);
     }
-  }, [selectedDate, byDates]);
+  }, [selectedDate, planByDates]);
 
   const handleOpenModal = (e) => {
     setModalPosition({ left: e.clientX, top: e.clientY });
@@ -64,7 +64,7 @@ function Plans() {
       <h2>Daily Plans</h2>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
-        <Modal onClose={handleCloseModal} style={modalPosition}>
+        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>
           <h3>Add a Plan</h3>
           <PlanForm onSubmit={(e) => submitPlanForm(e)} />
         </Modal>

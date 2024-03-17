@@ -3,27 +3,27 @@ import { devtools } from 'zustand/middleware';
 
 const planStore = (set) => ({
   userId: null,
-  byDates: {},
+  planByDates: {},
   allDates: [],
   setCompleted: (date, planId) => set((state) => {
-    state.byDates[date][planId] = {
-      ...state.byDates[date][planId],
-      completed: !state.byDates[date][planId].completed,
+    state.planByDates[date][planId] = {
+      ...state.planByDates[date][planId],
+      completed: !state.planByDates[date][planId].completed,
     };
 
-    return { byDates: { ...state.byDates } };
+    return { planByDates: { ...state.planByDates } };
   }),
   deletePlan: (date, planId) => set((state) => {
-    delete state.byDates[date][planId];
+    delete state.planByDates[date][planId];
 
-    if (Object.keys(state.byDates[date]).length === 0) {
-      state.byDates[date] = undefined;
+    if (Object.keys(state.planByDates[date]).length === 0) {
+      state.planByDates[date] = undefined;
 
       state.allDates = state.allDates.filter((existingDate) => existingDate !== date);
     }
 
     return {
-      byDates: { ...state.byDates },
+      planByDates: { ...state.planByDates },
       allDates: [...state.allDates],
     };
   }),
@@ -35,29 +35,30 @@ const planStore = (set) => ({
         state.userId = userId;
       }
 
-      if (!state.byDates[selectedDate]) {
-        state.byDates[selectedDate] = {
+      if (!state.planByDates[selectedDate]) {
+        state.planByDates[selectedDate] = {
           [planId]: planObject,
         };
       } else {
-        state.byDates[selectedDate] = {
-          ...state.byDates[selectedDate],
+        state.planByDates[selectedDate] = {
+          ...state.planByDates[selectedDate],
           [planId]: planObject,
         };
       }
+
       state.allDates = Array.from(
         new Set([...state.allDates, selectedDate]),
       );
 
       return {
-        byDates: { ...state.byDates },
+        planByDates: { ...state.planByDates },
         allDates: [...state.allDates],
       };
     });
   },
   clearPlan: () => set(() => ({
     userId: null,
-    byDates: {},
+    planByDates: {},
     allDates: [],
   })),
 });
