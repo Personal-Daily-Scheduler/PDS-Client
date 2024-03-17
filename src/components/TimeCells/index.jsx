@@ -58,40 +58,56 @@ function TimeCells() {
     handleDragStart(id);
   };
 
-  const handleMouseEnter = (id) => {
+  const handleMouseEnter = (timeCell) => {
     if (isDragging) {
-      setEndCell(id);
-      setSelectedCells((prevCells) => {
-        prevCells.sort((a, b) => a - b);
+      setEndCell(timeCell);
+      setSelectedCells((selectedIndexes) => {
+        selectedIndexes.sort((a, b) => a - b);
 
-        const min = prevCells[0];
-        const max = prevCells[prevCells.length - 1];
+        const startIndex = selectedIndexes[0];
+        const endIndex = selectedIndexes[selectedIndexes.length - 1];
 
-        if (!prevCells.includes(id)) {
-          if (id > min && id > max) {
+        const isNewlySelectedIndex = !selectedIndexes.includes(timeCell.index);
+
+        if (isNewlySelectedIndex) {
+          const isForwardSelection = timeCell.index > startIndex && timeCell.index > endIndex;
+
+          if (isForwardSelection) {
             if (startCell > endCell) {
-              return Array.from({ length: id - startCell + 1 }, (_, index) => index + startCell);
+              return Array.from({
+                length: timeCell.index - startCell.index + 1,
+              }, (_, index) => index + startCell.index);
             }
 
-            return Array.from({ length: id - min + 1 }, (_, index) => index + min);
+            return Array.from({
+              length: timeCell.index - startIndex + 1,
+            }, (_, index) => index + startIndex);
           }
 
-          if (id < min && id < max) {
-            return Array.from({ length: startCell - id + 1 }, (_, index) => index + id);
-          }
-        }
+          const isBackwardSelection = timeCell.index < startIndex && timeCell.index < endIndex;
 
-        if (min < id && max > id) {
-          if (id < endCell) {
-            return Array.from({ length: id - min + 1 }, (_, index) => index + min);
-          }
-
-          if (id > endCell) {
-            return Array.from({ length: max - id + 1 }, (_, index) => index + id);
+          if (isBackwardSelection) {
+            return Array.from({
+              length: startCell.index - timeCell.index + 1,
+            }, (_, index) => index + timeCell.index);
           }
         }
 
-        return [id];
+        const isWithinSelection = startIndex < timeCell.index && endIndex > timeCell.index;
+
+        if (isWithinSelection && timeCell.index < endCell.index) {
+          return Array.from({
+            length: timeCell.index - startIndex + 1,
+          }, (_, index) => index + startIndex);
+        }
+
+        if (isWithinSelection && timeCell.index > endCell.index) {
+          return Array.from({
+            length: endIndex - timeCell.index + 1,
+          }, (_, index) => index + timeCell.index);
+        }
+
+        return [timeCell.index];
       });
     }
   };
