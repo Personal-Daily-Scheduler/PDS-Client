@@ -15,6 +15,7 @@ import useCalendarStore from '../../store/calender';
 import addIcon from '../../assets/add_icon.png';
 import removeIcon from '../../assets/close_button_hover.png';
 import fetchPostPlan from '../../services/fetchPostPlan';
+import useScheduleStore from '../../store/schedules';
 
 function PlanForm({ onSubmit: setPlanList }) {
   const [title, setTitle] = useState('');
@@ -26,6 +27,7 @@ function PlanForm({ onSubmit: setPlanList }) {
   const [toast, setToast] = useState({});
 
   const { setPlan } = usePlanStore();
+  const { setSchedule } = useScheduleStore();
   const { selectedDate } = useCalendarStore();
 
   const handleInputChange = (type, value) => {
@@ -56,9 +58,19 @@ function PlanForm({ onSubmit: setPlanList }) {
 
     if ((!startTime && !endTime) || (startTime && endTime)) {
       const planId = uuidv4();
+
       const newPlanObject = {
         planId, selectedDate, title, description, startTime, endTime, colorCode, completed: false,
       };
+
+      const scheduleId = uuidv4();
+      const newScheduleObject = {
+        scheduleId, selectedDate, title, description, startTime, endTime, colorCode,
+      };
+
+      if (startTime && endTime) {
+        setSchedule(newScheduleObject);
+      }
 
       setPlan(newPlanObject);
 
