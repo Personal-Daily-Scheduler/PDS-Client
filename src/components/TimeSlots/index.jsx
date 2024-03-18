@@ -68,7 +68,7 @@ function TimeComponent({ handleTimeChange, time }) {
   };
 
   useEffect(() => {
-    if (time) {
+    if (time && (startTime === '' && endTime === '')) {
       setStartTime(time.startTime);
       setEndTime(time.endTime);
     }
