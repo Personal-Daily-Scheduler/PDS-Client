@@ -2,8 +2,12 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import initTimeMap from '../utils/createTimeMap';
+import initTimeSlots from '../utils/initTimeSlots';
 import setTimeMap from '../utils/setTimeMap';
+import setTimeSlots from '../utils/setTimeSlots';
 import getTimeRange from '../utils/getTimeRange';
+import updateTimeMap from '../utils/updateTimeMap';
+import updateTimeSlots from '../utils/updateTimeSlots';
 
 const scheduleStore = (set) => ({
   scheduleByDates: {},
@@ -16,7 +20,9 @@ const scheduleStore = (set) => ({
     return set((state) => {
       const timeRange = getTimeRange(startTime, endTime);
 
-      const newTimeMap = new Map(state.scheduleByDates[selectedDate].timeSlots);
+      new Map(state.scheduleByDates[selectedDate].timeSlots);
+
+      let newTimeMap = new Map(state.timeMaps);
 
       timeRange.forEach((time) => {
         newTimeMap.set(time, {
@@ -33,9 +39,13 @@ const scheduleStore = (set) => ({
 
       if (!scheduleLength) {
         state.scheduleByDates[selectedDate] = undefined;
+        newTimeMap = initTimeMap();
       }
 
-      return { scheduleByDates: { ...state.scheduleByDates } };
+      return {
+        scheduleByDates: { ...state.scheduleByDates },
+        timeMaps: newTimeMap,
+      };
     });
   },
   setSchedule: (scheduleObject) => {
@@ -47,8 +57,12 @@ const scheduleStore = (set) => ({
       if (!state.scheduleByDates[selectedDate]) {
         state.scheduleByDates[selectedDate] = {
           schedules: {},
-          timeSlots: initTimeMap(),
+          timeSlots: initTimeSlots(),
         };
+
+        const initMap = initTimeMap();
+
+        state.timeMaps = initMap;
       }
 
       const newSchedule = {
@@ -58,21 +72,54 @@ const scheduleStore = (set) => ({
         },
       };
 
-      const newTimeMap = setTimeMap(
-        state.scheduleByDates[selectedDate].timeSlots,
-        scheduleObject,
-      );
+      if (state.scheduleByDates[selectedDate].schedules[scheduleId]) {
+        state.scheduleByDates[selectedDate].schedules[scheduleId] = newSchedule[scheduleId];
 
-      state.scheduleByDates[selectedDate].timeSlots = newTimeMap;
+        const newTimeSlots = updateTimeSlots(
+          state.scheduleByDates[selectedDate].timeSlots,
+          scheduleObject,
+        );
 
+        const updatedTimeMap = updateTimeMap(
+          state.timeMaps,
+          scheduleObject,
+        );
+
+        state.scheduleByDates[selectedDate].timeSlots = newTimeSlots;
+
+        return {
+          scheduleByDates: { ...state.scheduleByDates },
+          timeMaps: updatedTimeMap,
+        };
+      }
       state.scheduleByDates[selectedDate].schedules = {
         ...state.scheduleByDates[selectedDate].schedules,
         ...newSchedule,
       };
 
-      return { scheduleByDates: { ...state.scheduleByDates } };
+      const newTimeSlots = setTimeSlots(
+        state.scheduleByDates[selectedDate].timeSlots,
+        scheduleObject,
+      );
+
+      state.scheduleByDates[selectedDate].timeSlots = newTimeSlots;
+
+      const newTimeMap = setTimeMap(
+        state.timeMaps,
+        scheduleObject,
+      );
+
+      return {
+        scheduleByDates: { ...state.scheduleByDates },
+        timeMaps: new Map(newTimeMap),
+      };
     });
   },
+  clearSchedules: () => set(() => ({
+    scheduleByDates: {},
+    timeMaps: initTimeMap(),
+  }))
+  ,
 });
 
 const useScheduleStore = create(devtools(scheduleStore));

@@ -29,6 +29,7 @@ module.exports = {
     "react/no-unstable-nested-components": "off",
     "consistent-return": "off",
     "guard-for-in": "off",
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "no-new": "off"
   },
 }
