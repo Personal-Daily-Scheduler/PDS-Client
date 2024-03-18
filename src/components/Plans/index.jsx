@@ -65,8 +65,7 @@ function Plans() {
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>
-          <h3>Add a Plan</h3>
-          <PlanForm onSubmit={(e) => submitPlanForm(e)} />
+          <PlanForm onSubmit={(e) => submitPlanForm(e)} onClose={handleCloseModal} />
         </Modal>
       )}
       {planList.length > 0 && (
