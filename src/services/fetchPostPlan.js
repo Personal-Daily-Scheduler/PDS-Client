@@ -2,7 +2,7 @@ import generateApiUri from '../utils/generateURI';
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
-const fetchPostPlans = async (plansObject, memberUser) => {
+const fetchPostPlan = async (plansObject, memberUser) => {
   const BASE_URI = generateApiUri(SERVER_URI, `users/${memberUser.userId}/diaries/${plansObject.selectedDate}/plan`);
 
   try {
@@ -27,4 +27,4 @@ const fetchPostPlans = async (plansObject, memberUser) => {
   }
 };
 
-export default fetchPostPlans;
+export default fetchPostPlan;

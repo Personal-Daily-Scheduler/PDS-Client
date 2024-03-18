@@ -9,11 +9,10 @@ const setTimeMap = (timeMap, scheduleObject) => {
 
   timeRange.forEach((time) => {
     targetTimeMap.set(time, {
-      index: targetTimeMap.get(time).index,
+      index: timeMap.get(time).index,
       schedule: scheduleObject,
     });
   });
-
   return targetTimeMap;
 };
 

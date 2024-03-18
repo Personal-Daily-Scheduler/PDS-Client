@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 
 import TimeComponent from '../TimeSlots';
 import ColorPicker from '../ColorPicker';
@@ -20,7 +20,7 @@ function ScheduleForm({ onSubmit, schedule }) {
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [colorCode, setColorCode] = useState('#000000');
+  const [colorCode, setColorCode] = useState('#ade0fd');
   const [toast, setToast] = useState({});
 
   const { setPlan } = usePlanStore();
@@ -62,16 +62,18 @@ function ScheduleForm({ onSubmit, schedule }) {
     }
 
     if ((!startTime && !endTime) || (startTime && endTime)) {
-      const planId = uuidv4();
+      const objectId = uuidV4();
 
-      const newPlan = {
-        planId, selectedDate, title, description, startTime, endTime, colorCode, completed: false,
+      const eventContent = {
+        selectedDate, title, description, startTime, endTime, colorCode,
       };
 
-      const scheduleId = uuidv4();
+      const newPlan = {
+        planId: objectId, ...eventContent, completed: false,
+      };
 
       const newSchedule = {
-        scheduleId, selectedDate, title, description, startTime, endTime, colorCode,
+        scheduleId: objectId, ...eventContent,
       };
 
       setPlan(newPlan);
