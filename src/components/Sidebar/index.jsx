@@ -13,10 +13,12 @@ import todayIcon from '../../assets/today_icon.png';
 import addTaskIcon from '../../assets/add_icon.png';
 import profileIcon from '../../assets/profile_icon.png';
 import logoutIcon from '../../assets/logout_icon.png';
+import useScheduleStore from '../../store/schedules';
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { username, clearUser } = useUserStore();
   const { clearCalendar } = useCalendarStore();
+  const { clearSchedules } = useScheduleStore();
   const { clearPlan } = usePlanStore();
 
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
     sessionStorage.removeItem('guestUser');
 
     clearCalendar();
+    clearSchedules();
     clearPlan();
     clearUser();
 
