@@ -22,6 +22,7 @@ const calculatePasteSchedule = (pasteStartTime, targetEvent) => {
     scheduleId: newScheduleId,
     ...pasteTargetTime,
   };
+
   return newSchedule;
 };
 
