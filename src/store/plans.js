@@ -39,6 +39,11 @@ const planStore = (set) => ({
         state.planByDates[selectedDate] = {
           [planId]: planObject,
         };
+      } else if (state.planByDates[selectedDate][planId]) {
+        state.planByDates[selectedDate][planId] = {
+          ...state.planByDates[selectedDate][planId],
+          ...planObject,
+        };
       } else {
         state.planByDates[selectedDate] = {
           ...state.planByDates[selectedDate],
