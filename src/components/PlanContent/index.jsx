@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import usePlanStore from '../../store/plans';
@@ -6,15 +6,24 @@ import useCalendarStore from '../../store/calender';
 
 import fetchRemovePlan from '../../services/fetchRemovePlan';
 import fetchUpdatePlan from '../../services/fetchUpdatePlan';
+import fetchEditSchedule from '../../services/fetchEditSchedules';
 
 import checkedIcon from '../../assets/checked_icon.png';
+import PlanForm from '../PlanForm';
+import Modal from '../../shared/Modal';
+import useScheduleStore from '../../store/schedules';
 
 function Plan({ plan }) {
+  const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { selectedDate } = useCalendarStore();
-  const { deletePlan, setCompleted } = usePlanStore();
+  const { deletePlan, setCompleted, setPlan } = usePlanStore();
+  const { setSchedule } = useScheduleStore();
 
   const handleClickCompleted = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
 
     setCompleted(selectedDate, plan.planId);
 
@@ -28,6 +37,7 @@ function Plan({ plan }) {
 
   const handleClickDeleteButton = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
 
     deletePlan(selectedDate, plan.planId);
 
@@ -38,33 +48,79 @@ function Plan({ plan }) {
     }
   };
 
+  const handleClickPlanContent = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setModalPosition({ left: e.clientX, top: e.clientY });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleClickEditButton = async (modifiedPlan) => {
+    const {
+      planId, startTime, endTime, ...rest
+    } = modifiedPlan;
+
+    if ((!startTime && !endTime) || (startTime && endTime)) {
+      setPlan(modifiedPlan);
+
+      const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
+      if (memberUser) {
+        await fetchUpdatePlan(modifiedPlan, memberUser);
+      }
+
+      if (startTime !== '' && endTime !== '') {
+        const modifiedSchedule = {
+          scheduleId: planId, startTime, endTime, ...rest,
+        };
+        setSchedule(modifiedSchedule);
+
+        if (memberUser) {
+          await fetchEditSchedule(modifiedSchedule, memberUser);
+        }
+      }
+    }
+  };
+
   return (
-    <PlanItemWrapper color={plan.color}>
-      <CompleteButton
-        completed={plan.completed}
-        onClick={handleClickCompleted}
-      >
-      </CompleteButton>
-      <PlanItem>
-        {plan.startTime && (
-          <Time>
-            {plan.startTime}
-            {' '}
-            ~
-            {plan.endTime}
-          </Time>
-        )}
-        <Title>
-          {plan.title}
-        </Title>
-        <div>
-          {plan.description}
-        </div>
-      </PlanItem>
-      <DeleteButton onClick={handleClickDeleteButton}>
-        삭제
-      </DeleteButton>
-    </PlanItemWrapper>
+    <>
+      {isModalOpen && (
+        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>
+          <PlanForm onSubmit={handleClickEditButton} plan={plan} onClose={handleCloseModal} />
+        </Modal>
+      )}
+      <PlanItemWrapper color={plan.colorCode} onClick={handleClickPlanContent}>
+        <CompleteButton
+          completed={plan.completed}
+          onClick={handleClickCompleted}
+        >
+        </CompleteButton>
+        <PlanItem>
+          {plan.startTime && (
+            <Time>
+              {plan.startTime}
+              {' '}
+              ~
+              {plan.endTime}
+            </Time>
+          )}
+          <Title>
+            {plan.title}
+          </Title>
+          <div>
+            {plan.description}
+          </div>
+        </PlanItem>
+        <DeleteButton onClick={handleClickDeleteButton}>
+          삭제
+        </DeleteButton>
+      </PlanItemWrapper>
+    </>
   );
 }
 
@@ -102,6 +158,10 @@ const PlanItemWrapper = styled.li`
   padding: 10px;
   margin-bottom: 5px;
   align-items: center;
+
+  &:hover {
+    background-color: #e0e0e0
+  };
 `;
 
 const Time = styled.div`
