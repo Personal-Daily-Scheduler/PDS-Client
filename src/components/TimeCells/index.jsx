@@ -8,14 +8,20 @@ import TimeCell from '../TimeCell';
 import Modal from '../../shared/Modal';
 import ScheduleModal from '../ScheduleModal';
 import ScheduleForm from '../ScheduleForm';
+import ToastPopup from '../../shared/Toast';
 
 import useScheduleStore from '../../store/schedules';
 import useCalendarStore from '../../store/calender';
+import useClipboardStore from '../../store/clipboard';
+import usePlanStore from '../../store/plans';
 
 import initTimeMap from '../../utils/createTimeMap';
 import useClickOutside from '../../utils/useClickOutside';
 import fetchRemoveSchedule from '../../services/fetRemoveSchedule';
 import getTimeRange from '../../utils/getTimeRange';
+import calculatePasteSchedule from '../../utils/calculateScheduleTime';
+import validPossiblePasteTime from '../../utils/validPossiblePasteTime';
+import validOverlapTime from '../../utils/validOverlaptime';
 
 function TimeCells() {
   const [startCell, setStartCell] = useState({ index: '', time: '' });
@@ -26,9 +32,16 @@ function TimeCells() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [toast, setToast] = useState({ status: false, message: '' });
 
   const { selectedDate } = useCalendarStore();
-  const { scheduleByDates, deleteSchedule } = useScheduleStore();
+  const {
+    timeMaps, setSchedule, scheduleByDates, deleteSchedule,
+  } = useScheduleStore();
+  const {
+    isCopied, copiedSchedule, clearClipboard, setCopiedSchedule,
+  } = useClipboardStore();
+  const { setPlan } = usePlanStore();
 
   const timeSlots = useRef();
 
@@ -45,7 +58,7 @@ function TimeCells() {
 
   useEffect(() => {
     if (selectedDate && scheduleByDates[selectedDate]) {
-      const dailyTimeMap = scheduleByDates[selectedDate].timeSlots;
+      const dailyTimeMap = timeMaps;
 
       setTimeMap(dailyTimeMap);
 
@@ -255,18 +268,62 @@ function TimeCells() {
     deleteSchedule(timeMap.get(startCell.time).schedule);
     setIsModalOpen(false);
     setIsSecondModalOpen(false);
+    setToast({ status: true, message: '일정이 정상적으로 삭제되었습니다.' });
+
     clearTimeSelection();
+  };
+
+  const handleClickCopy = async () => {
+    const copyTarget = timeMap.get(startCell.time).schedule;
+
+    setCopiedSchedule(copyTarget);
+    setToast({ status: true, message: '일정이 복사되었습니다.' });
+    clearTimeSelection();
+    setIsModalOpen(false);
+  };
+
+  const handleClickPaste = async () => {
+    const newSchedule = calculatePasteSchedule(startCell.time, copiedSchedule);
+    const { scheduleId, ...rest } = newSchedule;
+
+    const newPlan = { planId: uuidV4(), ...rest, completed: false };
+
+    const isPossiblePasteTime = validPossiblePasteTime(timeMap, newSchedule);
+    const isNonOverlapTime = validOverlapTime(copiedSchedule, newSchedule);
+
+    if (!isPossiblePasteTime || !isNonOverlapTime) {
+      setToast({ status: true, message: '일정이 존재하는 시간이 포함되어있습니다.' });
+      setIsModalOpen(false);
+
+      clearTimeSelection();
+
+      return;
+    }
+
+    setSchedule(newSchedule);
+    setPlan(newPlan);
+
+    setToast({ status: true, message: '일정이 붙여넣기 되었습니다.' });
+    setIsModalOpen(false);
+
+    clearClipboard();
   };
 
   const renderConditionalModal = () => (
     timeMap.get(startCell.time).schedule && timeMap.get(endCell.time).schedule ? (
       <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
-        <ScheduleModal onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} />
+        <ScheduleModal onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} onCopy={handleClickCopy} />
       </Modal>
     ) : (
-      <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
-        <ScheduleModal onCreate={handleOpenSecondModal} />
-      </Modal>
+      isCopied ? (
+        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
+          <ScheduleModal onCreate={handleOpenSecondModal} onPaste={handleClickPaste} />
+        </Modal>
+      ) : (
+        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
+          <ScheduleModal onCreate={handleOpenSecondModal} />
+        </Modal>
+      )
     )
   );
 
@@ -312,6 +369,9 @@ function TimeCells() {
           ))}
         </TimeWrapper>
       </CellContainer>
+      {toast.status && (
+        <ToastPopup setToast={setToast} message={toast.message} />
+      )}
     </>
   );
 }
@@ -334,6 +394,9 @@ const CellContainer = styled.div`
 `;
 
 const HoursWrapper = styled.div`
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -341,8 +404,11 @@ const HoursWrapper = styled.div`
 `;
 
 const TimeWrapper = styled.div`
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  overflow: hidden;
   display: flex;
-  width: 235px;
+  width: 222px;
   flex-wrap: wrap;
 `;
 
