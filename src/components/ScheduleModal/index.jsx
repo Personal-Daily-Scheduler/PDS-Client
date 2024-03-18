@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 function ScheduleModal({
-  onEdit, onDelete, onCreate, onCopy,
+  onEdit, onDelete, onCreate, onCopy, onPaste,
 }) {
   return (
     <ModalContent>
@@ -10,6 +10,7 @@ function ScheduleModal({
       {onDelete && <Button onClick={onDelete}>Delete❌</Button>}
       {onCreate && <Button onClick={onCreate}>Create📝</Button>}
       {onCopy && <Button onClick={onCopy}>Copy📑</Button>}
+      {onPaste && <Button onClick={onPaste}>Paste📑</Button>}
     </ModalContent>
   );
 }

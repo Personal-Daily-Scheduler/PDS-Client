@@ -31,6 +31,10 @@ function Layout() {
   const fetchSchedules = async (user) => {
     const response = await fetchUserSchedules(user);
 
+    if (!response.result) {
+      console.error(response.message);
+    }
+
     for (const dailySchedule of response.data) {
       for (const scheduleObject of dailySchedule.schedules) {
         setSchedule(scheduleObject);
