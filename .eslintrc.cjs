@@ -30,6 +30,7 @@ module.exports = {
     "consistent-return": "off",
     "guard-for-in": "off",
     "no-nested-ternary": "off",
-    "no-new": "off"
+    "no-new": "off",
+    "max-len": "off"
   },
 }
