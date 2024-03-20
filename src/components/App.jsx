@@ -4,6 +4,7 @@ import Login from './Login';
 import Layout from './Layout';
 import Plans from './Plans';
 import Schedules from './Schedules';
+import TextEditor from './See';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Wrapper>
               <Plans />
               <Schedules />
+              <TextEditor />
             </Wrapper>
         )}
         />
