@@ -5,14 +5,17 @@ import styled from 'styled-components';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 
+import formatDateToYYYYMMDD from '../../utils/formatDate';
+import fetchUserPlans from '../../services/plan/fetchGetPlans';
+import fetchUserSchedules from '../../services/schedule/fetchGetSchedules';
+import fetchPostDiary from '../../services/diary/fetchPostDiary';
+import fetchUserDiaries from '../../services/diary/fetchGetDiary';
+import useDiaryStore from '../../store/diary';
+
 import useCalendarStore from '../../store/calender';
 import useUserStore from '../../store/user';
 import usePlanStore from '../../store/plans';
 import useScheduleStore from '../../store/schedules';
-
-import formatDateToYYYYMMDD from '../../utils/formatDate';
-import fetchUserPlans from '../../services/fetchGetPlans';
-import fetchUserSchedules from '../../services/fetchGetSchedules';
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -21,6 +24,7 @@ function Layout() {
   const { setUser } = useUserStore();
   const { setPlan } = usePlanStore();
   const { setSchedule } = useScheduleStore();
+  const { saveDiary } = useDiaryStore();
 
   const navigate = useNavigate();
 
@@ -52,6 +56,16 @@ function Layout() {
     }
   };
 
+  const fetchDiaries = async (user) => {
+    const userDiaries = await fetchUserDiaries(user);
+
+    if (userDiaries.result) {
+      for (const dailyDiary of userDiaries) {
+        saveDiary(dailyDiary);
+      }
+    }
+  };
+
   useEffect(() => {
     const todayDate = formatDateToYYYYMMDD(new Date());
 
@@ -70,6 +84,7 @@ function Layout() {
 
       fetchSchedules(member);
       fetchPlans(member);
+      fetchDiaries(member);
 
       return;
     } if (guest) {
