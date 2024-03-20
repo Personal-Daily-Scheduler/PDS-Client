@@ -8,8 +8,8 @@ import Input from '../../shared/Input/Index';
 import CommonButton from '../../shared/Button';
 import ToastPopup from '../../shared/Toast';
 
-import fetchPostPlan from '../../services/fetchPostPlan';
-import fetchPostSchedule from '../../services/fetchPostSchedule';
+import fetchPostPlan from '../../services/plan/fetchPostPlan';
+import fetchPostSchedule from '../../services/schedule/fetchPostSchedule';
 
 import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';

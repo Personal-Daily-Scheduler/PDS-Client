@@ -92,6 +92,7 @@ const scheduleStore = (set) => ({
           timeMaps: updatedTimeMap,
         };
       }
+
       state.scheduleByDates[selectedDate].schedules = {
         ...state.scheduleByDates[selectedDate].schedules,
         ...newSchedule,
@@ -118,8 +119,7 @@ const scheduleStore = (set) => ({
   clearSchedules: () => set(() => ({
     scheduleByDates: {},
     timeMaps: initTimeMap(),
-  }))
-  ,
+  })),
 });
 
 const useScheduleStore = create(devtools(scheduleStore));

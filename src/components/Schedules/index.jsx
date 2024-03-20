@@ -30,7 +30,7 @@ function Schedules() {
 
   return (
     <SchedulesContainer>
-      <h2>Daily Do</h2>
+      <h2>Do</h2>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition}>
