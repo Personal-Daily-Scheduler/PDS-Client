@@ -5,7 +5,7 @@ function IconTextButton({ iconSrc, text, onClick }) {
   return (
     <Button onClick={onClick}>
       <Icon src={iconSrc} alt="Icon" />
-      <ButtonText>{text}</ButtonText>
+      { text && <ButtonText>{text}</ButtonText>}
     </Button>
   );
 }
@@ -13,27 +13,28 @@ function IconTextButton({ iconSrc, text, onClick }) {
 const Button = styled.button`
   display: flex;
   align-items: center;
-  padding: 5px;
-  background-color: white;
+  background:none;
   color: black;
-  border: 1px solid white;
-  border-radius: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px;
+  margin-right: 3px;
   cursor: pointer;
-  margin-bottom: 10px;
+  box-sizing: border-box;
 
   &:hover {
-    border: 1px solid black;
+    border: 1px solid white;
     color: black;
   }
 `;
 
 const Icon = styled.img`
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
+  width: 13px;
+  height: 13px;
 `;
 
 const ButtonText = styled.span`
+  margin-left: 5px;
   font-size: 16px;
 `;
 
