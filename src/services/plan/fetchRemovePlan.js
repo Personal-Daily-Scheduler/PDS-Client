@@ -1,30 +1,30 @@
-import generateApiUri from '../utils/generateURI';
+import generateApiUri from '../../utils/generateURI';
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
-const fetchPostPlan = async (plansObject, memberUser) => {
+const fetchRemovePlan = async (plansObject, memberUser) => {
   const BASE_URI = generateApiUri(SERVER_URI, `users/${memberUser.userId}/diaries/${plansObject.selectedDate}/plan`);
 
   try {
     const response = await fetch(BASE_URI, {
-      method: 'POST',
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${memberUser.token}`,
       },
-      body: JSON.stringify(plansObject),
+      body: JSON.stringify({ planId: plansObject.planId }),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error('Failed to delete plan from database');
     }
 
     const responseJson = await response.json();
 
     return responseJson;
   } catch (error) {
-    console.error('Error saving plan to database:', error);
+    console.error('Error deleting plan from database:', error);
   }
 };
 
-export default fetchPostPlan;
+export default fetchRemovePlan;
