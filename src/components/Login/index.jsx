@@ -7,13 +7,13 @@ import CommonTitle from '../../shared/Title';
 import Input from '../../shared/Input/Index';
 import ErrorMessage from '../../shared/ErrorMessage';
 
-import useUserStore from '../../store/user';
-
 import googleLogoImage from '../../assets/google_logo.png';
-import fetchSignUp from '../../services/fetchSignUp';
-import fetchLogin from '../../services/fetchLogin';
+import fetchSignUp from '../../services/user/fetchSignUp';
+import fetchLogin from '../../services/user/fetchLogin';
 import signUpValidate from '../../services/signupValidate';
 import loginValidate from '../../services/loginValidate';
+
+import useUserStore from '../../store/user';
 
 function Login() {
   const [selectedOption, setSelectedOption] = useState('signIn');

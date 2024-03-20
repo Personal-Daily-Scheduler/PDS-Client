@@ -61,7 +61,7 @@ function Plans() {
 
   return (
     <PlansContainer>
-      <h2>Daily Plans</h2>
+      <h2>Plan</h2>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>

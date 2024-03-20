@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import usePlanStore from '../../store/plans';
-import useCalendarStore from '../../store/calender';
-
-import fetchRemovePlan from '../../services/fetchRemovePlan';
-import fetchUpdatePlan from '../../services/fetchUpdatePlan';
-import fetchEditSchedule from '../../services/fetchEditSchedules';
+import Modal from '../../shared/Modal';
+import PlanForm from '../PlanForm';
 
 import checkedIcon from '../../assets/checked_icon.png';
-import PlanForm from '../PlanForm';
-import Modal from '../../shared/Modal';
+import fetchRemovePlan from '../../services/plan/fetchRemovePlan';
+import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
+import fetchEditSchedule from '../../services/schedule/fetchEditSchedules';
+
+import usePlanStore from '../../store/plans';
+import useCalendarStore from '../../store/calender';
 import useScheduleStore from '../../store/schedules';
 
 function Plan({ plan }) {

@@ -17,7 +17,7 @@ import usePlanStore from '../../store/plans';
 
 import initTimeMap from '../../utils/createTimeMap';
 import useClickOutside from '../../utils/useClickOutside';
-import fetchRemoveSchedule from '../../services/fetRemoveSchedule';
+import fetchRemoveSchedule from '../../services/schedule/fetRemoveSchedule';
 import getTimeRange from '../../utils/getTimeRange';
 import calculatePasteSchedule from '../../utils/calculateScheduleTime';
 import validPossiblePasteTime from '../../utils/validPossiblePasteTime';

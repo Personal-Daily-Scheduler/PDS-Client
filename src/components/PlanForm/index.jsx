@@ -9,16 +9,16 @@ import CommonButton from '../../shared/Button';
 import ToastPopup from '../../shared/Toast';
 import IconTextButton from '../../shared/IconButton';
 
-import usePlanStore from '../../store/plans';
-import useCalendarStore from '../../store/calender';
-
 import addIcon from '../../assets/add_icon.png';
 import removeIcon from '../../assets/close_button_hover.png';
-import fetchPostPlan from '../../services/fetchPostPlan';
-import fetchPostSchedule from '../../services/fetchPostSchedule';
+import fetchPostPlan from '../../services/plan/fetchPostPlan';
+import fetchPostSchedule from '../../services/schedule/fetchPostSchedule';
+import fetchEditSchedule from '../../services/schedule/fetchEditSchedules';
+import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
+
+import usePlanStore from '../../store/plans';
+import useCalendarStore from '../../store/calender';
 import useScheduleStore from '../../store/schedules';
-import fetchUpdatePlan from '../../services/fetchUpdatePlan';
-import fetchEditSchedule from '../../services/fetchEditSchedules';
 
 function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
   const [title, setTitle] = useState('');
@@ -31,7 +31,7 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
   const [isEditMode, setIsEditMode] = useState(false);
 
   const { setPlan } = usePlanStore();
-  const { setSchedule, timeMaps } = useScheduleStore();
+  const { setSchedule } = useScheduleStore();
   const { selectedDate } = useCalendarStore();
 
   useEffect(() => {
@@ -100,7 +100,6 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
 
       if (startTime && endTime) {
         setPlan(newPlanObject);
-
         setSchedule(newScheduleObject);
 
         if (memberUser) {
@@ -126,11 +125,13 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
       if (memberUser) {
         await fetchPostPlan(newPlanObject, memberUser);
       }
+
       if (isEditMode) {
         setIsEditMode(false);
       }
 
       onClose();
+
       return;
     }
 
@@ -200,16 +201,12 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
         <IconTextButton iconSrc={addIcon} text="Add Time" onClick={(e) => handleClickTimeButton(e, 'addTime')} />
       )}
       <Label>Color</Label>
-      <ColorPicker
-        onChange={(e) => {
-          setColorCode(e);
-        }}
-      />
+      <ColorPicker onChange={(e) => setColorCode(e)} />
       <CommonButton width="235px" height="25px" onClick={handleSubmitForm}>
         { isEditMode ? 'Save edit' : 'Save Changes' }
       </CommonButton>
       {toast.status && (
-        <ToastPopup setToast={setToast} message={toast.message}></ToastPopup>
+        <ToastPopup setToast={setToast} message={toast.message} />
       )}
     </>
   );
