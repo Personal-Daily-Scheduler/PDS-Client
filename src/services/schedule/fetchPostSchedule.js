@@ -1,4 +1,4 @@
-import generateApiUri from '../utils/generateURI';
+import generateApiUri from '../../utils/generateURI';
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
