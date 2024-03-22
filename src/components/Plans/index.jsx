@@ -80,6 +80,8 @@ function Plans() {
 }
 
 const PlansContainer = styled.div`
+  min-width: 280px;
+  overflow-x: auto;
   margin: 40px;
   border: 2px solid #ccc;
   border-radius: 8px;

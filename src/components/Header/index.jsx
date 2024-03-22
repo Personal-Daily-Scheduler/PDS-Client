@@ -48,15 +48,18 @@ function Header() {
 
 const HeaderContainer = styled.header`
   color: black;
-  padding: 1em;
+  padding: 10px;
   text-align: center;
   display: flex;
   position: fixed;
   width: 100%;
   height:70px;
+  background-color: white;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid black;
   top: 0;
+  z-index: 100;
 `;
 
 const Logo = styled.div`
@@ -67,7 +70,7 @@ const Logo = styled.div`
 
 const PDSLogo = styled.img`
   width: 40px;
-  height: 40px;
+  height: 30px;
 `;
 
 const DateContainer = styled.div`
