@@ -51,7 +51,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   return (
     <SidebarContainer isSidebarOpen={isSidebarOpen}>
       <ToggleButton isSidebarOpen={isSidebarOpen} onClick={toggleSidebar}>
-        {isSidebarOpen ? '<' : '>'}
+        {isSidebarOpen ? '×' : '☰'}
       </ToggleButton>
       {isSidebarOpen && (
         <>
@@ -85,11 +85,11 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   width: ${({ isSidebarOpen }) => (isSidebarOpen ? '300px' : '50px')};
-  overflow: hidden;
+  overflow: auto;
   background-color: #1877f2;
   padding: ${({ isSidebarOpen }) => (isSidebarOpen ? '10px' : '0px')};
-  margin-top: 70px;
   transition: width 0.3s ease;
 `;
 

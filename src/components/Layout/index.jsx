@@ -116,14 +116,16 @@ function Layout() {
 
 const Container = styled.div`
   display: flex;
-  min-height: 100vh;
+  height: calc(100vh - 90px);
+  overflow-y: auto;
+  margin-top: 90px;
 `;
 
 const Content = styled.main`
-  border-top: 3px solid #d9d9d9;
+  border-top: 2px solid #d9d9d9;
   flex-grow: 1;
-  margin-top: 70px;
   padding: 20px;
+  overflow-y: auto;
   transition: margin-left 0.3s ease;
 `;
 
