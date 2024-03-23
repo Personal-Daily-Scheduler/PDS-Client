@@ -8,7 +8,6 @@ import Sidebar from '../Sidebar';
 import formatDateToYYYYMMDD from '../../utils/formatDate';
 import fetchUserPlans from '../../services/plan/fetchGetPlans';
 import fetchUserSchedules from '../../services/schedule/fetchGetSchedules';
-import fetchPostDiary from '../../services/diary/fetchPostDiary';
 import fetchUserDiaries from '../../services/diary/fetchGetDiary';
 import useDiaryStore from '../../store/diary';
 
@@ -57,12 +56,12 @@ function Layout() {
   };
 
   const fetchDiaries = async (user) => {
-    const userDiaries = await fetchUserDiaries(user);
+    const response = await fetchUserDiaries(user);
 
-    if (userDiaries.result) {
-      for (const dailyDiary of userDiaries) {
-        saveDiary(dailyDiary);
-      }
+    if (response.result) {
+      response.data.forEach((dailyDiary) => {
+        saveDiary(dailyDiary.diary);
+      });
     }
   };
 
