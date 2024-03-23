@@ -22,7 +22,9 @@ function TimeCell({
         isDragging={isDragging}
         schedule={schedule}
       >
-        {(schedule.startTime === id.time) && schedule.title}
+        {schedule.startTime === id.time && (
+          <ScheduleTitle>{schedule.title}</ScheduleTitle>
+        )}
       </TimeCellWrapper>
     )
   );
@@ -62,6 +64,13 @@ const TimeCellWrapper = styled.div`
     isDragging ? schedule ? changeColor(schedule.colorCode, 10) : '#928f8f' : schedule ? changeColor(schedule.colorCode, 10, true) : '#f0f1f4'
   )};
   }
+`;
+
+const ScheduleTitle = styled.div`
+  white-space: nowrap;
+  padding: 4px;
+  border-radius: 4px;
+  position: relative;
 `;
 
 export default TimeCell;
