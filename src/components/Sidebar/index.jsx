@@ -14,12 +14,14 @@ import addTaskIcon from '../../assets/add_icon.png';
 import profileIcon from '../../assets/profile_icon.png';
 import logoutIcon from '../../assets/logout_icon.png';
 import useScheduleStore from '../../store/schedules';
+import useDiaryStore from '../../store/diary';
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { username, clearUser } = useUserStore();
   const { clearCalendar } = useCalendarStore();
   const { clearSchedules } = useScheduleStore();
   const { clearPlan } = usePlanStore();
+  const { clearDiary } = useDiaryStore();
 
   const navigate = useNavigate();
 
@@ -31,6 +33,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
     clearSchedules();
     clearPlan();
     clearUser();
+    clearDiary();
 
     navigate('/');
   };
