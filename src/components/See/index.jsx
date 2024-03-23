@@ -1,88 +1,229 @@
 import React, {
-  useRef, useState, useCallback, useEffect,
+  useRef, useState, useCallback, useLayoutEffect, useEffect,
 } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidV4 } from 'uuid';
 
-import IconTextButton from '../../shared/IconButton';
-import CommonButton from '../../shared/Button';
 import ToastPopup from '../../shared/Toast';
-
-import middleIcon from '../../assets/middle_align_icon.png';
-import leftIcon from '../../assets/left_align_icon.png';
-import rightIcon from '../../assets/right_align_icon.png';
-import underlineIcon from '../../assets/underline_icon.png';
-import boldIcon from '../../assets/bold_icon.png';
-import italicIcon from '../../assets/italic_icon.png';
+import focusContentEditableTextToEnd from '../../utils/focusContentEditable';
+import textEditorUtils from '../../utils/textEditor';
 import fetchPostDiary from '../../services/diary/fetchPostDiary';
 
 import useCalendarStore from '../../store/calender';
 import useDiaryStore from '../../store/diary';
+import EmojiPicker from '../EmojiPicker';
+import Toolbar from '../Toolbar';
 
 function See() {
-  const [content, setContent] = useState('');
-  const contentEditableRef = useRef(null);
-  const [diaryId, setDiaryId] = useState('');
   const [toast, setToast] = useState({});
+  const [diaryId, setDiaryId] = useState('');
+  const [activeBold, setActiveBold] = useState(false);
+  const [activeItalic, setActiveItalic] = useState(false);
+  const [activeUnderline, setActiveUnderline] = useState(false);
+  const [activeFontSize, setActiveFontSize] = useState('16px');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [text, setText] = useState('');
+  const [isComposing, setIsComposing] = useState(false);
+
+  const editorRef = useRef(null);
 
   const { selectedDate } = useCalendarStore();
   const { diaryByDates, saveDiary } = useDiaryStore();
 
-  const getDiaries = () => {
-    const dailyDiary = diaryByDates[selectedDate];
-
-    if (dailyDiary) {
-      const [diaryObjectId, diaryContent] = Object.entries(dailyDiary);
-
-      return { [diaryObjectId]: diaryContent };
-    }
-
-    return null;
-  };
-
   useEffect(() => {
     if (selectedDate && diaryByDates[selectedDate]) {
-      const dairyDiaryObject = getDiaries();
-      const [diaryObjectId, diaryContent] = Object.entries(dairyDiaryObject)[0];
+      const [diaryObjectId, diaryObject] = Object.entries(diaryByDates[selectedDate])[0];
 
       setDiaryId(diaryObjectId);
-      setContent(diaryContent.styledContent || '');
+      setText(diaryObject.styledContent || '');
 
       return;
     }
 
-    setContent('');
+    setText('');
     setDiaryId('');
   }, [selectedDate, diaryByDates]);
 
-  const focusEditor = () => {
-    contentEditableRef.current.focus({ preventScroll: true });
+  useLayoutEffect(() => {
+    if (editorRef.current) {
+      focusContentEditableTextToEnd(editorRef.current);
+    }
+  }, [text]);
+
+  const handleEmojiSelect = (emoji) => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const emojiNode = document.createTextNode(emoji.native);
+
+    range.insertNode(emojiNode);
+    range.setStartAfter(emojiNode);
+    range.setEndAfter(emojiNode);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    setText(editorRef.current.innerHTML);
+    setShowEmojiPicker(false);
   };
 
-  const applyStyle = (style) => {
-    document.execCommand('styleWithCSS', false, true);
-    document.execCommand(style, false, null);
-    focusEditor();
+  const handleTextChange = () => {
+    if (!isComposing) {
+      setText(editorRef.current.innerHTML);
+    }
   };
 
-  const changeColor = (e) => {
-    e.preventDefault();
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+      const newLine = document.createElement('div');
+      newLine.innerHTML = '<br>';
 
-    document.execCommand('foreColor', false, e.currentTarget.value);
-    focusEditor();
-  };
+      range.deleteContents();
+      range.insertNode(newLine);
+      range.setStartAfter(newLine);
+      range.setEndAfter(newLine);
+      range.collapse(false);
 
-  const alignText = useCallback((alignment) => {
-    document.execCommand(`justify${alignment.charAt(0).toUpperCase()}${alignment.slice(1)}`, false, null);
-    focusEditor();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
   }, []);
 
-  const handleFontSizeChange = (e) => {
-    document.execCommand('fontSize', false, e.currentTarget.value);
-    focusEditor();
+  const handleColorStyle = (value, range) => {
+    const fragment = range.extractContents();
+    const newElement = document.createElement('span');
+
+    newElement.style.color = value;
+    newElement.appendChild(fragment);
+    range.insertNode(newElement);
   };
 
-  const handleSubmitForm = async (e) => {
+  const handleOtherStyles = (style, startSpan, range, selection) => {
+    const styledText = startSpan.innerHTML;
+    const unstyledText = textEditorUtils.removeStyleTags(styledText, style);
+    const cleanedText = textEditorUtils.removeEmptySpanTags(unstyledText);
+    const newTextNode = document.createTextNode(cleanedText);
+
+    startSpan.parentNode.replaceChild(newTextNode, startSpan);
+
+    const newRange = document.createRange();
+    newRange.selectNodeContents(newTextNode);
+
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  };
+
+  const handleSameSpan = (style, value, startSpan, endSpan, range, selection) => {
+    if (startSpan && endSpan && startSpan === endSpan) {
+      if (style === 'color') {
+        handleColorStyle(value, range);
+      } else {
+        handleOtherStyles(style, startSpan, range, selection);
+      }
+    }
+  };
+
+  const processSpanNode = (style, value, node, newElement) => {
+    const styles = node.style;
+    let isStyleApplied = false;
+
+    for (let i = 0; i < styles.length; i += 1) {
+      const existingStyle = styles[i];
+
+      if (existingStyle === style) {
+        isStyleApplied = true;
+        while (node.firstChild) {
+          newElement.appendChild(node.firstChild);
+        }
+        break;
+      }
+    }
+
+    if (!isStyleApplied) {
+      const styledNode = node.cloneNode(true);
+
+      styledNode.style[style] = textEditorUtils.getStyleValue(style);
+      newElement.appendChild(styledNode);
+    }
+  };
+
+  const processNodes = (style, value, nodes, newElement) => {
+    Array.from(nodes).forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const textNode = node.cloneNode(true);
+
+        newElement.appendChild(textNode);
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === 'SPAN') {
+          processSpanNode(style, value, node, newElement);
+        } else {
+          const childNodes = Array.from(node.childNodes);
+
+          if (style === 'fontSize') {
+            const styledNode = node.cloneNode(true);
+
+            styledNode.style.fontSize = value;
+
+            newElement.appendChild(styledNode);
+            processNodes(style, value, childNodes, styledNode);
+          } else {
+            processNodes(style, value, childNodes, newElement);
+          }
+        }
+      }
+    });
+  };
+
+  const handleDifferentSpan = (style, value, startSpan, endSpan, range, selection) => {
+    if (!startSpan || !endSpan || startSpan !== endSpan) {
+      const fragment = range.cloneContents();
+      const newElement = document.createElement('span');
+
+      processNodes(style, value, fragment.childNodes, newElement);
+
+      range.deleteContents();
+      range.insertNode(newElement);
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  };
+
+  const updateActiveStyles = (style, value) => {
+    if (style === 'fontWeight') {
+      setActiveBold(!activeBold);
+    } else if (style === 'fontStyle') {
+      setActiveItalic(!activeItalic);
+    } else if (style === 'textDecoration') {
+      setActiveUnderline(!activeUnderline);
+    } else if (style === 'fontSize') {
+      setActiveFontSize(value);
+    }
+  };
+
+  const handleStyleChange = (style, value) => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+
+    if (selectedText.length === 0) return;
+
+    const { startContainer } = range;
+    const { endContainer } = range;
+
+    const startSpan = textEditorUtils.findParentSpan(startContainer, style);
+    const endSpan = textEditorUtils.findParentSpan(endContainer, style);
+
+    handleSameSpan(style, value, startSpan, endSpan, range, selection);
+    handleDifferentSpan(style, value, startSpan, endSpan, range, selection);
+
+    setText(editorRef.current.innerHTML);
+    updateActiveStyles(style, value);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const diaryObjectId = diaryId || uuidV4();
@@ -90,10 +231,10 @@ function See() {
     const diaryObject = {
       diaryId: diaryObjectId,
       selectedDate,
-      styledContent: contentEditableRef.current.innerHTML,
+      styledContent: editorRef.current.innerHTML,
     };
 
-    if (contentEditableRef.current.innerText) {
+    if (editorRef.current.innerText) {
       await saveDiary(diaryObject);
 
       setToast({ status: true, message: '다이어리가 저장되었습니다.' });
@@ -114,46 +255,47 @@ function See() {
     setToast({ status: true, message: '작성된 다이어리가 없습니다.' });
   };
 
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = (e) => {
+    setIsComposing(false);
+    handleTextChange(e);
+  };
+
   return (
     <>
       <SeeContainer>
-        <h2>Plan</h2>
-        <TextArea>
-          <ButtonWrapper>
-            <Select onChange={handleFontSizeChange}>
-              <Option value="">Size</Option>
-              <Option value="1">10px</Option>
-              <Option value="2">13px</Option>
-              <Option value="3">16px</Option>
-              <Option value="4">18px</Option>
-              <Option value="5">24px</Option>
-              <Option value="6">32px</Option>
-              <Option value="7">48px</Option>
-            </Select>
-            <IconTextButton iconSrc={boldIcon} onClick={() => applyStyle('bold')} />
-            <IconTextButton iconSrc={italicIcon} onClick={() => applyStyle('italic')} />
-            <IconTextButton iconSrc={underlineIcon} onClick={() => applyStyle('underline')} />
-            <IconTextButton iconSrc={leftIcon} onClick={() => alignText('left')} />
-            <IconTextButton iconSrc={middleIcon} onClick={() => alignText('center')} />
-            <IconTextButton iconSrc={rightIcon} onClick={() => alignText('right')} />
-            <ColorButton value="#000000" onClick={changeColor}></ColorButton>
-            <ColorButton value="#CCCCCC" onClick={changeColor}></ColorButton>
-            <ColorButton value="#F03E3E" onClick={changeColor}></ColorButton>
-            <ColorButton value="#1971C2" onClick={changeColor}></ColorButton>
-            <ColorButton value="#37B24D" onClick={changeColor}></ColorButton>
-          </ButtonWrapper>
-          <EditorWrapper>
-            <ContentEditable
-              contentEditable
-              ref={contentEditableRef}
-              placeholder="Enter your text here..."
-              dangerouslySetInnerHTML={{ __html: content }}
+        <h2>See</h2>
+        <EditorWrapper>
+          <EditorContainer>
+            <Toolbar
+              showEmojiPicker={showEmojiPicker}
+              setShowEmojiPicker={setShowEmojiPicker}
+              handleStyleChange={handleStyleChange}
+              activeBold={activeBold}
+              activeItalic={activeItalic}
+              activeUnderline={activeUnderline}
+              activeFontSize={activeFontSize}
+              setActiveFontSize={setActiveFontSize}
             />
-          </EditorWrapper>
-          <CommonButton width="235px" height="30px" onClick={handleSubmitForm}>
-            {'Save Change >'}
-          </CommonButton>
-        </TextArea>
+            <EditorContent
+              contentEditable
+              ref={editorRef}
+              onInput={handleTextChange}
+              onKeyDown={handleKeyDown}
+              onCompositionStart={handleCompositionStart}
+              onCompositionEnd={handleCompositionEnd}
+              dangerouslySetInnerHTML={{ __html: text }}
+            />
+          </EditorContainer>
+          <EmojiPicker
+            onEmojiSelect={handleEmojiSelect}
+            showEmojiPicker={showEmojiPicker}
+          />
+          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+        </EditorWrapper>
       </SeeContainer>
       {toast.status && (
         <ToastPopup setToast={setToast} message={toast.message} />
@@ -161,57 +303,6 @@ function See() {
     </>
   );
 }
-
-const ColorButton = styled.button`
-  width: 15px;
-  height: 15px;
-  padding: 0;
-  border: none;
-  margin-right: 3px;
-  background-color: ${({ value }) => value};
-  cursor: pointer;
-  border: 1px solid ${(props) => (props.active ? 'white' : 'black')};
-
-  &:hover {
-    border: 1px solid #d9d9d9;
-  }
-`;
-
-const Select = styled.select`
-  font-size: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-right: 3px;
-  outline: none;
-  cursor: pointer;
-`;
-
-const Option = styled.option`
-  font-size: 8px;
-`;
-
-const EditorWrapper = styled.div`
-  border: 1px solid #ccc;
-  min-height: 450px;
-  width: 260px;
-  padding: 10px;
-  margin-bottom: 16px;
-`;
-
-const ContentEditable = styled.div`
-  height: fit-content;
-  max-height: 500px;
-  overflow-y: scroll;
-
-  &:empty:before {
-    content: attr(placeholder);
-    color: #999;
-  }
-
-  & > div {
-    outline: none;
-  }
-`;
 
 const SeeContainer = styled.div`
   margin: 40px;
@@ -225,25 +316,48 @@ const SeeContainer = styled.div`
   position: relative;
 `;
 
-const TextArea = styled.div`
-  width: 280px;
-  border: 1px solid black;
-  height: 600px;
-  overflow-y: scroll;
+const EditorWrapper = styled.div`
   display: flex;
-  align-items: center;
   flex-direction: column;
-  padding: 10px 10px;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 5px;
-  padding: 8px;
-  border-radius: 15px;
-  background-color: #eeeeee;
+  height: 600px;
+  background-color: #f5f5f5;
+`;
+
+const EditorContainer = styled.div`
+  width: 280px;
+  height: 600px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+`;
+
+const EditorContent = styled.div`
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  font-size: 16px;
+  line-height: 1.5;
+`;
+
+const SubmitButton = styled.button`
+  margin-top: 16px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 export default See;
