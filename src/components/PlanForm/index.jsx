@@ -29,6 +29,7 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
   const [isClickedAddTime, setIsClickedAddTime] = useState(false);
   const [toast, setToast] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isToggled, setIsToggled] = useState(false);
 
   const { setPlan } = usePlanStore();
   const { setSchedule } = useScheduleStore();
@@ -165,9 +166,21 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
     setIsClickedAddTime(!isClickedAddTime);
   };
 
+  const handleToggle = () => {
+    setIsToggled(!isToggled);
+  };
+
   return (
     <>
-      <h3>{isEditMode ? 'Edit a Plan' : 'Add a Plan'}</h3>
+      <TitleWrapper>
+        <h3>{isEditMode ? 'Edit a Plan' : 'Add a Plan'}</h3>
+        <ToggleWrapper>
+          <ToggleButton isToggled={isToggled} onClick={handleToggle}>
+            <ToggleThumb isToggled={isToggled} />
+          </ToggleButton>
+          <ToggleDescription>Do 일정과 연동</ToggleDescription>
+        </ToggleWrapper>
+      </TitleWrapper>
       <Input
         label="Title"
         type="text"
@@ -211,6 +224,48 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
     </>
   );
 }
+
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const ToggleWrapper = styled.div`
+  position: relative;
+`;
+
+const ToggleButton = styled.div`
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: ${(props) => (props.isToggled ? '#4CAF50' : '#ccc')};
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+`;
+
+const ToggleThumb = styled.div`
+  position: absolute;
+  top: 2px;
+  left: ${(props) => (props.isToggled ? '22px' : '2px')};
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: left 0.3s;
+`;
+
+const ToggleDescription = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  font-size: 10px;
+  color: #888;
+  margin-top: 5px;
+  white-space: nowrap;
+`;
 
 const Label = styled.label`
   display: flex;
