@@ -18,6 +18,9 @@ const diaryStore = (set) => ({
       return { diaryByDates: { ...updatedDiaryByDates } };
     });
   },
+  clearDiary: () => set(() => ({
+    diaryByDates: {},
+  })),
 });
 
 const useDiaryStore = create(devtools(diaryStore));
