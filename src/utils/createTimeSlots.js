@@ -1,13 +1,17 @@
-const createTimeSlots = () => {
+const createTimeSlots = (startTime = null) => {
   const times = [];
+  let hour = startTime ? parseInt(startTime.split(':')[0], 10) : 0;
+  let minute = startTime ? parseInt(startTime.split(':')[1], 10) : 0;
 
-  for (let i = 0; i < 24; i += 1) {
-    for (let j = 0; j < 6; j += 1) {
-      const [hourString, minString] = [i.toString(), j.toString()];
-      const hour = hourString.length < 2 ? `0${hourString}` : hourString;
-      const minutes = `${minString}0`;
+  while (hour < 24) {
+    const hourString = hour.toString().padStart(2, '0');
+    const minuteString = minute.toString().padStart(2, '0');
+    times.push(`${hourString}:${minuteString}`);
 
-      times.push(`${hour}:${minutes}`);
+    minute += 10;
+    if (minute === 60) {
+      hour += 1;
+      minute = 0;
     }
   }
 
