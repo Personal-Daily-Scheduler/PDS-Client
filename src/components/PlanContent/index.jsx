@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import Modal from '../../shared/Modal';
-import PlanForm from '../PlanForm';
-
 import checkedIcon from '../../assets/checked_icon.png';
 import fetchRemovePlan from '../../services/plan/fetchRemovePlan';
 import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
-import fetchEditSchedule from '../../services/schedule/fetchEditSchedules';
+import dragIndicator from '../../assets/drag_indicator_icon.png';
 
 import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';
-import useScheduleStore from '../../store/schedules';
 
-function Plan({ plan }) {
-  const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function Plan({
+  plan, index, onClick, onDragStart, onDragEnter,
+}) {
+  const [isDragging, setIsDragging] = useState(false);
 
   const { selectedDate } = useCalendarStore();
-  const { deletePlan, setCompleted, setPlan } = usePlanStore();
-  const { setSchedule } = useScheduleStore();
+  const { deletePlan, setCompleted } = usePlanStore();
 
   const handleClickCompleted = async (e) => {
     e.preventDefault();
@@ -51,93 +47,105 @@ function Plan({ plan }) {
   const handleClickPlanContent = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    setModalPosition({ left: e.clientX, top: e.clientY });
-    setIsModalOpen(true);
+    onClick(e, plan);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleDragStart = (e) => {
+    setIsDragging(true);
+    onDragStart(e, index);
   };
 
-  const handleClickEditButton = async (modifiedPlan) => {
-    const {
-      planId, startTime, endTime, ...rest
-    } = modifiedPlan;
-
-    if ((!startTime && !endTime) || (startTime && endTime)) {
-      setPlan(modifiedPlan);
-
-      const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
-
-      if (memberUser) {
-        await fetchUpdatePlan(modifiedPlan, memberUser);
-      }
-
-      if (startTime !== '' && endTime !== '') {
-        const modifiedSchedule = {
-          scheduleId: planId, startTime, endTime, ...rest,
-        };
-        setSchedule(modifiedSchedule);
-
-        if (memberUser) {
-          await fetchEditSchedule(modifiedSchedule, memberUser);
-        }
-      }
-    }
+  const handleDragEnter = (e) => {
+    onDragEnter(e, index);
+    setIsDragging(false);
   };
 
   return (
-    <>
-      {isModalOpen && (
-        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>
-          <PlanForm onSubmit={handleClickEditButton} plan={plan} onClose={handleCloseModal} />
-        </Modal>
-      )}
-      <PlanItemWrapper color={plan.colorCode} onClick={handleClickPlanContent}>
-        <CompleteButton
-          completed={plan.completed}
-          onClick={handleClickCompleted}
-        >
-        </CompleteButton>
-        <PlanItem>
-          {plan.startTime && (
-            <Time>
-              {plan.startTime}
-              {' '}
-              ~
-              {plan.endTime}
-            </Time>
-          )}
-          <Title>
-            {plan.title}
-          </Title>
-          <div>
-            {plan.description}
-          </div>
-        </PlanItem>
-        <DeleteButton onClick={handleClickDeleteButton}>
-          삭제
-        </DeleteButton>
-      </PlanItemWrapper>
-    </>
+    <PlanItemWrapper
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnter={handleDragEnter}
+      onDragOver={(e) => e.preventDefault()}
+      onDragEnd={(e) => e.preventDefault()}
+      color={plan.colorCode}
+      onClick={handleClickPlanContent}
+      isDragging={isDragging}
+    >
+      <DragIndicator isDragging={isDragging} />
+      <CompleteButton
+        completed={plan.completed}
+        onClick={handleClickCompleted}
+      >
+      </CompleteButton>
+      <PlanItem>
+        {plan.startTime && (
+        <Time>
+          {`${plan.startTime} ~ ${plan.endTime}`}
+        </Time>
+        )}
+        <Title>
+          {plan.title}
+        </Title>
+        <Description>
+          {plan.description}
+        </Description>
+      </PlanItem>
+      <DeleteButton onClick={handleClickDeleteButton}>
+        삭제
+      </DeleteButton>
+    </PlanItemWrapper>
   );
 }
+
+const DragIndicator = styled.div`
+  position: absolute;
+  left: -22px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 30px;
+  background-image: url(${dragIndicator});
+  background-repeat: no-repeat;
+  background-size: contain;
+  cursor: move;
+  visibility: ${({ isDragging }) => (isDragging ? 'visible' : 'hidden')};
+`;
+
+const PlanItemWrapper = styled.li`
+  margin-left: 15px;
+  display: flex;
+  flex-direction: row;
+  border-left: 5px solid ${(props) => props.color};
+  padding: 5px 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  align-items: center;
+  position: relative;
+
+  &:hover {
+    background-color: #f5f5f5;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    ${DragIndicator} {
+      visibility: ${({ isDragging }) => (isDragging ? 'visible' : 'visible')};
+    }
+  }
+`;
 
 const CompleteButton = styled.button`
   height:25px;
   width:25px;
-  padding: 2px;
   background-image: ${(props) => (props.completed ? `url(${checkedIcon})` : 'none')};
   background-repeat: no-repeat;
-  background-size: contain;
-  background-color:  ${(props) => (props.completed ? '#0A7EED' : 'white')};
+  background-size: 80%;
+  background-position: center;
+  background-color: ${(props) => (props.completed ? '#0A7EED' : 'white')};
   border: ${(props) => (props.completed ? 'none' : '#7A7A7A 1px solid')};
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color:  ${(props) => (props.completed ? '#0803F9' : '#7A7A7A')};
+    background-color:  ${(props) => (props.completed ? '#0803F9' : '#e0e0e0')};
     border: none;
   }
 `;
@@ -150,31 +158,21 @@ const PlanItem = styled.div`
   align-items: flex-start;
 `;
 
-const PlanItemWrapper = styled.li`
-  margin-left: 5px;
-  display: flex;
-  flex-direction: row;
-  border-left: 5px solid ${(props) => props.color};
-  padding: 10px;
-  margin-bottom: 5px;
-  align-items: center;
-
-  &:hover {
-    background-color: #e0e0e0
-  };
-`;
-
 const Time = styled.div`
-  font-size: 12px;
+  font-size: 10px;
+  color: #777;
+  margin: 4px 0px;
 `;
 
 const Title = styled.div`
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
+  margin: 4px 0px;
 `;
 
 const DeleteButton = styled.button`
   width: 50px;
+  border-radius: 5px;
   justify-content: center;
   align-items: center;
   background-color: #e74c3c;
@@ -189,6 +187,17 @@ const DeleteButton = styled.button`
   &:hover {
     opacity: 1;
   }
+`;
+
+const Description = styled.div`
+  font-size: 14px;
+  color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  line-height: 1.4;
+  word-break: break-word;
 `;
 
 export default Plan;
