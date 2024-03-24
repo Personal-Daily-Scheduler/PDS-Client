@@ -2,34 +2,33 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
+import IconTextButton from '../../shared/IconButton';
 import TimeComponent from '../TimeSlots';
 import ColorPicker from '../ColorPicker';
 import Input from '../../shared/Input/Index';
 import CommonButton from '../../shared/Button';
 import ToastPopup from '../../shared/Toast';
-import IconTextButton from '../../shared/IconButton';
 
-import addIcon from '../../assets/add_icon.png';
-import removeIcon from '../../assets/close_button_hover.png';
-import fetchPostPlan from '../../services/plan/fetchPostPlan';
 import fetchPostSchedule from '../../services/schedule/fetchPostSchedule';
 import fetchEditSchedule from '../../services/schedule/fetchEditSchedules';
 import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
+import fetchPostPlan from '../../services/plan/fetchPostPlan';
+import removeIcon from '../../assets/close_button_hover.png';
+import addIcon from '../../assets/add_icon.png';
 
-import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';
 import useScheduleStore from '../../store/schedules';
+import usePlanStore from '../../store/plans';
 
-function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
-  const [title, setTitle] = useState('');
+function PlanForm({ plan, onClose, separatorIndex = null }) {
+  const [isClickedAddTime, setIsClickedAddTime] = useState(false);
+  const [colorCode, setColorCode] = useState('#0A7EED');
   const [description, setDescription] = useState('');
+  const [isToggled, setIsToggled] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [colorCode, setColorCode] = useState('#0A7EED');
-  const [isClickedAddTime, setIsClickedAddTime] = useState(false);
+  const [title, setTitle] = useState('');
   const [toast, setToast] = useState({});
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isToggled, setIsToggled] = useState(false);
 
   const { setPlan } = usePlanStore();
   const { setSchedule } = useScheduleStore();
@@ -42,7 +41,6 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
       setStartTime(plan.startTime || '');
       setEndTime(plan.endTime || '');
       setColorCode(plan.colorCode || '#0A7EED');
-      setIsEditMode(true);
     }
   }, [plan]);
 
@@ -73,11 +71,13 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
       return;
     }
 
-    if ((!startTime && !endTime) || (startTime && endTime)) {
-      const planId = uuidv4();
+    let newPlanObject;
 
-      const newPlanObject = {
-        planId: isEditMode ? plan.planId : planId,
+    if (plan) {
+      const { planId } = plan;
+
+      newPlanObject = {
+        planId,
         selectedDate,
         title,
         description,
@@ -87,70 +87,107 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
         completed: false,
       };
 
-      const newScheduleObject = {
-        scheduleId: isEditMode ? plan.planId : planId,
+      if (startTime && endTime) {
+        const newScheduleObject = {
+          scheduleId: planId,
+          selectedDate,
+          title,
+          description,
+          startTime,
+          endTime,
+          colorCode,
+        };
+
+        setPlan(newPlanObject, separatorIndex);
+        setSchedule(newScheduleObject);
+
+        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
+        if (memberUser) {
+          await fetchUpdatePlan(newPlanObject, memberUser);
+          await fetchEditSchedule(newScheduleObject, memberUser);
+        }
+
+        setToast({ status: true, message: 'Plan이 정상적으로 수정되었습니다.' });
+
+        onClose();
+
+        return;
+      } if (!startTime && !endTime) {
+        setPlan(newPlanObject, separatorIndex);
+
+        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
+        if (memberUser) {
+          await fetchUpdatePlan(newPlanObject, memberUser);
+        }
+
+        setToast({ status: true, message: '새로운 Plan이 정상적으로 추가되었습니다.' });
+
+        onClose();
+
+        return;
+      }
+    } else {
+      const planId = uuidv4();
+
+      newPlanObject = {
+        planId,
         selectedDate,
         title,
         description,
         startTime,
         endTime,
         colorCode,
+        completed: false,
       };
 
-      const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
-
       if (startTime && endTime) {
-        setPlan(newPlanObject);
+        const newScheduleObject = {
+          scheduleId: planId,
+          selectedDate,
+          title,
+          description,
+          startTime,
+          endTime,
+          colorCode,
+        };
+
+        setPlan(newPlanObject, separatorIndex);
         setSchedule(newScheduleObject);
 
+        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
         if (memberUser) {
-          if (isEditMode) {
-            await fetchUpdatePlan(newPlanObject, memberUser);
-            await fetchEditSchedule(newScheduleObject, memberUser);
-          } else {
-            await fetchPostPlan(newPlanObject, memberUser);
-            await fetchPostSchedule(newScheduleObject, memberUser);
-          }
+          await fetchPostPlan(newPlanObject, memberUser);
+          await fetchPostSchedule(newScheduleObject, memberUser);
         }
 
-        if (isEditMode) {
-          setIsEditMode(false);
+        onClose();
+
+        return;
+      } if (!startTime && !endTime) {
+        setPlan(newPlanObject, separatorIndex);
+
+        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
+        if (memberUser) {
+          await fetchPostPlan(newPlanObject, memberUser);
         }
 
         onClose();
 
         return;
       }
-      setPlan(newPlanObject);
-
-      if (memberUser) {
-        await fetchPostPlan(newPlanObject, memberUser);
-      }
-
-      if (isEditMode) {
-        setIsEditMode(false);
-      }
-
-      onClose();
-
-      return;
     }
 
     if (!startTime) {
-      if (isEditMode) {
-        setIsEditMode(false);
-      }
-
       setToast({ status: true, message: '시작 시간이 비어있습니다.' });
 
       return;
     }
 
     if (!endTime) {
-      if (isEditMode) {
-        setIsEditMode(false);
-      }
-
       setToast({ status: true, message: '종료 시간이 비어있습니다.' });
     }
   };
@@ -173,7 +210,7 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
   return (
     <>
       <TitleWrapper>
-        <h3>{isEditMode ? 'Edit a Plan' : 'Add a Plan'}</h3>
+        <h3>{plan ? 'Edit a Plan' : 'Add a Plan'}</h3>
         <ToggleWrapper>
           <ToggleButton isToggled={isToggled} onClick={handleToggle}>
             <ToggleThumb isToggled={isToggled} />
@@ -198,12 +235,12 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
         size={{ width: '235px', height: '32px' }}
       />
       <Label>Time</Label>
-      {(isClickedAddTime || (isEditMode && (startTime && endTime))) ? (
+      {(isClickedAddTime || (plan && (startTime && endTime))) ? (
         <>
           <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, 'removeTime')} />
           <TimeComponent
             handleTimeChange={handleInputChange}
-            time={isEditMode ? {
+            time={plan ? {
               startTime: plan.startTime,
               endTime: plan.endTime,
             } : null}
@@ -216,7 +253,7 @@ function PlanForm({ onSubmit: setPlanList, plan, onClose }) {
       <Label>Color</Label>
       <ColorPicker onChange={(e) => setColorCode(e)} />
       <CommonButton width="235px" height="25px" onClick={handleSubmitForm}>
-        { isEditMode ? 'Save edit' : 'Save Changes' }
+        { plan ? 'Save edit' : 'Save Changes' }
       </CommonButton>
       {toast.status && (
         <ToastPopup setToast={setToast} message={toast.message} />
