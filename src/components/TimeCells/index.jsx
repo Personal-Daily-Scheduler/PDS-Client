@@ -278,8 +278,9 @@ function TimeCells() {
 
     setCopiedSchedule(copyTarget);
     setToast({ status: true, message: '일정이 복사되었습니다.' });
-    clearTimeSelection();
     setIsModalOpen(false);
+
+    clearTimeSelection();
   };
 
   const handleClickPaste = async () => {
@@ -302,14 +303,13 @@ function TimeCells() {
 
     setSchedule(newSchedule);
     setPlan(newPlan);
-
-    setToast({ status: true, message: '일정이 붙여넣기 되었습니다.' });
     setIsModalOpen(false);
+    setToast({ status: true, message: '일정이 붙여넣기 되었습니다.' });
 
     clearClipboard();
   };
 
-  const renderConditionalModal = () => (
+  const taskModal = () => (
     timeMap.get(startCell.time).schedule && timeMap.get(endCell.time).schedule ? (
       <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
         <ScheduleModal onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} onCopy={handleClickCopy} />
@@ -330,7 +330,7 @@ function TimeCells() {
   return (
     <>
       <Outside onClick={clearTimeSelection}>시간 초기화</Outside>
-      {isModalOpen && renderConditionalModal()}
+      {isModalOpen && taskModal()}
       {isSecondModalOpen && (
         <Modal onClose={handleCloseSecondModal} style={secondModalPosition} darkBackground={false}>
           <h2>Add New Event</h2>
@@ -376,16 +376,29 @@ function TimeCells() {
   );
 }
 
-const Outside = styled.div`
+const Outside = styled.button`
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  padding-left: 10px;
-  width: 230px;
+  width: 100%;
   height: 30px;
   margin-bottom: 10px;
-  background-color: #d9d9d9;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &:active {
+    background-color: #d0d0d0;
+  }
 `;
 
 const CellContainer = styled.div`
