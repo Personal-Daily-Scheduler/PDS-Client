@@ -21,14 +21,14 @@ function TimeComponent({ handleTimeChange, time }) {
     const selectedTime = e.target.textContent;
 
     if (type === 'startTime') {
-      if (endTime) {
-        if (endTime < selectedTime) {
-          handleTimeChange('startTime', selectedTime);
-          handleTimeChange('endTime', '');
+      if (endTime && endTime < selectedTime) {
+        handleTimeChange('startTime', selectedTime);
+        handleTimeChange('endTime', '');
 
-          setStartTime(selectedTime);
-          setEndTime('');
-        }
+        setStartTime(selectedTime);
+        setEndTime('');
+
+        return;
       }
 
       handleTimeChange('startTime', selectedTime);
@@ -37,14 +37,14 @@ function TimeComponent({ handleTimeChange, time }) {
     }
 
     if (type === 'endTime') {
-      if (startTime) {
-        if (startTime > selectedTime) {
-          handleTimeChange('endTime', selectedTime);
-          handleTimeChange('startTime', '');
+      if (startTime && startTime > selectedTime) {
+        handleTimeChange('endTime', selectedTime);
+        handleTimeChange('startTime', '');
 
-          setEndTime(selectedTime);
-          setStartTime('');
-        }
+        setEndTime(selectedTime);
+        setStartTime('');
+
+        return;
       }
 
       handleTimeChange('endTime', selectedTime);
@@ -103,7 +103,7 @@ function TimeComponent({ handleTimeChange, time }) {
           <TimeSelect className="opened" onClick={(e) => handleTimeSelectButton(e, 'endTime')}>
             {endTime}
             <img
-              src={openedIcon}
+              src={isClickedEndTime ? openedIcon : closedIcon}
               alt="Button Icon"
               width="20px"
               height="20px"
@@ -113,7 +113,7 @@ function TimeComponent({ handleTimeChange, time }) {
           <TimeSelect className="closed" onClick={(e) => handleTimeSelectButton(e, 'endTime')}>
             {endTime}
             <img
-              src={closedIcon}
+              src={isClickedEndTime ? openedIcon : closedIcon}
               alt="Button Icon"
               width="20px"
               height="20px"
@@ -123,44 +123,28 @@ function TimeComponent({ handleTimeChange, time }) {
       </TimeSelectRow>
       {isClickedStartTime && (
         <TimeSlotColumn>
-          {timeGroups.map((group) => {
-            const randomTimeWrapperKey = uuidV4();
-
-            return (
-              <TimeSlotRow key={randomTimeWrapperKey}>
-                {group.map((timeString) => {
-                  const randomTimeKey = uuidV4();
-
-                  return (
-                    <TimeButton key={randomTimeKey} onClick={(e) => handleClickTimeSlot(e, 'startTime')}>
-                      {timeString}
-                    </TimeButton>
-                  );
-                })}
-              </TimeSlotRow>
-            );
-          })}
+          {timeGroups.map((group) => (
+            <TimeSlotRow key={uuidV4()}>
+              {group.map((timeString) => (
+                <TimeButton key={uuidV4()} onClick={(e) => handleClickTimeSlot(e, 'startTime')}>
+                  {timeString}
+                </TimeButton>
+              ))}
+            </TimeSlotRow>
+          ))}
         </TimeSlotColumn>
       )}
       {isClickedEndTime && (
         <TimeSlotColumn>
-          {timeGroups.map((group) => {
-            const randomTimeWrapperKey = uuidV4();
-
-            return (
-              <TimeSlotRow key={randomTimeWrapperKey}>
-                {group.map((timeString) => {
-                  const randomTimeKey = uuidV4();
-
-                  return (
-                    <TimeButton key={randomTimeKey} onClick={(e) => handleClickTimeSlot(e, 'endTime')}>
-                      {timeString}
-                    </TimeButton>
-                  );
-                })}
-              </TimeSlotRow>
-            );
-          })}
+          {sliceTimeSlots(createTimeSlots(startTime), 4).map((group) => (
+            <TimeSlotRow key={uuidV4()}>
+              {group.map((timeString) => (
+                <TimeButton key={uuidV4()} onClick={(e) => handleClickTimeSlot(e, 'endTime')}>
+                  {timeString}
+                </TimeButton>
+              ))}
+            </TimeSlotRow>
+          ))}
         </TimeSlotColumn>
       )}
     </TimeWrapper>
