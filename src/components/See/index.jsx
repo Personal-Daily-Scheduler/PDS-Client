@@ -5,14 +5,13 @@ import styled from 'styled-components';
 import { v4 as uuidV4 } from 'uuid';
 
 import ToastPopup from '../../shared/Toast';
+import EmojiPicker from '../EmojiPicker';
 import focusContentEditableTextToEnd from '../../utils/focusContentEditable';
 import textEditorUtils from '../../utils/textEditor';
 import fetchPostDiary from '../../services/diary/fetchPostDiary';
 
 import useCalendarStore from '../../store/calender';
 import useDiaryStore from '../../store/diary';
-import EmojiPicker from '../EmojiPicker';
-import Toolbar from '../Toolbar';
 
 function See() {
   const [toast, setToast] = useState({});
@@ -20,22 +19,34 @@ function See() {
   const [activeBold, setActiveBold] = useState(false);
   const [activeItalic, setActiveItalic] = useState(false);
   const [activeUnderline, setActiveUnderline] = useState(false);
-  const [activeFontSize, setActiveFontSize] = useState('16px');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [text, setText] = useState('');
   const [isComposing, setIsComposing] = useState(false);
 
   const editorRef = useRef(null);
+  const selectionRef = useRef(null);
 
   const { selectedDate } = useCalendarStore();
   const { diaryByDates, saveDiary } = useDiaryStore();
 
+  const getDiaries = () => {
+    const dailyDiary = diaryByDates[selectedDate];
+
+    if (dailyDiary) {
+      const [, diaryContent] = Object.entries(dailyDiary)[0];
+
+      return diaryContent;
+    }
+
+    return null;
+  };
+
   useEffect(() => {
     if (selectedDate && diaryByDates[selectedDate]) {
-      const [diaryObjectId, diaryObject] = Object.entries(diaryByDates[selectedDate])[0];
+      const dairyDiaryObject = getDiaries();
 
-      setDiaryId(diaryObjectId);
-      setText(diaryObject.styledContent || '');
+      setDiaryId(dairyDiaryObject.diaryId);
+      setText(dairyDiaryObject.styledContent || '');
 
       return;
     }
@@ -66,8 +77,20 @@ function See() {
     setShowEmojiPicker(false);
   };
 
-  const handleTextChange = () => {
+  const handleTextChange = (e) => {
     if (!isComposing) {
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+
+      if (e.nativeEvent.inputType === 'insertText' || e.nativeEvent.inputType === 'insertCompositionText') {
+        selectionRef.current = {
+          startContainer: range.startContainer,
+          startOffset: range.startOffset,
+          endContainer: range.endContainer,
+          endOffset: range.endOffset,
+        };
+      }
+
       setText(editorRef.current.innerHTML);
     }
   };
@@ -75,152 +98,191 @@ function See() {
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+
       const selection = window.getSelection();
       const range = selection.getRangeAt(0);
-      const newLine = document.createElement('div');
-      newLine.innerHTML = '<br>';
+      const br = document.createElement('br');
 
       range.deleteContents();
-      range.insertNode(newLine);
-      range.setStartAfter(newLine);
-      range.setEndAfter(newLine);
+      range.insertNode(br);
+      range.setStartAfter(br);
+      range.setEndAfter(br);
       range.collapse(false);
 
       selection.removeAllRanges();
       selection.addRange(range);
+    } else if (e.key === 'Backspace') {
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+
+      const currentNode = range.startContainer;
+      const currentOffset = range.startOffset;
+
+      if (currentNode.nodeType === Node.TEXT_NODE && currentOffset === 0) {
+        const previousNode = currentNode.previousSibling;
+
+        if (previousNode && previousNode.nodeType === Node.ELEMENT_NODE && previousNode.tagName === 'BR') {
+          const { parentNode } = previousNode;
+
+          parentNode.removeChild(previousNode);
+
+          const newRange = document.createRange();
+
+          newRange.setStart(currentNode, 0);
+          newRange.setEnd(currentNode, 0);
+
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        }
+      }
     }
   }, []);
-
-  const handleColorStyle = (value, range) => {
-    const fragment = range.extractContents();
-    const newElement = document.createElement('span');
-
-    newElement.style.color = value;
-    newElement.appendChild(fragment);
-    range.insertNode(newElement);
-  };
-
-  const handleOtherStyles = (style, startSpan, range, selection) => {
-    const styledText = startSpan.innerHTML;
-    const unstyledText = textEditorUtils.removeStyleTags(styledText, style);
-    const cleanedText = textEditorUtils.removeEmptySpanTags(unstyledText);
-    const newTextNode = document.createTextNode(cleanedText);
-
-    startSpan.parentNode.replaceChild(newTextNode, startSpan);
-
-    const newRange = document.createRange();
-    newRange.selectNodeContents(newTextNode);
-
-    selection.removeAllRanges();
-    selection.addRange(newRange);
-  };
-
-  const handleSameSpan = (style, value, startSpan, endSpan, range, selection) => {
-    if (startSpan && endSpan && startSpan === endSpan) {
-      if (style === 'color') {
-        handleColorStyle(value, range);
-      } else {
-        handleOtherStyles(style, startSpan, range, selection);
-      }
-    }
-  };
-
-  const processSpanNode = (style, value, node, newElement) => {
-    const styles = node.style;
-    let isStyleApplied = false;
-
-    for (let i = 0; i < styles.length; i += 1) {
-      const existingStyle = styles[i];
-
-      if (existingStyle === style) {
-        isStyleApplied = true;
-        while (node.firstChild) {
-          newElement.appendChild(node.firstChild);
-        }
-        break;
-      }
-    }
-
-    if (!isStyleApplied) {
-      const styledNode = node.cloneNode(true);
-
-      styledNode.style[style] = textEditorUtils.getStyleValue(style);
-      newElement.appendChild(styledNode);
-    }
-  };
-
-  const processNodes = (style, value, nodes, newElement) => {
-    Array.from(nodes).forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const textNode = node.cloneNode(true);
-
-        newElement.appendChild(textNode);
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.tagName === 'SPAN') {
-          processSpanNode(style, value, node, newElement);
-        } else {
-          const childNodes = Array.from(node.childNodes);
-
-          if (style === 'fontSize') {
-            const styledNode = node.cloneNode(true);
-
-            styledNode.style.fontSize = value;
-
-            newElement.appendChild(styledNode);
-            processNodes(style, value, childNodes, styledNode);
-          } else {
-            processNodes(style, value, childNodes, newElement);
-          }
-        }
-      }
-    });
-  };
-
-  const handleDifferentSpan = (style, value, startSpan, endSpan, range, selection) => {
-    if (!startSpan || !endSpan || startSpan !== endSpan) {
-      const fragment = range.cloneContents();
-      const newElement = document.createElement('span');
-
-      processNodes(style, value, fragment.childNodes, newElement);
-
-      range.deleteContents();
-      range.insertNode(newElement);
-
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  };
-
-  const updateActiveStyles = (style, value) => {
-    if (style === 'fontWeight') {
-      setActiveBold(!activeBold);
-    } else if (style === 'fontStyle') {
-      setActiveItalic(!activeItalic);
-    } else if (style === 'textDecoration') {
-      setActiveUnderline(!activeUnderline);
-    } else if (style === 'fontSize') {
-      setActiveFontSize(value);
-    }
-  };
 
   const handleStyleChange = (style, value) => {
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
     const selectedText = range.toString();
 
-    if (selectedText.length === 0) return;
+    if (selectedText.length > 0) {
+      const { startContainer } = range;
+      const { endContainer } = range;
 
-    const { startContainer } = range;
-    const { endContainer } = range;
+      const startSpan = textEditorUtils.findParentSpan(startContainer, style);
+      const endSpan = textEditorUtils.findParentSpan(endContainer, style);
 
-    const startSpan = textEditorUtils.findParentSpan(startContainer, style);
-    const endSpan = textEditorUtils.findParentSpan(endContainer, style);
+      if (startSpan && endSpan && startSpan === endSpan) {
+        const styledText = startSpan.innerHTML;
+        const unstyledText = textEditorUtils.removeStyleTags(styledText, style);
+        const cleanedText = textEditorUtils.removeEmptySpanTags(unstyledText);
+        const newTextNode = document.createTextNode(cleanedText);
 
-    handleSameSpan(style, value, startSpan, endSpan, range, selection);
-    handleDifferentSpan(style, value, startSpan, endSpan, range, selection);
+        startSpan.parentNode.replaceChild(newTextNode, startSpan);
 
-    setText(editorRef.current.innerHTML);
-    updateActiveStyles(style, value);
+        const newRange = document.createRange();
+
+        newRange.selectNodeContents(newTextNode);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      } else {
+        const fragment = range.cloneContents();
+        const newElement = document.createElement('span');
+
+        if (style === 'color' || style === 'fontSize') {
+          newElement.style[style] = value;
+
+          const processNode = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              const textNode = node.cloneNode(true);
+
+              newElement.appendChild(textNode);
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+              if (node.tagName === 'SPAN') {
+                const styledNode = node.cloneNode(true);
+
+                styledNode.style[style] = value;
+                newElement.appendChild(styledNode);
+              } else {
+                Array.from(node.childNodes).forEach(processNode);
+              }
+            }
+          };
+
+          Array.from(fragment.childNodes).forEach(processNode);
+        } else {
+          const processNode = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              const textNode = node.cloneNode(true);
+
+              let { parentNode } = node;
+              const styledNode = newElement;
+
+              while (parentNode && parentNode.tagName === 'SPAN') {
+                const styles = parentNode.style;
+
+                let isStyleApplied = false;
+
+                for (let i = 0; i < styles.length; i += 1) {
+                  const existingStyle = styles[i];
+
+                  if (existingStyle === style) {
+                    isStyleApplied = true;
+
+                    break;
+                  }
+
+                  styledNode.style[existingStyle] = parentNode.style[existingStyle];
+                }
+
+                if (isStyleApplied) {
+                  styledNode.appendChild(textNode);
+
+                  return;
+                }
+
+                parentNode = parentNode.parentNode;
+              }
+
+              if (style === 'color' || style === 'fontSize') {
+                styledNode.style[style] = value;
+              } else {
+                styledNode.style[style] = textEditorUtils.getStyleValue(style);
+              }
+
+              styledNode.appendChild(textNode);
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+              if (node.tagName === 'SPAN') {
+                const styles = node.style;
+
+                let isStyleApplied = false;
+
+                for (let i = 0; i < styles.length; i += 1) {
+                  const existingStyle = styles[i];
+
+                  if (existingStyle === style) {
+                    isStyleApplied = true;
+
+                    break;
+                  }
+                }
+
+                if (isStyleApplied) {
+                  if (style === 'color' || style === 'fontSize') {
+                    node.style[style] = value;
+                  }
+
+                  newElement.appendChild(node.firstChild);
+                } else {
+                  const styledNode = node.cloneNode(true);
+
+                  styledNode.style[style] = textEditorUtils.getStyleValue(style);
+                  newElement.appendChild(styledNode);
+                }
+              } else {
+                Array.from(node.childNodes).forEach(processNode);
+              }
+            }
+          };
+
+          Array.from(fragment.childNodes).forEach(processNode);
+        }
+
+        range.deleteContents();
+        range.insertNode(newElement);
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
+      setText(editorRef.current.innerHTML);
+
+      if (style === 'fontWeight') {
+        setActiveBold(!activeBold);
+      } else if (style === 'fontStyle') {
+        setActiveItalic(!activeItalic);
+      } else if (style === 'textDecoration') {
+        setActiveUnderline(!activeUnderline);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -270,16 +332,37 @@ function See() {
         <h2>See</h2>
         <EditorWrapper>
           <EditorContainer>
-            <Toolbar
-              showEmojiPicker={showEmojiPicker}
-              setShowEmojiPicker={setShowEmojiPicker}
-              handleStyleChange={handleStyleChange}
-              activeBold={activeBold}
-              activeItalic={activeItalic}
-              activeUnderline={activeUnderline}
-              activeFontSize={activeFontSize}
-              setActiveFontSize={setActiveFontSize}
-            />
+            <Toolbar>
+              <ToolbarButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                <Icon>😀</Icon>
+              </ToolbarButton>
+              <ToolbarButton onClick={() => handleStyleChange('fontWeight')}>
+                <Icon>
+                  <strong>B</strong>
+                </Icon>
+              </ToolbarButton>
+              <ToolbarButton onClick={() => handleStyleChange('fontStyle')}>
+                <Icon>
+                  <em>I</em>
+                </Icon>
+              </ToolbarButton>
+              <ToolbarButton onClick={() => handleStyleChange('textDecoration')}>
+                <Icon>
+                  <u>U</u>
+                </Icon>
+              </ToolbarButton>
+              <FontSizeSelect onChange={(e) => handleStyleChange('fontSize', e.target.value)}>
+                <option value="12px">Small</option>
+                <option value="26px">Normal</option>
+                <option value="32px">Large</option>
+              </FontSizeSelect>
+              <ColorPicker>
+                <ColorOption color="#000000" onClick={() => handleStyleChange('color', '#000000')} />
+                <ColorOption color="#FF0000" onClick={() => handleStyleChange('color', '#FF0000')} />
+                <ColorOption color="#00FF00" onClick={() => handleStyleChange('color', '#00FF00')} />
+                <ColorOption color="#0000FF" onClick={() => handleStyleChange('color', '#0000FF')} />
+              </ColorPicker>
+            </Toolbar>
             <EditorContent
               contentEditable
               ref={editorRef}
@@ -305,15 +388,63 @@ function See() {
 }
 
 const SeeContainer = styled.div`
-  margin: 40px;
-  border: 2px solid #ccc;
+  margin: 20px;
+  border: none;
   border-radius: 8px;
-  width: 300px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   text-align: center;
   align-items: center;
   position: relative;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+`;
+
+const ColorPicker = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+`;
+
+const ColorOption = styled.button`
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: ${(props) => props.color};
+  margin-right: 4px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    &:before {
+      width: 150%;
+      height: 150%;
+    }
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const EditorWrapper = styled.div`
@@ -335,12 +466,53 @@ const EditorContainer = styled.div`
   flex-direction: column;
 `;
 
+const Toolbar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f0f0f0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+`;
+
+const ToolbarButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: ${(props) => (props.active ? '#e0e0e0' : 'transparent')};
+  cursor: pointer;
+  margin-right: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+`;
+
+const Icon = styled.span`
+  font-size: 18px;
+  color: #333333;
+`;
+
 const EditorContent = styled.div`
   flex: 1;
   padding: 16px;
   overflow-y: auto;
   font-size: 16px;
   line-height: 1.5;
+`;
+
+const FontSizeSelect = styled.select`
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 12px;
 `;
 
 const SubmitButton = styled.button`
