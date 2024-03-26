@@ -9,8 +9,10 @@ import formatDateToYYYYMMDD from '../../utils/formatDate';
 import fetchUserPlans from '../../services/plan/fetchGetPlans';
 import fetchUserSchedules from '../../services/schedule/fetchGetSchedules';
 import fetchUserDiaries from '../../services/diary/fetchGetDiary';
-import useDiaryStore from '../../store/diary';
+import SimpleModal from '../SimpleModal';
+import Welcome from '../Welcome';
 
+import useDiaryStore from '../../store/diary';
 import useCalendarStore from '../../store/calender';
 import useUserStore from '../../store/user';
 import usePlanStore from '../../store/plans';
@@ -18,6 +20,11 @@ import useScheduleStore from '../../store/schedules';
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+
+  const closeWelcomeModal = () => {
+    setIsWelcomeModalOpen(false);
+  };
 
   const { selectedDate, setSelectedDate } = useCalendarStore();
   const { setUser } = useUserStore();
@@ -85,6 +92,7 @@ function Layout() {
       fetchPlans(member);
       fetchDiaries(member);
 
+      setIsWelcomeModalOpen(true);
       return;
     } if (guest) {
       setUser({
@@ -92,6 +100,7 @@ function Layout() {
         username: guest.username,
       });
 
+      setIsWelcomeModalOpen(true);
       return;
     }
 
@@ -102,6 +111,11 @@ function Layout() {
 
   return (
     <>
+      {isWelcomeModalOpen && (
+        <SimpleModal>
+          <Welcome handleClick={closeWelcomeModal} />
+        </SimpleModal>
+      )}
       <Header></Header>
       <Container>
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -117,14 +131,18 @@ const Container = styled.div`
   display: flex;
   height: calc(100vh - 90px);
   overflow-y: auto;
-  margin-top: 90px;
+  margin-top: 80px;
 `;
 
 const Content = styled.main`
   border-top: 2px solid #d9d9d9;
   flex-grow: 1;
   padding: 20px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
   overflow-y: auto;
+  max-width: 1100px;
   transition: margin-left 0.3s ease;
 `;
 
