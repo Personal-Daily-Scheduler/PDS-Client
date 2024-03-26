@@ -7,6 +7,7 @@ import CommonTitle from '../../shared/Title';
 import Input from '../../shared/Input/Index';
 import ErrorMessage from '../../shared/ErrorMessage';
 
+import mainImage from '../../assets/main_image.png';
 import googleLogoImage from '../../assets/google_logo.png';
 import fetchSignUp from '../../services/user/fetchSignUp';
 import fetchLogin from '../../services/user/fetchLogin';
@@ -69,8 +70,6 @@ function Login() {
         const response = await fetchLogin(email, password);
 
         if (response.result) {
-          alert(response.message);
-
           setUser({
             userId: response.data.userId,
             username: response.data.username,
@@ -86,10 +85,10 @@ function Login() {
             token: response.data.token,
           }));
 
+          alert(response.message);
+
           navigate('/users');
         }
-
-        alert(response.message);
       }
     }
 
@@ -224,7 +223,9 @@ function Login() {
 
   return (
     <Container>
-      <Wrapper className="content-left"></Wrapper>
+      <Wrapper className="content-left">
+        <MainImage src={mainImage} alt="Main Image" />
+      </Wrapper>
       <Wrapper className="content-right">
         {selectedOption !== 'signUp' ? (
           <>
@@ -249,7 +250,7 @@ function Login() {
         {selectedOption !== 'signUp' ? (
           <>
             <DescriptionWrapper>
-              아직 아이디어가 없으세요?
+              <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
               <ButtonText onClick={() => handleButtonClick('signUp')}>회원 가입 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
@@ -259,7 +260,7 @@ function Login() {
         ) : (
           <>
             <DescriptionWrapper>
-              이미 계정이 있으신가요?
+              <TextWrapper>이미 계정이 있으신가요?</TextWrapper>
               <ButtonText onClick={() => handleButtonClick('signIn')}>로그인 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
@@ -277,14 +278,31 @@ function Login() {
   );
 }
 
+const TextWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  margin-right: 10px;
+  font-size: 14px;
+  color: #707070;
+`;
+const MainImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+`;
+
 const DescriptionWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-top: 20px;
+  margin-bottom: 10px;
 `;
 
 const LoginContentWrapper = styled.div`
-  height: 40%;
+  height: auto;
+  margin-bottom: 20px;
 `;
 
 const ButtonText = styled.button`
@@ -294,22 +312,24 @@ const ButtonText = styled.button`
 `;
 
 const ButtonLine = styled.div`
-  background-color: #E9F1FF;
-  padding: 10px 5px;
+  background-color: #f0f4f8;
+  padding: 10px;
   width: 400px;
   border: none;
   border-radius: 8px;
   display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
+  justify-content: space-around;
+  margin-bottom: 20px;
 `;
 
 const StyledButton = styled.button`
-  padding: 10px;
-  flex:1;
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  background-color: ${(props) => (props.selected ? 'lightblue' : '#E9F1FF')};
+  background-color: ${(props) => (props.selected ? '#3f51b5' : '#f0f4f8')};
+  color: ${(props) => (props.selected ? '#ffffff' : '#000000')};
+  font-weight: bold;
+  cursor: pointer;
 `;
 
 const Container = styled.div`
@@ -320,15 +340,18 @@ const Container = styled.div`
   height: 100vh;
 
   .content-left {
-    flex-grow: 5;
-
-    background-color: blue;
+    flex: 1;
+    background-color: #f0f4f8;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .content-right {
-    flex-grow: 5;
-
-    background-color: #84cd84;
+    flex: 1;
+    background-color: #ffffff;
+    padding: 2rem;
   }
 `;
 
@@ -343,13 +366,20 @@ const Wrapper = styled.div`
 const GoogleSignInContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-top: 20px;
-  justify-content: space-between;
+
+  a {
+    margin-left: 10px;
+    color: #3f51b5;
+    text-decoration: none;
+  }
 `;
 
 const GoogleLogo = styled.img`
   width: 24px;
   height: 24px;
+  margin-left: 10px;
 `;
 
 export default Login;
