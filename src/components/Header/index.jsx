@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import useCalendarStore from '../../store/calender';
 
 import pdsLogo from '../../assets/pds_logo.png';
+import todayIcon from '../../assets/today_icon.png';
 import formatDateToYYYYMMDD from '../../utils/formatDate';
 
 function Header() {
@@ -25,23 +26,28 @@ function Header() {
     setSelectedDate(formattedDate);
   };
 
+  const handleTodayClick = () => {
+    const todayDate = new Date();
+
+    const formattedDate = formatDateToYYYYMMDD(todayDate);
+    setSelectedDate(formattedDate);
+  };
+
   return (
     <HeaderContainer>
       <Logo>
         <PDSLogo src={pdsLogo} alt="PDS Logo" />
         <Title>P.D.S</Title>
       </Logo>
-
       <DateContainer>
+        <TodayButton onClick={handleTodayClick}>
+          <img src={todayIcon} alt="Today Icon" />
+          <span>Today</span>
+        </TodayButton>
         <ArrowButton onClick={() => handleDateChange('prev')}>{'<'}</ArrowButton>
         <h2>{selectedDate}</h2>
         <ArrowButton onClick={() => handleDateChange('next')}>{'>'}</ArrowButton>
       </DateContainer>
-
-      <ViewModeSelect>
-        <option value="daily">Daily View</option>
-        <option value="weekly">Weekly View</option>
-      </ViewModeSelect>
     </HeaderContainer>
   );
 }
@@ -53,7 +59,7 @@ const HeaderContainer = styled.header`
   display: flex;
   position: fixed;
   width: 100%;
-  height:70px;
+  height: 70px;
   background-color: white;
   justify-content: space-between;
   align-items: center;
@@ -64,7 +70,6 @@ const HeaderContainer = styled.header`
 
 const Logo = styled.div`
   display: flex;
-  width: 260px;
   align-items: center;
 `;
 
@@ -76,6 +81,7 @@ const PDSLogo = styled.img`
 const DateContainer = styled.div`
   display: flex;
   align-items: center;
+  margin: 0 auto;
 `;
 
 const ArrowButton = styled.button`
@@ -94,12 +100,23 @@ const Title = styled.h1`
   font-weight: 700;
 `;
 
-const ViewModeSelect = styled.select`
-  background-color: #3b5998;
-  color: #fff;
+const TodayButton = styled.button`
+  display: flex;
+  align-items: center;
+  background: none;
   border: none;
-  padding-right: 5px;
   cursor: pointer;
+  margin-right: 20px;
+
+  img {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+  }
+
+  span {
+    font-size: 16px;
+  }
 `;
 
 export default Header;
