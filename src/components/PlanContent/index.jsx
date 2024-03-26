@@ -5,9 +5,11 @@ import checkedIcon from '../../assets/checked_icon.png';
 import fetchRemovePlan from '../../services/plan/fetchRemovePlan';
 import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
 import dragIndicator from '../../assets/drag_indicator_icon.png';
+import syncedIcon from '../../assets/synced_icon.png';
 
 import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';
+import useScheduleStore from '../../store/schedules';
 
 function Plan({
   plan, index, onClick, onDragStart, onDragEnter,
@@ -16,6 +18,7 @@ function Plan({
 
   const { selectedDate } = useCalendarStore();
   const { deletePlan, setCompleted } = usePlanStore();
+  const { deleteSchedule } = useScheduleStore();
 
   const handleClickCompleted = async (e) => {
     e.preventDefault();
@@ -35,7 +38,20 @@ function Plan({
     e.preventDefault();
     e.stopPropagation();
 
-    deletePlan(selectedDate, plan.planId);
+    if (plan.isSynced) {
+      const { planId, completed, ...rest } = plan;
+
+      deletePlan(selectedDate, plan.planId);
+
+      const targetSchedule = {
+        scheduleId: planId,
+        ...rest,
+      };
+
+      deleteSchedule(targetSchedule);
+    } else {
+      deletePlan(selectedDate, plan.planId);
+    }
 
     const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
 
@@ -83,9 +99,10 @@ function Plan({
           {`${plan.startTime} ~ ${plan.endTime}`}
         </Time>
         )}
-        <Title>
-          {plan.title}
-        </Title>
+        <TitleWrapper>
+          {plan.isSynced && <SyncedIcon src={syncedIcon} alt="synced_icon" />}
+          <Title>{plan.title}</Title>
+        </TitleWrapper>
         <Description>
           {plan.description}
         </Description>
@@ -96,6 +113,12 @@ function Plan({
     </PlanItemWrapper>
   );
 }
+
+const TitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 4px 0px;
+`;
 
 const DragIndicator = styled.div`
   position: absolute;
@@ -148,6 +171,12 @@ const CompleteButton = styled.button`
     background-color:  ${(props) => (props.completed ? '#0803F9' : '#e0e0e0')};
     border: none;
   }
+`;
+
+const SyncedIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
 `;
 
 const PlanItem = styled.div`
