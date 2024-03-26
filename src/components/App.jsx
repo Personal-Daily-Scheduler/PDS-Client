@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
+
 import Login from './Login';
 import Layout from './Layout';
 import Plans from './Plans';

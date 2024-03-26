@@ -208,7 +208,7 @@ const PlanItemSeparator = styled.div`
   transition: background-color 0.2s ease-in-out;
 
   &::before {
-    content: '';
+    content: "";
     width: 90%;
     height: 2px;
     background-color: #e0e0e0;

@@ -9,7 +9,6 @@ function Toolbar({
   activeItalic,
   activeUnderline,
   activeFontSize,
-  setActiveFontSize,
 }) {
   return (
     <ToolbarContainer>

@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const CommonTitle = ({ mainTitle, subTitle }) => {
+function CommonTitle({ mainTitle, subTitle }) {
   return (
     <TitleContainer>
       <MainTitle>{mainTitle}</MainTitle>
       <SubTitle>{subTitle}</SubTitle>
     </TitleContainer>
   );
-};
+}
 
 const TitleContainer = styled.div`
   text-align: center;

@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
 import CustomCalendar from '../Calendar';
-import useUserStore from '../../store/user';
-import useCalendarStore from '../../store/calender';
-import usePlanStore from '../../store/plans';
+
 import calendarIcon from '../../assets/calendar_icon.png';
 import profileIcon from '../../assets/profile_icon.png';
 import logoutIcon from '../../assets/logout_icon.png';
+
 import useScheduleStore from '../../store/schedules';
+import useCalendarStore from '../../store/calender';
+import usePlanStore from '../../store/plans';
 import useDiaryStore from '../../store/diary';
+import useUserStore from '../../store/user';
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { username, clearUser } = useUserStore();

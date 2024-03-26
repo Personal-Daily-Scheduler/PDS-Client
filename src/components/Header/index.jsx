@@ -95,7 +95,7 @@ const ArrowButton = styled.button`
 
 const Title = styled.h1`
   margin-left: 10px;
-  font-family: 'Philosopher', sans-serif;
+  font-family: "Philosopher", sans-serif;
   font-size: 35px;
   font-weight: 700;
 `;
