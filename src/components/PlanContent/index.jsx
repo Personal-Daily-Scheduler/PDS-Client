@@ -194,7 +194,7 @@ const Time = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
   margin: 4px 0px;
 `;
@@ -219,7 +219,7 @@ const DeleteButton = styled.button`
 `;
 
 const Description = styled.div`
-  font-size: 14px;
+  font-size: 12px;
   color: #777;
   white-space: nowrap;
   overflow: hidden;
