@@ -18,6 +18,7 @@ import usePlanStore from '../../store/plans';
 import initTimeMap from '../../utils/createTimeMap';
 import useClickOutside from '../../utils/useClickOutside';
 import fetchRemoveSchedule from '../../services/schedule/fetRemoveSchedule';
+import fetchRemovePlan from '../../services/plan/fetchRemovePlan';
 import getTimeRange from '../../utils/getTimeRange';
 import calculatePasteSchedule from '../../utils/calculateScheduleTime';
 import validPossiblePasteTime from '../../utils/validPossiblePasteTime';
@@ -41,7 +42,7 @@ function TimeCells() {
   const {
     isCopied, copiedSchedule, clearClipboard, setCopiedSchedule,
   } = useClipboardStore();
-  const { setPlan } = usePlanStore();
+  const { deletePlan, setPlan } = usePlanStore();
 
   const timeSlots = useRef();
 
@@ -257,15 +258,33 @@ function TimeCells() {
   };
 
   const handleDeleteButton = async () => {
-    const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
-
     const deleteTarget = timeMap.get(startCell.time).schedule;
 
-    if (memberUser) {
-      await fetchRemoveSchedule(deleteTarget, memberUser);
+    if (deleteTarget.isSynced) {
+      deleteSchedule(deleteTarget);
+      deletePlan(selectedDate, deleteTarget.scheduleId);
+    } else {
+      deleteSchedule(deleteTarget);
     }
 
-    deleteSchedule(timeMap.get(startCell.time).schedule);
+    const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+
+    if (memberUser) {
+      if (deleteTarget.isSynced) {
+        const { scheduleId, ...rest } = deleteTarget;
+
+        const targetPlan = {
+          planId: scheduleId,
+          ...rest,
+        };
+
+        await fetchRemoveSchedule(deleteTarget, memberUser);
+        await fetchRemovePlan(targetPlan, memberUser);
+      } else {
+        await fetchRemoveSchedule(deleteTarget, memberUser);
+      }
+    }
+
     setIsModalOpen(false);
     setIsSecondModalOpen(false);
     setToast({ status: true, message: '일정이 정상적으로 삭제되었습니다.' });
@@ -301,8 +320,13 @@ function TimeCells() {
       return;
     }
 
-    setSchedule(newSchedule);
-    setPlan(newPlan);
+    if (newSchedule.isSynced) {
+      setSchedule(newSchedule);
+      setPlan(newPlan);
+    } else {
+      setSchedule(newSchedule);
+    }
+
     setIsModalOpen(false);
     setToast({ status: true, message: '일정이 붙여넣기 되었습니다.' });
 
@@ -329,14 +353,12 @@ function TimeCells() {
 
   return (
     <>
-      <Outside onClick={clearTimeSelection}>시간 초기화</Outside>
       {isModalOpen && taskModal()}
       {isSecondModalOpen && (
         <Modal onClose={handleCloseSecondModal} style={secondModalPosition} darkBackground={false}>
-          <h2>Add New Event</h2>
           <ScheduleForm
             onSubmit={submitScheduleForm}
-            schedule={{
+            time={{
               startTime: startCell.time,
               endTime: endCell.time,
             }}
