@@ -15,6 +15,7 @@ import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
 import fetchPostPlan from '../../services/plan/fetchPostPlan';
 import removeIcon from '../../assets/close_button_hover.png';
 import addIcon from '../../assets/add_icon.png';
+import checkedIcon from '../../assets/checked_icon.png';
 
 import useCalendarStore from '../../store/calender';
 import useScheduleStore from '../../store/schedules';
@@ -24,7 +25,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
   const [isClickedAddTime, setIsClickedAddTime] = useState(false);
   const [colorCode, setColorCode] = useState('#0A7EED');
   const [description, setDescription] = useState('');
-  const [isToggled, setIsToggled] = useState(false);
+  const [isSynced, setIsSynced] = useState(false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [title, setTitle] = useState('');
@@ -41,6 +42,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
       setStartTime(plan.startTime || '');
       setEndTime(plan.endTime || '');
       setColorCode(plan.colorCode || '#0A7EED');
+      setIsSynced(plan.isSynced || false);
     }
   }, [plan]);
 
@@ -84,6 +86,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
         startTime,
         endTime,
         colorCode,
+        isSynced,
         completed: false,
       };
 
@@ -96,16 +99,25 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
           startTime,
           endTime,
           colorCode,
+          isSynced,
         };
 
-        setPlan(newPlanObject, separatorIndex);
-        setSchedule(newScheduleObject);
+        if (isSynced) {
+          setPlan(newPlanObject, separatorIndex);
+          setSchedule(newScheduleObject);
+        } else {
+          setPlan(newPlanObject, separatorIndex);
+        }
 
         const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
 
         if (memberUser) {
-          await fetchUpdatePlan(newPlanObject, memberUser);
-          await fetchEditSchedule(newScheduleObject, memberUser);
+          if (isSynced) {
+            await fetchUpdatePlan(newPlanObject, memberUser);
+            await fetchEditSchedule(newScheduleObject, memberUser);
+          } else {
+            await fetchUpdatePlan(newPlanObject, memberUser);
+          }
         }
 
         setToast({ status: true, message: 'Plan이 정상적으로 수정되었습니다.' });
@@ -140,6 +152,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
         endTime,
         colorCode,
         completed: false,
+        isSynced,
       };
 
       if (startTime && endTime) {
@@ -151,16 +164,25 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
           startTime,
           endTime,
           colorCode,
+          isSynced,
         };
 
-        setPlan(newPlanObject, separatorIndex);
-        setSchedule(newScheduleObject);
+        if (isSynced) {
+          setPlan(newPlanObject, separatorIndex);
+          setSchedule(newScheduleObject);
+        } else {
+          setPlan(newPlanObject, separatorIndex);
+        }
 
         const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
 
         if (memberUser) {
-          await fetchPostPlan(newPlanObject, memberUser);
-          await fetchPostSchedule(newScheduleObject, memberUser);
+          if (isSynced) {
+            await fetchPostPlan(newPlanObject, memberUser);
+            await fetchPostSchedule(newScheduleObject, memberUser);
+          } else {
+            await fetchPostPlan(newPlanObject, memberUser);
+          }
         }
 
         onClose();
@@ -204,20 +226,12 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
   };
 
   const handleToggle = () => {
-    setIsToggled(!isToggled);
+    setIsSynced(!isSynced);
   };
 
   return (
     <>
-      <TitleWrapper>
-        <h3>{plan ? 'Edit a Plan' : 'Add a Plan'}</h3>
-        <ToggleWrapper>
-          <ToggleButton isToggled={isToggled} onClick={handleToggle}>
-            <ToggleThumb isToggled={isToggled} />
-          </ToggleButton>
-          <ToggleDescription>Do 일정과 연동</ToggleDescription>
-        </ToggleWrapper>
-      </TitleWrapper>
+      <h3>{plan ? 'Edit a Plan' : 'Add a Plan'}</h3>
       <Input
         label="Title"
         type="text"
@@ -237,7 +251,24 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
       <Label>Time</Label>
       {(isClickedAddTime || (plan && (startTime && endTime))) ? (
         <>
-          <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, 'removeTime')} />
+          <TimeWrapper>
+            <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, 'removeTime')} />
+            {isSynced ? (
+              <SyncedWrapper>
+                <CheckedIcon src={checkedIcon} alt="Checked Icon" />
+                <SyncedDescription>IsSynced</SyncedDescription>
+              </SyncedWrapper>
+            ) : (
+              (startTime && endTime) && (
+                <ToggleWrapper>
+                  <ToggleDescription>Do 일정과 연동</ToggleDescription>
+                  <ToggleButton isSynced={isSynced} onClick={handleToggle}>
+                    <ToggleThumb isSynced={isSynced} />
+                  </ToggleButton>
+                </ToggleWrapper>
+              )
+            )}
+          </TimeWrapper>
           <TimeComponent
             handleTimeChange={handleInputChange}
             time={plan ? {
@@ -262,11 +293,31 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
   );
 }
 
-const TitleWrapper = styled.div`
+const SyncedWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+`;
+
+const CheckedIcon = styled.img`
+  width: 12px;
+  height: 12px;
+  padding: 3px;
+  background-color: #08f508;
+  border-radius: 50%;
+  margin-right: 5px;
+`;
+
+const SyncedDescription = styled.div`
+  font-size: 12px;
+  color: #4CAF50;
+`;
+
+const TimeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom:15px;
 `;
 
 const ToggleWrapper = styled.div`
@@ -277,7 +328,7 @@ const ToggleButton = styled.div`
   position: relative;
   width: 40px;
   height: 20px;
-  background-color: ${(props) => (props.isToggled ? '#4CAF50' : '#ccc')};
+  background-color: ${(props) => (props.isSynced ? '#4CAF50' : '#ccc')};
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -286,7 +337,7 @@ const ToggleButton = styled.div`
 const ToggleThumb = styled.div`
   position: absolute;
   top: 2px;
-  left: ${(props) => (props.isToggled ? '22px' : '2px')};
+  left: ${(props) => (props.isSynced ? '22px' : '2px')};
   width: 16px;
   height: 16px;
   background-color: white;
