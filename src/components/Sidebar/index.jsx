@@ -1,16 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
 import CustomCalendar from '../Calendar';
-
 import useUserStore from '../../store/user';
 import useCalendarStore from '../../store/calender';
 import usePlanStore from '../../store/plans';
-
 import calendarIcon from '../../assets/calendar_icon.png';
-import todayIcon from '../../assets/today_icon.png';
-import addTaskIcon from '../../assets/add_icon.png';
 import profileIcon from '../../assets/profile_icon.png';
 import logoutIcon from '../../assets/logout_icon.png';
 import useScheduleStore from '../../store/schedules';
@@ -22,34 +17,24 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { clearSchedules } = useScheduleStore();
   const { clearPlan } = usePlanStore();
   const { clearDiary } = useDiaryStore();
-
   const navigate = useNavigate();
+
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleLogout = () => {
     sessionStorage.removeItem('authenticatedUser');
     sessionStorage.removeItem('guestUser');
-
     clearCalendar();
     clearSchedules();
     clearPlan();
     clearUser();
     clearDiary();
-
     navigate('/');
   };
 
-  function IconButton(imageUri) {
-    return (
-      <Button>
-        <img
-          src={imageUri}
-          alt="Button Icon"
-          width="25px"
-          height="25px"
-        />
-      </Button>
-    );
-  }
+  const toggleCalendar = () => {
+    setIsCalendarOpen(!isCalendarOpen);
+  };
 
   return (
     <SidebarContainer isSidebarOpen={isSidebarOpen}>
@@ -58,26 +43,23 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
       </ToggleButton>
       {isSidebarOpen && (
         <>
-          <MenuWrapper>
-            {IconButton(profileIcon)}
+          <ProfileWrapper>
+            <ProfileIcon src={profileIcon} alt="Profile Icon" />
             <ProfileText>{username}</ProfileText>
+          </ProfileWrapper>
+          <MenuWrapper onClick={toggleCalendar}>
+            <MenuIcon src={calendarIcon} alt="Calendar Icon" />
+            <MenuText>Calendar</MenuText>
           </MenuWrapper>
-          <MenuWrapper>
-            {IconButton(addTaskIcon)}
-            <Button>Add Task</Button>
-          </MenuWrapper>
-          <MenuWrapper>
-            {IconButton(todayIcon)}
-            <Button>Today</Button>
-          </MenuWrapper>
-          <MenuWrapper>
-            {IconButton(calendarIcon)}
-            <Button>Calendar</Button>
-          </MenuWrapper>
-          <CustomCalendar />
+          {isCalendarOpen && (
+            <CalendarWrapper>
+              <CustomCalendar />
+            </CalendarWrapper>
+          )}
+          <Spacer />
           <MenuWrapper onClick={handleLogout}>
-            {IconButton(logoutIcon)}
-            <LogoutButtonText>Logout</LogoutButtonText>
+            <MenuIcon src={logoutIcon} alt="Logout Icon" />
+            <MenuText>Logout</MenuText>
           </MenuWrapper>
         </>
       )}
@@ -88,68 +70,71 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  width: ${({ isSidebarOpen }) => (isSidebarOpen ? '300px' : '50px')};
-  overflow: auto;
-  background-color: #1877f2;
-  padding: ${({ isSidebarOpen }) => (isSidebarOpen ? '10px' : '0px')};
+  width: ${({ isSidebarOpen }) => (isSidebarOpen ? '250px' : '20px')};
+  background-color: #f5f5f5;
+  padding: 20px;
   transition: width 0.3s ease;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 `;
 
 const ToggleButton = styled.button`
-  background-color: #333;
-  color: #fff;
+  background-color: transparent;
+  color: #333;
   border: none;
   font-size: 1.5rem;
-  font-weight: 800;
-  border-radius: 8px;
   cursor: pointer;
+  margin-bottom: 20px;
+  align-self: ${({ isSidebarOpen }) => (isSidebarOpen ? 'flex-end' : 'center')};
 `;
 
-const MenuWrapper = styled.div`
-  border-radius: 8px;
+const ProfileWrapper = styled.div`
   display: flex;
-  margin-bottom: 10px;
   align-items: center;
-  cursor: pointer;
+  margin-bottom: 30px;
+`;
 
-  &:hover {
-    background-color: #ccc;
-  }
+const ProfileIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
 `;
 
 const ProfileText = styled.p`
-  font-size: 20px;
-  color: black;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: bold;
+`;
 
-  ${MenuWrapper}:hover & {
-    color: white;
+const MenuWrapper = styled.div`
+  display: flex;
+  width: 230px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e0e0e0;
   }
 `;
 
-const Button = styled.button`
-  border: none;
-  background: none;
-  font-size: 20px;
-  color: black;
-  font-weight: 700;
-  margin-right: 5px;
-
-  ${MenuWrapper}:hover & {
-    color: white;
-  }
+const Spacer = styled.div`
+  flex-grow: 1;
 `;
 
-const LogoutButtonText = styled.h2`
-  font-size: 20px;
-  color: black;
-  font-weight: 700;
-  margin-left: 10px;
+const MenuIcon = styled.img`
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+`;
 
-  ${MenuWrapper}:hover & {
-    color: white;
-  }
+const MenuText = styled.span`
+  font-size: 16px;
+`;
+
+const CalendarWrapper = styled.div`
+  margin: 20px 0;
 `;
 
 export default Sidebar;
