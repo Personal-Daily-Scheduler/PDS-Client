@@ -10,16 +10,18 @@ import ToastPopup from '../../shared/Toast';
 
 import fetchPostPlan from '../../services/plan/fetchPostPlan';
 import fetchPostSchedule from '../../services/schedule/fetchPostSchedule';
+import checkedIcon from '../../assets/checked_icon.png';
 
 import usePlanStore from '../../store/plans';
 import useCalendarStore from '../../store/calender';
 import useScheduleStore from '../../store/schedules';
 
-function ScheduleForm({ onSubmit, schedule }) {
+function ScheduleForm({ onSubmit, time }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [isSynced, setIsSynced] = useState(false);
   const [colorCode, setColorCode] = useState('#ade0fd');
   const [toast, setToast] = useState({});
 
@@ -28,11 +30,11 @@ function ScheduleForm({ onSubmit, schedule }) {
   const { selectedDate } = useCalendarStore();
 
   useEffect(() => {
-    if (schedule) {
-      setStartTime(schedule.startTime);
-      setEndTime(schedule.endTime);
+    if (time) {
+      setStartTime(time.startTime);
+      setEndTime(time.endTime);
     }
-  }, [schedule]);
+  }, [time]);
 
   const handleInputChange = (type, value) => {
     if (type === 'title') {
@@ -65,7 +67,7 @@ function ScheduleForm({ onSubmit, schedule }) {
       const objectId = uuidV4();
 
       const eventContent = {
-        selectedDate, title, description, startTime, endTime, colorCode,
+        selectedDate, title, description, startTime, endTime, colorCode, isSynced,
       };
 
       const newPlan = {
@@ -76,17 +78,25 @@ function ScheduleForm({ onSubmit, schedule }) {
         scheduleId: objectId, ...eventContent,
       };
 
-      setPlan(newPlan);
-      setSchedule(newSchedule);
+      if (isSynced) {
+        setSchedule(newSchedule);
+        setPlan(newPlan);
+      } else {
+        setSchedule(newSchedule);
+      }
 
       const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
 
       if (memberUser) {
-        await fetchPostSchedule(newSchedule, memberUser);
-        await fetchPostPlan(newPlan, memberUser);
+        if (isSynced) {
+          await fetchPostSchedule(newSchedule, memberUser);
+          await fetchPostPlan(newPlan, memberUser);
+        } else {
+          await fetchPostSchedule(newSchedule, memberUser);
+        }
       }
 
-      onSubmit(newPlan);
+      onSubmit();
 
       return;
     }
@@ -102,10 +112,33 @@ function ScheduleForm({ onSubmit, schedule }) {
     }
   };
 
+  const handleToggle = () => {
+    setIsSynced(!isSynced);
+  };
+
   return (
     <>
-      <Label>Time</Label>
-      {schedule ? (
+      <h2>Add New Event</h2>
+      <Label>
+        Time
+        <ToggleContainer>
+          <IconSpace isSynced={isSynced}>
+            {isSynced && (
+              <SyncedWrapper>
+                <CheckedIcon src={checkedIcon} alt="Checked Icon" />
+                <SyncedDescription>IsSynced</SyncedDescription>
+              </SyncedWrapper>
+            )}
+          </IconSpace>
+          <ToggleWrapper>
+            <ToggleDescription>Plan 연동</ToggleDescription>
+            <ToggleButton isSynced={isSynced} onClick={handleToggle}>
+              <ToggleThumb isSynced={isSynced} />
+            </ToggleButton>
+          </ToggleWrapper>
+        </ToggleContainer>
+      </Label>
+      {time ? (
         <TimeComponent handleTimeChange={handleInputChange} time={{ startTime, endTime }} />
       ) : (
         <TimeComponent handleTimeChange={handleInputChange} />
@@ -141,10 +174,85 @@ function ScheduleForm({ onSubmit, schedule }) {
   );
 }
 
+const ToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const IconSpace = styled.div`
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SyncedWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+`;
+
+const CheckedIcon = styled.img`
+  width: 11px;
+  height: 11px;
+  padding: 3px;
+  margin-right: 4px;
+  background-color: #08f508;
+  border-radius: 50%;
+`;
+
+const SyncedDescription = styled.div`
+  font-size: 12px;
+  color: #4CAF50;
+`;
+
+const ToggleWrapper = styled.div`
+  margin-left: 20px;
+  position: relative;
+  transition: background-color 0.5s;
+`;
+
+const ToggleButton = styled.div`
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: ${(props) => (props.isSynced ? '#4CAF50' : '#ccc')};
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+`;
+
+const ToggleThumb = styled.div`
+  position: absolute;
+  top: 2px;
+  left: ${(props) => (props.isSynced ? '22px' : '2px')};
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: left 0.3s;
+`;
+
+const ToggleDescription = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  bottom: 100%;
+  font-size: 8px;
+  color: #888;
+  margin-bottom: 3px;
+  white-space: nowrap;
+`;
+
 const Label = styled.label`
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: flex-start;
   font-size: 14px;
   color: black;
