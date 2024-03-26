@@ -42,6 +42,8 @@ function CustomCalendar() {
 
 const CalendarWrapper = styled.div`
   overflow-y: auto;
+  border-radius: 20px;
+  border: 1px solid black;
   
   .highlight {
     background: #f3a95f;

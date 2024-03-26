@@ -163,7 +163,7 @@ const TimeSelectDivider = styled.div`
 const TimeSelectRow = styled.div`
   display: flex;
   align-items: center;
-  width: 235px;
+  width: 220px;
   height: 32px;
   padding-left: 5px;
   padding-right: 5px;
@@ -221,16 +221,18 @@ const TimeButton = styled.button`
 
 const TimeSlotRow = styled.div`
   display: flex;
-  width: 230px;
+  width: 220px;
   padding:2px 5px;
+  align-items: center;
   justify-content: space-between;
   flex-direction: row;
 `;
 
 const TimeSlotColumn = styled.div`
   display: flex;
-  height: 80px;
+  height: 72px;
   overflow-y: auto;
+  align-items: center;
   flex-direction: column;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius:10px;

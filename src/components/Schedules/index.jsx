@@ -5,13 +5,9 @@ import Modal from '../../shared/Modal';
 import ScheduleForm from '../ScheduleForm';
 import TimeCells from '../TimeCells';
 
-import useScheduleStore from '../../store/schedules';
-
 function Schedules() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { setSchedule } = useScheduleStore();
 
   const handleOpenModal = (e) => {
     setModalPosition({ left: e.clientX, top: e.clientY });
@@ -22,9 +18,7 @@ function Schedules() {
     setIsModalOpen(false);
   };
 
-  const submitScheduleForm = (newSchedule) => {
-    setSchedule(newSchedule);
-
+  const submitScheduleForm = () => {
     handleCloseModal();
   };
 
@@ -34,8 +28,7 @@ function Schedules() {
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition}>
-          <h3>Add New Task</h3>
-          <ScheduleForm onSubmit={(e) => submitScheduleForm(e)} />
+          <ScheduleForm onSubmit={submitScheduleForm} />
         </Modal>
       )}
       <TimeCells></TimeCells>
@@ -44,26 +37,35 @@ function Schedules() {
 }
 
 const SchedulesContainer = styled.div`
-  margin: 40px 0px;
-  border: 2px solid #ccc;
+  margin: 20px;
+  border: none;
   border-radius: 8px;
-  width: 300px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   position: relative;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 20px;
 `;
 
 const AddButton = styled.button`
   background-color: #3b5998;
   color: #fff;
   border: none;
-  padding: 5px 10px;
   cursor: pointer;
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 20px;
+  right: 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2d4373;
+  }
 `;
 
 export default Schedules;

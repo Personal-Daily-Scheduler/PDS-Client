@@ -136,61 +136,71 @@ function Plans() {
 }
 
 const PlansContainer = styled.div`
-  min-width: 280px;
-  overflow-x: auto;
-  margin: 40px;
-  border: 2px solid #ccc;
+  min-width: 240px;
+  margin: 20px;
+  border: none;
   border-radius: 8px;
-  width: 300px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   text-align: center;
+  align-items: center;
   position: relative;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 20px;
 `;
 
 const AddButton = styled.button`
   background-color: #3b5998;
   color: #fff;
   border: none;
-  padding: 5px 10px;
   cursor: pointer;
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 20px;
+  right: 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2d4373;
+  }
 `;
 
 const PlansList = styled.ul`
   list-style: none;
   padding: 0;
-  max-height: 600px;
-  overflow-y: scroll;
+  max-height: 560px;
+  overflow-y: auto;
+  width: 100%;
 `;
 
 const PlanItem = styled.li`
-  margin-bottom: 5px;
-  border-radius: 4px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  background-color: #f8f8f8;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease-in-out;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
   &.dragging {
-    opacity: 0.5;
-    background-color: #f0f0f0;
+    opacity: 0.8;
+    background-color: #e8e8e8;
     transform: scale(0.98);
   }
 
   &.dragover {
     border: 2px dashed #3b5998;
-    background-color: #f7f7f7;
+    background-color: #f0f0f0;
   }
 `;
 
 const PlanItemSeparator = styled.div`
-  height: 10px;
+  height: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -209,7 +219,7 @@ const PlanItemSeparator = styled.div`
     background-color: #f5f5f5;
 
     &::before {
-      background-color: #4caf50;
+      background-color: #01fb58;
     }
   }
 `;

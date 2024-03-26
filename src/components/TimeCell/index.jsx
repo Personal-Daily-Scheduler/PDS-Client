@@ -68,8 +68,11 @@ const TimeCellWrapper = styled.div`
 
 const ScheduleTitle = styled.div`
   white-space: nowrap;
-  padding: 4px;
+  font-size: 14px;
+  margin-left: 5px;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
   position: relative;
 `;
 
