@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      api: {
+      '/api': {
         target: 'https://api.pdsdiary.com',
         changeOrigin: true,
         secure: false,

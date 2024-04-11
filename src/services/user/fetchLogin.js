@@ -4,7 +4,7 @@ const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
 const fetchLogin = async (userId, password) => {
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('https://api.pdsdiary.com/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
