@@ -43,7 +43,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 sync --refion ap-northeast-2 dist s3://pdsdiary.com --delete
+          aws s3 sync --region ap-northeast-2 dist s3://pdsdiary.com --delete
 
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }}
