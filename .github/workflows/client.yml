@@ -18,22 +18,32 @@ jobs:
           echo "VITE_AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env
           echo "VITE_AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
 
-      # - name: Setup node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18.x
-      #     cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build
         run: npm run build
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS-REGION: ap-northeast-2
 
-      - name: Sync Bucket
+      - name: Sync S3 Bucket
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 sync dist s3://pdsdiary.com
+          aws s3 sync --refion ap-northeast-2 dist s3://pdsdiary.com --delete
+
+      - name: Invalidate CloudFront Cache
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }}
