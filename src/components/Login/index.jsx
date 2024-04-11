@@ -60,7 +60,6 @@ function Login() {
   const handleClickLoginButton = async (e) => {
     e.preventDefault();
 
-    console.log('click Login');
     if (selectedOption === 'signIn') {
       const isSuccessValid = loginValidate({
         email,
@@ -68,10 +67,8 @@ function Login() {
       }, setSignUpError);
 
       if (isSuccessValid) {
-        console.log('isSuccessValid');
         const response = await fetchLogin(email, password);
 
-        console.log('response', response);
         if (response.result) {
           setUser({
             userId: response.data.userId,
