@@ -82,7 +82,16 @@ PDS 다이어리는 하루 24시간을 10분 단위로 일정을 관리 할 수 
 
 다이어리 앱을 개발할 때 PDS 다이어리의 레이아웃 형태를 차용하고자 했던 이유로는 다음과 같습니다.
 
-![alt text](src/assets/readme/diary_layout.png)
+<table>
+  <tr>
+    <th>PDS 다이어리 레이아웃</th>
+    <th>PDS 웹 클라이언트 레이아웃</th>
+  </tr>
+  <tr>
+    <td><img src="src/assets/readme/diary_layout.png" width="400px"></td>
+    <td><img src="src/assets/readme/pds_diray_main.png" width="800px"></td>
+  </tr>
+</table>
 
 1. **10분 단위의 시간 관리**
 
