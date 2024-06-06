@@ -1,4 +1,5 @@
-import isPasswordValid from '../utils/passwordValidation';
+import isValidPassword from '../utils/passwordValidation';
+import isValidEmail from '../utils/emailValidation';
 
 const signUpValidate = async (formData, setError) => {
   const {
@@ -23,7 +24,25 @@ const signUpValidate = async (formData, setError) => {
     return false;
   }
 
-  if (!isPasswordValid(password)) {
+  if (username.length < 2) {
+    setError({
+      message: '2자 이상의 닉네임을 입력해야 합니다.',
+      visible: true,
+    });
+
+    return false;
+  }
+
+  if (!isValidEmail(email)) {
+    setError({
+      message: '옳바르지 않은 이메일 형식입니다.',
+      visible: true,
+    });
+
+    return false;
+  }
+
+  if (!isValidPassword(password)) {
     setError({
       message: '영어 대 소문자를 포함해야 합니다.',
       visible: true,

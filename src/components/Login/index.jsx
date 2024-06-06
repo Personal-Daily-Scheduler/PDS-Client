@@ -61,7 +61,7 @@ function Login() {
     e.preventDefault();
 
     if (selectedOption === 'signIn') {
-      const isSuccessValid = loginValidate({
+      const isSuccessValid = await loginValidate({
         email,
         password,
       }, setSignUpError);
@@ -89,22 +89,27 @@ function Login() {
 
           navigate('/users');
         }
+
+        setSignUpError({
+          message: response.message,
+          visible: true,
+        });
       }
     }
 
     if (selectedOption === 'guest') {
-      if (!email) {
+      if (!username) {
         setSignUpError({
-          message: '아이디를 입력해주세요',
+          message: '닉네임을 입력해주세요',
           visible: true,
         });
 
         return false;
       }
 
-      if (!username) {
+      if (username.length < 3) {
         setSignUpError({
-          message: '닉네임을 입력해주세요',
+          message: '닉네임은 최소 3자 이상 입력해야 합니다.',
           visible: true,
         });
 
@@ -144,14 +149,6 @@ function Login() {
 
   const renderGuestForm = () => (
     <>
-      <Input
-        label="Email"
-        type="email"
-        value={email}
-        placeholder="Enter your email"
-        onChange={(e) => handleInputChange(e, 'email')}
-      >
-      </Input>
       <Input
         label="Nickname"
         type="text"

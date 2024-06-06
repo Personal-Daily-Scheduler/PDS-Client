@@ -19,10 +19,6 @@ const fetchLogin = async (userId, password) => {
 
     const responseJson = await response.json();
 
-    if (!responseJson.result) {
-      return { result: false, message: responseJson.message };
-    }
-
     return responseJson;
   } catch (error) {
     return { result: false, message: error.message };

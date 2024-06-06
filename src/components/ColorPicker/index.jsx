@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import { Github } from '@uiw/react-color';
 
-export function ColorPicker({ onChange }) {
+function ColorPicker({ onChange }) {
   return (
     <Picker>
       <Github onChange={(color) => onChange(color.hex)} />
