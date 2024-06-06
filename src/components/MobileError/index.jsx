@@ -36,8 +36,8 @@ const Header = styled.header`
   margin-top: 40px;
 
   .logo {
-    background-size: cover;
-    width: 60px;
+    object-fit: scale-down;
+    width: 50px;
     margin-right: 20px;
   }
 

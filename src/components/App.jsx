@@ -37,26 +37,48 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <Routes>
-        <Route path="/" exact element={<Login />} />
-        <Route element={<Layout />}>
-          <Route
-            path="/users"
-            exact
-            element={(
-              <Wrapper>
-                <Plans />
-                <Schedules />
-                <TextEditor />
-              </Wrapper>
-          )}
-          />
-        </Route>
-        <Route path="/mobileError" element={<MobileError />} />
-      </Routes>
+      <Main>
+        <Routes>
+          <Route path="/" exact element={<Login />} />
+          <Route element={<Layout />}>
+            <Route
+              path="/users"
+              exact
+              element={(
+                <Wrapper>
+                  <Plans />
+                  <Schedules />
+                  <TextEditor />
+                </Wrapper>
+              )}
+            />
+          </Route>
+          <Route path="/mobileError" element={<MobileError />} />
+        </Routes>
+      </Main>
+      <MobileNotification>
+        <MobileError />
+      </MobileNotification>
     </>
   );
 }
+
+const Main = styled.div`
+  @media screen and (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const MobileNotification = styled.div`
+  @media screen and (max-width: 600px) {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  display: none;
+`;
 
 const GlobalStyle = createGlobalStyle`
   body {
