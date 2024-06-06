@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 
 import Login from './Login';
@@ -6,8 +7,33 @@ import Layout from './Layout';
 import Plans from './Plans';
 import Schedules from './Schedules';
 import TextEditor from './See';
+import MobileError from './MobileError';
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isMobileDevice = () => {
+      const { userAgent } = navigator;
+
+      const mobileEnvironment = ['Mobi', 'Android', 'iPhone'];
+
+      for (const keyword of mobileEnvironment) {
+        if (userAgent.includes(keyword)) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    const isMobile = isMobileDevice();
+
+    if (isMobile) {
+      navigate('/mobileError');
+    }
+  }, [navigate]);
+
   return (
     <>
       <GlobalStyle />
@@ -26,6 +52,7 @@ function App() {
           )}
           />
         </Route>
+        <Route path="/mobileError" element={<MobileError />} />
       </Routes>
     </>
   );
