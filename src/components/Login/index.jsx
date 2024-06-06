@@ -351,7 +351,6 @@ const Container = styled.div`
   .content-left {
     flex: 1;
     background-color: #f0f4f8;
-    padding: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -360,7 +359,6 @@ const Container = styled.div`
   .content-right {
     flex: 1;
     background-color: #ffffff;
-    padding: 2rem;
   }
 `;
 
