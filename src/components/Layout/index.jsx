@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
-import Header from '../Header';
-import Sidebar from '../Sidebar';
+import Header from "../Header";
+import Sidebar from "../Sidebar";
 
-import formatDateToYYYYMMDD from '../../utils/formatDate';
-import fetchUserPlans from '../../services/plan/fetchGetPlans';
-import fetchUserSchedules from '../../services/schedule/fetchGetSchedules';
-import fetchUserDiaries from '../../services/diary/fetchGetDiary';
-import SimpleModal from '../SimpleModal';
-import Welcome from '../Welcome';
+import formatDateToYYYYMMDD from "../../utils/formatDate";
+import fetchUserPlans from "../../services/plan/fetchGetPlans";
+import fetchUserSchedules from "../../services/schedule/fetchGetSchedules";
+import fetchUserDiaries from "../../services/diary/fetchGetDiary";
+import SimpleModal from "../SimpleModal";
+import Welcome from "../Welcome";
 
-import useDiaryStore from '../../store/diary';
-import useCalendarStore from '../../store/calender';
-import useUserStore from '../../store/user';
-import usePlanStore from '../../store/plans';
-import useScheduleStore from '../../store/schedules';
+import useDiaryStore from "../../store/diary";
+import useCalendarStore from "../../store/calender";
+import useUserStore from "../../store/user";
+import usePlanStore from "../../store/plans";
+import useScheduleStore from "../../store/schedules";
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -79,8 +79,8 @@ function Layout() {
       setSelectedDate(todayDate);
     }
 
-    const member = JSON.parse(sessionStorage.getItem('authenticatedUser'));
-    const guest = JSON.parse(sessionStorage.getItem('guestUser'));
+    const member = JSON.parse(sessionStorage.getItem("authenticatedUser"));
+    const guest = JSON.parse(sessionStorage.getItem("guestUser"));
 
     if (member) {
       setUser({
@@ -104,9 +104,9 @@ function Layout() {
       return;
     }
 
-    alert('로그인이 필요한 페이지입니다.');
+    alert("로그인이 필요한 페이지입니다.");
 
-    navigate('/');
+    navigate("/");
   }, []);
 
   return (

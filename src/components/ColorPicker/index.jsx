@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-import { Github } from '@uiw/react-color';
+import { Github } from "@uiw/react-color";
 
 function ColorPicker({ onChange }) {
   return (

@@ -1,26 +1,26 @@
 import React, {
   useRef, useState, useCallback, useLayoutEffect, useEffect,
-} from 'react';
-import styled from 'styled-components';
-import { v4 as uuidV4 } from 'uuid';
+} from "react";
+import styled from "styled-components";
+import { v4 as uuidV4 } from "uuid";
 
-import ToastPopup from '../../shared/Toast';
-import EmojiPicker from '../EmojiPicker';
-import focusContentEditableTextToEnd from '../../utils/focusContentEditable';
-import textEditorUtils from '../../utils/textEditor';
-import fetchPostDiary from '../../services/diary/fetchPostDiary';
+import ToastPopup from "../../shared/Toast";
+import EmojiPicker from "../EmojiPicker";
+import focusContentEditableTextToEnd from "../../utils/focusContentEditable";
+import textEditorUtils from "../../utils/textEditor";
+import fetchPostDiary from "../../services/diary/fetchPostDiary";
 
-import useCalendarStore from '../../store/calender';
-import useDiaryStore from '../../store/diary';
+import useCalendarStore from "../../store/calender";
+import useDiaryStore from "../../store/diary";
 
 function See() {
   const [toast, setToast] = useState({});
-  const [diaryId, setDiaryId] = useState('');
+  const [diaryId, setDiaryId] = useState("");
   const [activeBold, setActiveBold] = useState(false);
   const [activeItalic, setActiveItalic] = useState(false);
   const [activeUnderline, setActiveUnderline] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [isComposing, setIsComposing] = useState(false);
 
   const editorRef = useRef(null);
@@ -46,13 +46,13 @@ function See() {
       const dairyDiaryObject = getDiaries();
 
       setDiaryId(dairyDiaryObject.diaryId);
-      setText(dairyDiaryObject.styledContent || '');
+      setText(dairyDiaryObject.styledContent || "");
 
       return;
     }
 
-    setText('');
-    setDiaryId('');
+    setText("");
+    setDiaryId("");
   }, [selectedDate, diaryByDates]);
 
   useLayoutEffect(() => {
@@ -82,7 +82,7 @@ function See() {
       const selection = window.getSelection();
       const range = selection.getRangeAt(0);
 
-      if (e.nativeEvent.inputType === 'insertText' || e.nativeEvent.inputType === 'insertCompositionText') {
+      if (e.nativeEvent.inputType === "insertText" || e.nativeEvent.inputType === "insertCompositionText") {
         selectionRef.current = {
           startContainer: range.startContainer,
           startOffset: range.startOffset,
@@ -96,12 +96,12 @@ function See() {
   };
 
   const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
 
       const selection = window.getSelection();
       const range = selection.getRangeAt(0);
-      const br = document.createElement('br');
+      const br = document.createElement("br");
 
       range.deleteContents();
       range.insertNode(br);
@@ -111,7 +111,7 @@ function See() {
 
       selection.removeAllRanges();
       selection.addRange(range);
-    } else if (e.key === 'Backspace') {
+    } else if (e.key === "Backspace") {
       const selection = window.getSelection();
       const range = selection.getRangeAt(0);
 
@@ -121,7 +121,7 @@ function See() {
       if (currentNode.nodeType === Node.TEXT_NODE && currentOffset === 0) {
         const previousNode = currentNode.previousSibling;
 
-        if (previousNode && previousNode.nodeType === Node.ELEMENT_NODE && previousNode.tagName === 'BR') {
+        if (previousNode && previousNode.nodeType === Node.ELEMENT_NODE && previousNode.tagName === "BR") {
           const { parentNode } = previousNode;
 
           parentNode.removeChild(previousNode);
@@ -165,9 +165,9 @@ function See() {
         selection.addRange(newRange);
       } else {
         const fragment = range.cloneContents();
-        const newElement = document.createElement('span');
+        const newElement = document.createElement("span");
 
-        if (style === 'color' || style === 'fontSize') {
+        if (style === "color" || style === "fontSize") {
           newElement.style[style] = value;
 
           const processNode = (node) => {
@@ -176,7 +176,7 @@ function See() {
 
               newElement.appendChild(textNode);
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-              if (node.tagName === 'SPAN') {
+              if (node.tagName === "SPAN") {
                 const styledNode = node.cloneNode(true);
 
                 styledNode.style[style] = value;
@@ -196,7 +196,7 @@ function See() {
               let { parentNode } = node;
               const styledNode = newElement;
 
-              while (parentNode && parentNode.tagName === 'SPAN') {
+              while (parentNode && parentNode.tagName === "SPAN") {
                 const styles = parentNode.style;
 
                 let isStyleApplied = false;
@@ -222,7 +222,7 @@ function See() {
                 parentNode = parentNode.parentNode;
               }
 
-              if (style === 'color' || style === 'fontSize') {
+              if (style === "color" || style === "fontSize") {
                 styledNode.style[style] = value;
               } else {
                 styledNode.style[style] = textEditorUtils.getStyleValue(style);
@@ -230,7 +230,7 @@ function See() {
 
               styledNode.appendChild(textNode);
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-              if (node.tagName === 'SPAN') {
+              if (node.tagName === "SPAN") {
                 const styles = node.style;
 
                 let isStyleApplied = false;
@@ -246,7 +246,7 @@ function See() {
                 }
 
                 if (isStyleApplied) {
-                  if (style === 'color' || style === 'fontSize') {
+                  if (style === "color" || style === "fontSize") {
                     node.style[style] = value;
                   }
 
@@ -275,11 +275,11 @@ function See() {
 
       setText(editorRef.current.innerHTML);
 
-      if (style === 'fontWeight') {
+      if (style === "fontWeight") {
         setActiveBold(!activeBold);
-      } else if (style === 'fontStyle') {
+      } else if (style === "fontStyle") {
         setActiveItalic(!activeItalic);
-      } else if (style === 'textDecoration') {
+      } else if (style === "textDecoration") {
         setActiveUnderline(!activeUnderline);
       }
     }
@@ -299,22 +299,22 @@ function See() {
     if (editorRef.current.innerText) {
       await saveDiary(diaryObject);
 
-      setToast({ status: true, message: '다이어리가 저장되었습니다.' });
+      setToast({ status: true, message: "다이어리가 저장되었습니다." });
 
-      const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+      const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
       if (memberUser) {
         const fetchDiaryData = await fetchPostDiary(diaryObject, memberUser);
 
         if (!fetchDiaryData.result) {
-          setToast({ status: true, message: '저장에 실패했습니다.' });
+          setToast({ status: true, message: "저장에 실패했습니다." });
         }
       }
 
       return;
     }
 
-    setToast({ status: true, message: '작성된 다이어리가 없습니다.' });
+    setToast({ status: true, message: "작성된 다이어리가 없습니다." });
   };
 
   const handleCompositionStart = () => {
@@ -336,31 +336,31 @@ function See() {
               <ToolbarButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                 <Icon>😀</Icon>
               </ToolbarButton>
-              <ToolbarButton onClick={() => handleStyleChange('fontWeight')}>
+              <ToolbarButton onClick={() => handleStyleChange("fontWeight")}>
                 <Icon>
                   <strong>B</strong>
                 </Icon>
               </ToolbarButton>
-              <ToolbarButton onClick={() => handleStyleChange('fontStyle')}>
+              <ToolbarButton onClick={() => handleStyleChange("fontStyle")}>
                 <Icon>
                   <em>I</em>
                 </Icon>
               </ToolbarButton>
-              <ToolbarButton onClick={() => handleStyleChange('textDecoration')}>
+              <ToolbarButton onClick={() => handleStyleChange("textDecoration")}>
                 <Icon>
                   <u>U</u>
                 </Icon>
               </ToolbarButton>
-              <FontSizeSelect onChange={(e) => handleStyleChange('fontSize', e.target.value)}>
+              <FontSizeSelect onChange={(e) => handleStyleChange("fontSize", e.target.value)}>
                 <option value="12px">Small</option>
                 <option value="26px">Normal</option>
                 <option value="32px">Large</option>
               </FontSizeSelect>
               <ColorPicker>
-                <ColorOption color="#000000" onClick={() => handleStyleChange('color', '#000000')} />
-                <ColorOption color="#FF0000" onClick={() => handleStyleChange('color', '#FF0000')} />
-                <ColorOption color="#00FF00" onClick={() => handleStyleChange('color', '#00FF00')} />
-                <ColorOption color="#0000FF" onClick={() => handleStyleChange('color', '#0000FF')} />
+                <ColorOption color="#000000" onClick={() => handleStyleChange("color", "#000000")} />
+                <ColorOption color="#FF0000" onClick={() => handleStyleChange("color", "#FF0000")} />
+                <ColorOption color="#00FF00" onClick={() => handleStyleChange("color", "#00FF00")} />
+                <ColorOption color="#0000FF" onClick={() => handleStyleChange("color", "#0000FF")} />
               </ColorPicker>
             </Toolbar>
             <EditorContent
@@ -484,7 +484,7 @@ const ToolbarButton = styled.button`
   width: 32px;
   height: 32px;
   border: none;
-  background-color: ${(props) => (props.active ? '#e0e0e0' : 'transparent')};
+  background-color: ${(props) => (props.active ? "#e0e0e0" : "transparent")};
   cursor: pointer;
   margin-right: 5px;
   border-radius: 4px;

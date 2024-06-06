@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import styled from "styled-components";
 
-import checkedIcon from '../../assets/checked_icon.png';
-import fetchRemovePlan from '../../services/plan/fetchRemovePlan';
-import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
-import dragIndicator from '../../assets/drag_indicator_icon.png';
-import syncedIcon from '../../assets/synced_icon.png';
+import checkedIcon from "../../assets/checked_icon.png";
+import fetchRemovePlan from "../../services/plan/fetchRemovePlan";
+import fetchUpdatePlan from "../../services/plan/fetchUpdatePlan";
+import dragIndicator from "../../assets/drag_indicator_icon.png";
+import syncedIcon from "../../assets/synced_icon.png";
 
-import usePlanStore from '../../store/plans';
-import useCalendarStore from '../../store/calender';
-import useScheduleStore from '../../store/schedules';
+import usePlanStore from "../../store/plans";
+import useCalendarStore from "../../store/calender";
+import useScheduleStore from "../../store/schedules";
 
 function Plan({
   plan, index, onClick, onDragStart, onDragEnter,
@@ -26,7 +26,7 @@ function Plan({
 
     setCompleted(selectedDate, plan.planId);
 
-    const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+    const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
     if (memberUser) {
       plan.completed = !plan.completed;
@@ -53,7 +53,7 @@ function Plan({
       deletePlan(selectedDate, plan.planId);
     }
 
-    const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+    const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
     if (memberUser) {
       await fetchRemovePlan(plan, memberUser);
@@ -131,7 +131,7 @@ const DragIndicator = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   cursor: move;
-  visibility: ${({ isDragging }) => (isDragging ? 'visible' : 'hidden')};
+  visibility: ${({ isDragging }) => (isDragging ? "visible" : "hidden")};
 `;
 
 const PlanItemWrapper = styled.li`
@@ -150,7 +150,7 @@ const PlanItemWrapper = styled.li`
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
     ${DragIndicator} {
-      visibility: ${({ isDragging }) => (isDragging ? 'visible' : 'visible')};
+      visibility: ${({ isDragging }) => (isDragging ? "visible" : "visible")};
     }
   }
 `;
@@ -158,17 +158,17 @@ const PlanItemWrapper = styled.li`
 const CompleteButton = styled.button`
   height:25px;
   width:25px;
-  background-image: ${(props) => (props.completed ? `url(${checkedIcon})` : 'none')};
+  background-image: ${(props) => (props.completed ? `url(${checkedIcon})` : "none")};
   background-repeat: no-repeat;
   background-size: 80%;
   background-position: center;
-  background-color: ${(props) => (props.completed ? '#0A7EED' : 'white')};
-  border: ${(props) => (props.completed ? 'none' : '#7A7A7A 1px solid')};
+  background-color: ${(props) => (props.completed ? "#0A7EED" : "white")};
+  border: ${(props) => (props.completed ? "none" : "#7A7A7A 1px solid")};
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color:  ${(props) => (props.completed ? '#0803F9' : '#e0e0e0')};
+    background-color:  ${(props) => (props.completed ? "#0803F9" : "#e0e0e0")};
     border: none;
   }
 `;

@@ -1,11 +1,11 @@
-import isValidEmail from '../utils/emailValidation';
+import isValidEmail from "../utils/emailValidation";
 
 const loginValidate = async (formData, setError) => {
   const { email, password } = formData;
 
   if (email.length === 0) {
     setError({
-      message: '아이디를 입력해주세요',
+      message: "아이디를 입력해주세요",
       visible: true,
     });
 
@@ -14,7 +14,7 @@ const loginValidate = async (formData, setError) => {
 
   if (password.length === 0) {
     setError({
-      message: '비밀번호를 입력해주세요',
+      message: "비밀번호를 입력해주세요",
       visible: true,
     });
 
@@ -23,7 +23,7 @@ const loginValidate = async (formData, setError) => {
 
   if (!isValidEmail(email)) {
     setError({
-      message: '잘못된 이메일 형식입니다.',
+      message: "잘못된 이메일 형식입니다.",
       visible: true,
     });
 

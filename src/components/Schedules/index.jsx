@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import styled from "styled-components";
 
-import Modal from '../../shared/Modal';
-import ScheduleForm from '../ScheduleForm';
-import TimeCells from '../TimeCells';
+import Modal from "../../shared/Modal";
+import ScheduleForm from "../ScheduleForm";
+import TimeCells from "../TimeCells";
 
 function Schedules() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });

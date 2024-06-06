@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 function Input({
   label, type, placeholder, description, value, onChange, size,
@@ -33,8 +33,8 @@ const InputLabel = styled.label`
 `;
 
 const StyledInput = styled.input`
-  width: ${({ size }) => (size && size.width ? size.width : '400px')};
-  height: ${({ size }) => (size && size.height ? size.height : '48px')};
+  width: ${({ size }) => (size && size.width ? size.width : "400px")};
+  height: ${({ size }) => (size && size.height ? size.height : "48px")};
   padding: 5px 10px;
   margin-bottom: 5px;
   border: 1px solid #ccc;

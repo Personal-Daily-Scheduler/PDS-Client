@@ -1,4 +1,4 @@
-import timeToMinutes from './timeToMinutes';
+import timeToMinutes from "./timeToMinutes";
 
 const differenceTime = (startTime, endTime) => {
   const startMinutes = timeToMinutes(startTime);

@@ -1,4 +1,4 @@
-import getTimeRange from './getTimeRange';
+import getTimeRange from "./getTimeRange";
 
 const setTimeSlots = (timeSlots, scheduleObject) => {
   const newTimeSlots = new Map(timeSlots);

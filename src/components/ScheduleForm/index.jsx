@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { v4 as uuidV4 } from 'uuid';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { v4 as uuidV4 } from "uuid";
 
-import TimeComponent from '../TimeSlots';
-import ColorPicker from '../ColorPicker';
-import Input from '../../shared/Input/Index';
-import CommonButton from '../../shared/Button';
-import ToastPopup from '../../shared/Toast';
+import TimeComponent from "../TimeSlots";
+import ColorPicker from "../ColorPicker";
+import Input from "../../shared/Input/Index";
+import CommonButton from "../../shared/Button";
+import ToastPopup from "../../shared/Toast";
 
-import fetchPostPlan from '../../services/plan/fetchPostPlan';
-import fetchPostSchedule from '../../services/schedule/fetchPostSchedule';
-import checkedIcon from '../../assets/checked_icon.png';
+import fetchPostPlan from "../../services/plan/fetchPostPlan";
+import fetchPostSchedule from "../../services/schedule/fetchPostSchedule";
+import checkedIcon from "../../assets/checked_icon.png";
 
-import usePlanStore from '../../store/plans';
-import useCalendarStore from '../../store/calender';
-import useScheduleStore from '../../store/schedules';
+import usePlanStore from "../../store/plans";
+import useCalendarStore from "../../store/calender";
+import useScheduleStore from "../../store/schedules";
 
 function ScheduleForm({ onSubmit, time }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [isSynced, setIsSynced] = useState(false);
-  const [colorCode, setColorCode] = useState('#ade0fd');
+  const [colorCode, setColorCode] = useState("#ade0fd");
   const [toast, setToast] = useState({});
 
   const { setPlan } = usePlanStore();
@@ -37,19 +37,19 @@ function ScheduleForm({ onSubmit, time }) {
   }, [time]);
 
   const handleInputChange = (type, value) => {
-    if (type === 'title') {
+    if (type === "title") {
       setTitle(value);
     }
 
-    if (type === 'description') {
+    if (type === "description") {
       setDescription(value);
     }
 
-    if (type === 'startTime') {
+    if (type === "startTime") {
       setStartTime(value);
     }
 
-    if (type === 'endTime') {
+    if (type === "endTime") {
       setEndTime(value);
     }
   };
@@ -58,7 +58,7 @@ function ScheduleForm({ onSubmit, time }) {
     e.preventDefault();
 
     if (!title) {
-      setToast({ status: true, message: '제목을 반드시 입력해야 합니다.' });
+      setToast({ status: true, message: "제목을 반드시 입력해야 합니다." });
 
       return;
     }
@@ -85,7 +85,7 @@ function ScheduleForm({ onSubmit, time }) {
         setSchedule(newSchedule);
       }
 
-      const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+      const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
       if (memberUser) {
         if (isSynced) {
@@ -102,13 +102,13 @@ function ScheduleForm({ onSubmit, time }) {
     }
 
     if (!startTime) {
-      setToast({ status: true, message: '시작 시간이 비어있습니다.' });
+      setToast({ status: true, message: "시작 시간이 비어있습니다." });
 
       return;
     }
 
     if (!endTime) {
-      setToast({ status: true, message: '종료 시간이 비어있습니다.' });
+      setToast({ status: true, message: "종료 시간이 비어있습니다." });
     }
   };
 
@@ -147,17 +147,17 @@ function ScheduleForm({ onSubmit, time }) {
         label="Title"
         type="text"
         placeholder="이벤트 이름을 입력하세요"
-        onChange={(e) => handleInputChange('title', e.target.value)}
+        onChange={(e) => handleInputChange("title", e.target.value)}
         value={title}
-        size={{ width: '235px', height: '32px' }}
+        size={{ width: "235px", height: "32px" }}
       />
       <Input
         label="Description"
         type="text"
         placeholder="이벤트 상세 내용을 입력하세요"
-        onChange={(e) => handleInputChange('description', e.target.value)}
+        onChange={(e) => handleInputChange("description", e.target.value)}
         value={description}
-        size={{ width: '235px', height: '32px' }}
+        size={{ width: "235px", height: "32px" }}
       />
       <Label>Color</Label>
       <ColorPicker
@@ -219,7 +219,7 @@ const ToggleButton = styled.div`
   position: relative;
   width: 40px;
   height: 20px;
-  background-color: ${(props) => (props.isSynced ? '#4CAF50' : '#ccc')};
+  background-color: ${(props) => (props.isSynced ? "#4CAF50" : "#ccc")};
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -228,7 +228,7 @@ const ToggleButton = styled.div`
 const ToggleThumb = styled.div`
   position: absolute;
   top: 2px;
-  left: ${(props) => (props.isSynced ? '22px' : '2px')};
+  left: ${(props) => (props.isSynced ? "22px" : "2px")};
   width: 16px;
   height: 16px;
   background-color: white;

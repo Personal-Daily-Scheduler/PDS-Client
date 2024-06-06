@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import { useEffect } from "react";
+import styled, { keyframes } from "styled-components";
 
-import CONSTANTS from '../../constants/constants';
+import CONSTANTS from "../../constants/constants";
 
 function ToastPopup({ message, setToast }) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      setToast({ status: false, message: '' });
+      setToast({ status: false, message: "" });
     }, CONSTANTS.TOAST_DELAY);
 
     return () => {

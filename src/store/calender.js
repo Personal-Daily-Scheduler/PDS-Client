@@ -1,8 +1,8 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 const calendarStore = (set) => ({
-  viewMode: 'week',
+  viewMode: "week",
   currentDate: new Date(),
   selectedDate: null,
 
@@ -11,7 +11,7 @@ const calendarStore = (set) => ({
   setSelectedDate: (date) => set({ selectedDate: date }),
 
   clearCalendar: () => set({
-    viewMode: 'week',
+    viewMode: "week",
     currentDate: new Date(),
     selectedDate: null,
   }),

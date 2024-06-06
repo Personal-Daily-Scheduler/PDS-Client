@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
-import initTimeMap from '../utils/createTimeMap';
-import initTimeSlots from '../utils/initTimeSlots';
-import setTimeMap from '../utils/setTimeMap';
-import setTimeSlots from '../utils/setTimeSlots';
-import getTimeRange from '../utils/getTimeRange';
-import updateTimeMap from '../utils/updateTimeMap';
-import updateTimeSlots from '../utils/updateTimeSlots';
+import initTimeMap from "../utils/createTimeMap";
+import initTimeSlots from "../utils/initTimeSlots";
+import setTimeMap from "../utils/setTimeMap";
+import setTimeSlots from "../utils/setTimeSlots";
+import getTimeRange from "../utils/getTimeRange";
+import updateTimeMap from "../utils/updateTimeMap";
+import updateTimeSlots from "../utils/updateTimeSlots";
 
 const scheduleStore = (set) => ({
   scheduleByDates: {},
@@ -27,7 +27,7 @@ const scheduleStore = (set) => ({
       timeRange.forEach((time) => {
         newTimeMap.set(time, {
           index: newTimeMap.get(time).index,
-          schedule: '',
+          schedule: "",
         });
       });
 

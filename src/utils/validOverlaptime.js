@@ -1,4 +1,4 @@
-import getTimeRange from './getTimeRange';
+import getTimeRange from "./getTimeRange";
 
 const validOverlapTime = (copySchedule, pasteSchedule) => {
   const copyTimeRange = getTimeRange(copySchedule.startTime, copySchedule.endTime);

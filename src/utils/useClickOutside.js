@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 const useClickOutside = (ref, eventHandler, isDisabled = false) => {
   useEffect(() => {
@@ -26,14 +26,14 @@ const useClickOutside = (ref, eventHandler, isDisabled = false) => {
       startedInside = ref.current && ref.current.contains(event.target);
     };
 
-    document.addEventListener('mousedown', validateEventStart);
-    document.addEventListener('touchstart', validateEventStart);
-    document.addEventListener('click', customListener);
+    document.addEventListener("mousedown", validateEventStart);
+    document.addEventListener("touchstart", validateEventStart);
+    document.addEventListener("click", customListener);
 
     return () => {
-      document.removeEventListener('mousedown', validateEventStart);
-      document.removeEventListener('touchstart', validateEventStart);
-      document.removeEventListener('click', customListener);
+      document.removeEventListener("mousedown", validateEventStart);
+      document.removeEventListener("touchstart", validateEventStart);
+      document.removeEventListener("click", customListener);
     };
   }, [ref, eventHandler]);
 };

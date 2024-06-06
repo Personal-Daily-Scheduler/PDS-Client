@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-import Picker from '@emoji-mart/react';
-import data from '@emoji-mart/data';
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
 
 function EmojiPicker({ onEmojiSelect, showEmojiPicker }) {
   return showEmojiPicker && (

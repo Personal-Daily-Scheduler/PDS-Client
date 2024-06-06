@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useEffect } from "react";
+import styled, { keyframes } from "styled-components";
 
 function ErrorMessage({ content, setMessage }) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      setMessage({ message: '', visible: false });
+      setMessage({ message: "", visible: false });
     }, 1500);
 
     return () => {

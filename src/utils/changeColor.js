@@ -7,7 +7,7 @@ const changeColor = (colorString, amount, isLighten = false) => {
   const adjustedG = isLighten ? Math.min(255, g + amount) : Math.max(0, g - amount);
   const adjustedB = isLighten ? Math.min(255, b + amount) : Math.max(0, b - amount);
 
-  return `#${adjustedR.toString(16).padStart(2, '0')}${adjustedG.toString(16).padStart(2, '0')}${adjustedB.toString(16).padStart(2, '0')}`;
+  return `#${adjustedR.toString(16).padStart(2, "0")}${adjustedG.toString(16).padStart(2, "0")}${adjustedB.toString(16).padStart(2, "0")}`;
 };
 
 export default changeColor;

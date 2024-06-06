@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-import Description from '../Description';
+import Description from "../Description";
 
-import diaryIcon from '../../assets/diary_icon.png';
+import diaryIcon from "../../assets/diary_icon.png";
 
 function Welcome({ handleClick }) {
   return (

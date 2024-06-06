@@ -1,11 +1,11 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-import useCalendarStore from '../../store/calender';
+import useCalendarStore from "../../store/calender";
 
-import pdsLogo from '../../assets/pds_logo.png';
-import todayIcon from '../../assets/today_icon.png';
-import formatDateToYYYYMMDD from '../../utils/formatDate';
+import pdsLogo from "../../assets/pds_logo.png";
+import todayIcon from "../../assets/today_icon.png";
+import formatDateToYYYYMMDD from "../../utils/formatDate";
 
 function Header() {
   const { selectedDate, setSelectedDate } = useCalendarStore();
@@ -13,11 +13,11 @@ function Header() {
   const handleDateChange = (direction) => {
     const currentDate = new Date(selectedDate);
 
-    if (direction === 'prev') {
+    if (direction === "prev") {
       currentDate.setDate(currentDate.getDate() - 1);
     }
 
-    if (direction === 'next') {
+    if (direction === "next") {
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -44,9 +44,9 @@ function Header() {
           <img src={todayIcon} alt="Today Icon" />
           <span>Today</span>
         </TodayButton>
-        <ArrowButton onClick={() => handleDateChange('prev')}>{'<'}</ArrowButton>
+        <ArrowButton onClick={() => handleDateChange("prev")}>{"<"}</ArrowButton>
         <h2>{selectedDate}</h2>
-        <ArrowButton onClick={() => handleDateChange('next')}>{'>'}</ArrowButton>
+        <ArrowButton onClick={() => handleDateChange("next")}>{">"}</ArrowButton>
       </DateContainer>
     </HeaderContainer>
   );

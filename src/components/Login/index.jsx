@@ -1,58 +1,58 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
-import CommonButton from '../../shared/Button';
-import CommonTitle from '../../shared/Title';
-import Input from '../../shared/Input/Index';
-import ErrorMessage from '../../shared/ErrorMessage';
+import CommonButton from "../../shared/Button";
+import CommonTitle from "../../shared/Title";
+import Input from "../../shared/Input/Index";
+import ErrorMessage from "../../shared/ErrorMessage";
 
-import mainImage from '../../assets/main_image.png';
-import googleLogoImage from '../../assets/google_logo.png';
-import fetchSignUp from '../../services/user/fetchSignUp';
-import fetchLogin from '../../services/user/fetchLogin';
-import signUpValidate from '../../services/signupValidate';
-import loginValidate from '../../services/loginValidate';
+import mainImage from "../../assets/main_image.png";
+import googleLogoImage from "../../assets/google_logo.png";
+import fetchSignUp from "../../services/user/fetchSignUp";
+import fetchLogin from "../../services/user/fetchLogin";
+import signUpValidate from "../../services/signupValidate";
+import loginValidate from "../../services/loginValidate";
 
-import useUserStore from '../../store/user';
+import useUserStore from "../../store/user";
 
 function Login() {
-  const [selectedOption, setSelectedOption] = useState('signIn');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [signUpError, setSignUpError] = useState({ message: '', visible: false });
+  const [selectedOption, setSelectedOption] = useState("signIn");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [signUpError, setSignUpError] = useState({ message: "", visible: false });
 
   const { setUser, setToken } = useUserStore();
 
   const navigate = useNavigate();
 
   const handleButtonClick = (option) => {
-    setUsername('');
-    setEmail('');
-    setUsername('');
-    setEmail('');
+    setUsername("");
+    setEmail("");
+    setUsername("");
+    setEmail("");
     setSelectedOption(option);
   };
 
   const handleInputChange = (event, field) => {
     const { value } = event.target;
 
-    if (field === 'username') {
+    if (field === "username") {
       setUsername(value);
     }
 
-    if (field === 'email') {
+    if (field === "email") {
       setEmail(value);
     }
 
-    if (field === 'password') {
+    if (field === "password") {
       setPassword(value);
-      setConfirmPassword('');
+      setConfirmPassword("");
     }
 
-    if (field === 'confirmPassword') {
+    if (field === "confirmPassword") {
       setConfirmPassword(value);
     }
   };
@@ -60,7 +60,7 @@ function Login() {
   const handleClickLoginButton = async (e) => {
     e.preventDefault();
 
-    if (selectedOption === 'signIn') {
+    if (selectedOption === "signIn") {
       const isSuccessValid = await loginValidate({
         email,
         password,
@@ -79,7 +79,7 @@ function Login() {
             token: response.data.token,
           });
 
-          sessionStorage.setItem('authenticatedUser', JSON.stringify({
+          sessionStorage.setItem("authenticatedUser", JSON.stringify({
             userId: response.data.userId,
             username: response.data.username,
             token: response.data.token,
@@ -87,7 +87,7 @@ function Login() {
 
           alert(response.message);
 
-          navigate('/users');
+          navigate("/users");
         }
 
         setSignUpError({
@@ -97,10 +97,10 @@ function Login() {
       }
     }
 
-    if (selectedOption === 'guest') {
+    if (selectedOption === "guest") {
       if (!username) {
         setSignUpError({
-          message: '닉네임을 입력해주세요',
+          message: "닉네임을 입력해주세요",
           visible: true,
         });
 
@@ -109,7 +109,7 @@ function Login() {
 
       if (username.length < 3) {
         setSignUpError({
-          message: '닉네임은 최소 3자 이상 입력해야 합니다.',
+          message: "닉네임은 최소 3자 이상 입력해야 합니다.",
           visible: true,
         });
 
@@ -118,12 +118,12 @@ function Login() {
 
       setUser({ userId: email, username });
 
-      sessionStorage.setItem('guestUser', JSON.stringify({ userId: email, username }));
+      sessionStorage.setItem("guestUser", JSON.stringify({ userId: email, username }));
 
-      navigate('/users');
+      navigate("/users");
     }
 
-    if (selectedOption === 'signUp') {
+    if (selectedOption === "signUp") {
       const isSuccessValid = signUpValidate({
         username,
         email,
@@ -132,14 +132,14 @@ function Login() {
       }, setSignUpError);
 
       if (isSuccessValid) {
-        setSignUpError({ message: '', visible: false });
+        setSignUpError({ message: "", visible: false });
 
         const response = await fetchSignUp(username, email, password);
 
         if (response.result) {
           alert(response.message);
 
-          navigate('/users');
+          navigate("/users");
         }
 
         alert(response.message);
@@ -154,7 +154,7 @@ function Login() {
         type="text"
         value={username}
         placeholder="Enter your Nickname"
-        onChange={(e) => handleInputChange(e, 'username')}
+        onChange={(e) => handleInputChange(e, "username")}
       >
       </Input>
       {signUpError.visible && (
@@ -173,28 +173,28 @@ function Login() {
         type="text"
         value={username}
         placeholder="Enter your username"
-        onChange={(e) => handleInputChange(e, 'username')}
+        onChange={(e) => handleInputChange(e, "username")}
       />
       <Input
         label="Email"
         type="email"
         value={email}
         placeholder="Enter your email"
-        onChange={(e) => handleInputChange(e, 'email')}
+        onChange={(e) => handleInputChange(e, "email")}
       />
       <Input
         label="Password"
         type="password"
         value={password}
         placeholder="Enter your password"
-        onChange={(e) => handleInputChange(e, 'password')}
+        onChange={(e) => handleInputChange(e, "password")}
       />
       <Input
         label="Confirm Password"
         type="password"
         value={confirmPassword}
         placeholder="Confirm your password"
-        onChange={(e) => handleInputChange(e, 'confirmPassword')}
+        onChange={(e) => handleInputChange(e, "confirmPassword")}
       />
       {signUpError.visible && (
         <ErrorMessage
@@ -211,14 +211,14 @@ function Login() {
         label="Email"
         type="email"
         placeholder="Enter your email"
-        onChange={(e) => handleInputChange(e, 'email')}
+        onChange={(e) => handleInputChange(e, "email")}
       >
       </Input>
       <Input
         label="Password"
         type="password"
         placeholder="Enter your password"
-        onChange={(e) => handleInputChange(e, 'password')}
+        onChange={(e) => handleInputChange(e, "password")}
       >
       </Input>
       {signUpError.visible && (
@@ -236,14 +236,14 @@ function Login() {
         <MainImage src={mainImage} alt="Main Image" />
       </Wrapper>
       <Wrapper className="content-right">
-        {selectedOption !== 'signUp' ? (
+        {selectedOption !== "signUp" ? (
           <>
             <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
             <ButtonLine>
-              <StyledButton selected={selectedOption === 'guest'} onClick={() => handleButtonClick('guest')}>
+              <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
                 Guest Login
               </StyledButton>
-              <StyledButton selected={selectedOption === 'signIn'} onClick={() => handleButtonClick('signIn')}>
+              <StyledButton selected={selectedOption === "signIn"} onClick={() => handleButtonClick("signIn")}>
                 Member Login
               </StyledButton>
             </ButtonLine>
@@ -252,15 +252,15 @@ function Login() {
           <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
         )}
         <LoginContentWrapper>
-          {selectedOption === 'guest' && renderGuestForm()}
-          {selectedOption === 'signIn' && renderUserForm()}
-          {selectedOption === 'signUp' && renderSighUpForm()}
+          {selectedOption === "guest" && renderGuestForm()}
+          {selectedOption === "signIn" && renderUserForm()}
+          {selectedOption === "signUp" && renderSighUpForm()}
         </LoginContentWrapper>
-        {selectedOption !== 'signUp' ? (
+        {selectedOption !== "signUp" ? (
           <>
             <DescriptionWrapper>
               <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
-              <ButtonText onClick={() => handleButtonClick('signUp')}>회원 가입 하기</ButtonText>
+              <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
               Login
@@ -270,7 +270,7 @@ function Login() {
           <>
             <DescriptionWrapper>
               <TextWrapper>이미 계정이 있으신가요?</TextWrapper>
-              <ButtonText onClick={() => handleButtonClick('signIn')}>로그인 하기</ButtonText>
+              <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
             </DescriptionWrapper>
             <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
               SignUp
@@ -335,8 +335,8 @@ const StyledButton = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  background-color: ${(props) => (props.selected ? '#3f51b5' : '#f0f4f8')};
-  color: ${(props) => (props.selected ? '#ffffff' : '#000000')};
+  background-color: ${(props) => (props.selected ? "#3f51b5" : "#f0f4f8")};
+  color: ${(props) => (props.selected ? "#ffffff" : "#000000")};
   font-weight: bold;
   cursor: pointer;
 `;

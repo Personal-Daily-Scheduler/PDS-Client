@@ -1,4 +1,4 @@
-import createTimeSlots from './createTimeSlots';
+import createTimeSlots from "./createTimeSlots";
 
 const initTimeSlots = () => {
   const timeMap = new Map();
@@ -6,7 +6,7 @@ const initTimeSlots = () => {
   createTimeSlots().forEach((item) => {
     timeMap.set(item, {
       timeList: [],
-      schedule: '',
+      schedule: "",
     });
   });
 

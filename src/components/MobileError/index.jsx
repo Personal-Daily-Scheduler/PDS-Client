@@ -1,9 +1,9 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import Description from '../Description';
+import Description from "../Description";
 
-import mobileErrorImage from '../../assets/mobile_error_image.png';
-import pdsLogo from '../../assets/pds_logo.png';
+import mobileErrorImage from "../../assets/mobile_error_image.png";
+import pdsLogo from "../../assets/pds_logo.png";
 
 function MobileError() {
   return (

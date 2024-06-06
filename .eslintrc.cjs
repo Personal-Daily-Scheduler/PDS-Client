@@ -12,6 +12,7 @@ module.exports = {
   plugins: ["react", "prettier", "react-hooks"],
   rules: {
     semi: "warn",
+    quotes: ["error", "double"],
     "no-unused-vars": "warn",
     "import/no-extraneous-dependencies": "off",
     "import/no-named-as-default": 0,

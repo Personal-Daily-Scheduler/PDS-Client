@@ -1,4 +1,4 @@
-import generateApiUri from '../../utils/generateURI';
+import generateApiUri from "../../utils/generateURI";
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
@@ -7,9 +7,9 @@ const fetchEditSchedule = async (scheduleObject, user) => {
 
   try {
     const response = await fetch(BASE_URI, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.token}`,
       },
       body: JSON.stringify(scheduleObject),
@@ -23,7 +23,7 @@ const fetchEditSchedule = async (scheduleObject, user) => {
 
     return responseJson;
   } catch (error) {
-    console.error('Error fetching user plans:', error);
+    console.error("Error fetching user plans:", error);
   }
 };
 

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import styled from "styled-components";
 
-import usePlanStore from '../../store/plans';
-import useCalendarStore from '../../store/calender';
+import usePlanStore from "../../store/plans";
+import useCalendarStore from "../../store/calender";
 
-import formatDateToYYYYMMDD from '../../utils/formatDate';
+import formatDateToYYYYMMDD from "../../utils/formatDate";
 
 function CustomCalendar() {
   const [markDate, setMarkDate] = useState([]);
@@ -32,7 +32,7 @@ function CustomCalendar() {
         locale="en-EN"
         tileClassName={({ date }) => {
           if (markDate.find((x) => x === formatDateToYYYYMMDD(date))) {
-            return 'highlight';
+            return "highlight";
           }
         }}
       />

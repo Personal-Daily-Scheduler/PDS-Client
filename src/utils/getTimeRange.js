@@ -1,5 +1,5 @@
-import minutesToTime from './minutesToTime';
-import timeToMinutes from './timeToMinutes';
+import minutesToTime from "./minutesToTime";
+import timeToMinutes from "./timeToMinutes";
 
 const getTimeRange = (start, end) => {
   const timeList = [];

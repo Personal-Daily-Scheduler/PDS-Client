@@ -1,4 +1,4 @@
-import generateApiUri from '../../utils/generateURI';
+import generateApiUri from "../../utils/generateURI";
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
@@ -7,9 +7,9 @@ const fetchPostPlan = async (plansObject, memberUser) => {
 
   try {
     const response = await fetch(BASE_URI, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${memberUser.token}`,
       },
       body: JSON.stringify(plansObject),
@@ -23,7 +23,7 @@ const fetchPostPlan = async (plansObject, memberUser) => {
 
     return responseJson;
   } catch (error) {
-    console.error('Error saving plan to database:', error);
+    console.error("Error saving plan to database:", error);
   }
 };
 

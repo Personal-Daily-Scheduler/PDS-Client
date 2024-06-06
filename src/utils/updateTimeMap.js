@@ -1,4 +1,4 @@
-import getTimeRange from './getTimeRange';
+import getTimeRange from "./getTimeRange";
 
 const updateTimeMap = (timeMap, scheduleObject) => {
   const targetTimeMap = new Map(timeMap);
@@ -8,13 +8,13 @@ const updateTimeMap = (timeMap, scheduleObject) => {
   for (const [key, value] of timeMap) {
     const { schedule } = value;
 
-    if (schedule !== '' && schedule.scheduleId === scheduleId) {
+    if (schedule !== "" && schedule.scheduleId === scheduleId) {
       const oldTimeRange = getTimeRange(schedule.startTime, schedule.endTime);
 
       oldTimeRange.forEach((scheduleTime) => {
         targetTimeMap.set(scheduleTime, {
           ...timeMap.get(scheduleTime),
-          schedule: '',
+          schedule: "",
         });
       });
 

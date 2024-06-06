@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
-import CustomCalendar from '../Calendar';
+import CustomCalendar from "../Calendar";
 
-import calendarIcon from '../../assets/calendar_icon.png';
-import profileIcon from '../../assets/profile_icon.png';
-import logoutIcon from '../../assets/logout_icon.png';
+import calendarIcon from "../../assets/calendar_icon.png";
+import profileIcon from "../../assets/profile_icon.png";
+import logoutIcon from "../../assets/logout_icon.png";
 
-import useScheduleStore from '../../store/schedules';
-import useCalendarStore from '../../store/calender';
-import usePlanStore from '../../store/plans';
-import useDiaryStore from '../../store/diary';
-import useUserStore from '../../store/user';
+import useScheduleStore from "../../store/schedules";
+import useCalendarStore from "../../store/calender";
+import usePlanStore from "../../store/plans";
+import useDiaryStore from "../../store/diary";
+import useUserStore from "../../store/user";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const { username, clearUser } = useUserStore();
@@ -25,14 +25,14 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('authenticatedUser');
-    sessionStorage.removeItem('guestUser');
+    sessionStorage.removeItem("authenticatedUser");
+    sessionStorage.removeItem("guestUser");
     clearCalendar();
     clearSchedules();
     clearPlan();
     clearUser();
     clearDiary();
-    navigate('/');
+    navigate("/");
   };
 
   const toggleCalendar = () => {
@@ -42,7 +42,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   return (
     <SidebarContainer isSidebarOpen={isSidebarOpen}>
       <ToggleButton isSidebarOpen={isSidebarOpen} onClick={toggleSidebar}>
-        {isSidebarOpen ? '×' : '☰'}
+        {isSidebarOpen ? "×" : "☰"}
       </ToggleButton>
       {isSidebarOpen && (
         <>
@@ -73,7 +73,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
-  width: ${({ isSidebarOpen }) => (isSidebarOpen ? '250px' : '20px')};
+  width: ${({ isSidebarOpen }) => (isSidebarOpen ? "250px" : "20px")};
   background-color: #f5f5f5;
   padding: 20px;
   transition: width 0.3s ease;
@@ -87,7 +87,7 @@ const ToggleButton = styled.button`
   font-size: 1.5rem;
   cursor: pointer;
   margin-bottom: 20px;
-  align-self: ${({ isSidebarOpen }) => (isSidebarOpen ? 'flex-end' : 'center')};
+  align-self: ${({ isSidebarOpen }) => (isSidebarOpen ? "flex-end" : "center")};
 `;
 
 const ProfileWrapper = styled.div`

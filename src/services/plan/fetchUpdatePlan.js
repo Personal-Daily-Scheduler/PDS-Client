@@ -1,4 +1,4 @@
-import generateApiUri from '../../utils/generateURI';
+import generateApiUri from "../../utils/generateURI";
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
@@ -7,9 +7,9 @@ const fetchUpdatePlan = async (updatedPlan, memberUser) => {
 
   try {
     const response = await fetch(BASE_URI, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${memberUser.token}`,
       },
       body: JSON.stringify(updatedPlan),

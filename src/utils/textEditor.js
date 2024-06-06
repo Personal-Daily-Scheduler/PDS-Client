@@ -2,7 +2,7 @@ const findParentSpan = (node, style) => {
   let { parentNode } = node;
 
   while (parentNode) {
-    if (parentNode.tagName === 'SPAN' && parentNode.style[style]) {
+    if (parentNode.tagName === "SPAN" && parentNode.style[style]) {
       return parentNode;
     }
     parentNode = parentNode.parentNode;
@@ -12,8 +12,8 @@ const findParentSpan = (node, style) => {
 };
 
 const removeStyleTags = (html, style) => {
-  const container = document.createElement('div');
-  const elements = container.getElementsByTagName('span');
+  const container = document.createElement("div");
+  const elements = container.getElementsByTagName("span");
 
   container.innerHTML = html;
 
@@ -23,8 +23,8 @@ const removeStyleTags = (html, style) => {
     if (element.style[style]) {
       const parent = element.parentNode;
 
-      if (parent.tagName === 'SPAN') {
-        const newSpan = document.createElement('span');
+      if (parent.tagName === "SPAN") {
+        const newSpan = document.createElement("span");
         newSpan.innerHTML = element.innerHTML;
 
         for (let j = 0; j < element.style.length; j += 1) {
@@ -36,10 +36,10 @@ const removeStyleTags = (html, style) => {
         }
         parent.replaceChild(newSpan, element);
       } else {
-        element.style[style] = '';
+        element.style[style] = "";
 
-        if (element.getAttribute('style') === '') {
-          element.removeAttribute('style');
+        if (element.getAttribute("style") === "") {
+          element.removeAttribute("style");
         }
       }
     }
@@ -49,14 +49,14 @@ const removeStyleTags = (html, style) => {
 };
 
 const removeEmptySpanTags = (html) => {
-  const container = document.createElement('div');
-  const elements = container.getElementsByTagName('span');
+  const container = document.createElement("div");
+  const elements = container.getElementsByTagName("span");
   container.innerHTML = html;
 
   for (let i = elements.length - 1; i >= 0; i -= 1) {
     const element = elements[i];
 
-    if (!element.getAttribute('style')) {
+    if (!element.getAttribute("style")) {
       const parent = element.parentNode;
 
       while (element.firstChild) {
@@ -71,15 +71,15 @@ const removeEmptySpanTags = (html) => {
 };
 
 const getStyleValue = (style) => {
-  if (style === 'fontWeight') {
-    return 'bold';
-  } if (style === 'fontStyle') {
-    return 'italic';
-  } if (style === 'textDecoration') {
-    return 'underline';
+  if (style === "fontWeight") {
+    return "bold";
+  } if (style === "fontStyle") {
+    return "italic";
+  } if (style === "textDecoration") {
+    return "underline";
   }
 
-  return '';
+  return "";
 };
 
 const saveSelection = () => {

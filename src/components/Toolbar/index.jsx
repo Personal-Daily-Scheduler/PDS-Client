@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 function Toolbar({
   showEmojiPicker,
@@ -15,31 +15,31 @@ function Toolbar({
       <ToolbarButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
         <Icon>😀</Icon>
       </ToolbarButton>
-      <ToolbarButton onClick={() => handleStyleChange('fontWeight')} active={activeBold}>
+      <ToolbarButton onClick={() => handleStyleChange("fontWeight")} active={activeBold}>
         <Icon>
           <strong>B</strong>
         </Icon>
       </ToolbarButton>
-      <ToolbarButton onClick={() => handleStyleChange('fontStyle')} active={activeItalic}>
+      <ToolbarButton onClick={() => handleStyleChange("fontStyle")} active={activeItalic}>
         <Icon>
           <em>I</em>
         </Icon>
       </ToolbarButton>
-      <ToolbarButton onClick={() => handleStyleChange('textDecoration')} active={activeUnderline}>
+      <ToolbarButton onClick={() => handleStyleChange("textDecoration")} active={activeUnderline}>
         <Icon>
           <u>U</u>
         </Icon>
       </ToolbarButton>
-      <FontSizeSelect onChange={(e) => handleStyleChange('fontSize', e.target.value)} value={activeFontSize}>
+      <FontSizeSelect onChange={(e) => handleStyleChange("fontSize", e.target.value)} value={activeFontSize}>
         <option value="12px">Small</option>
         <option value="16px">Normal</option>
         <option value="32px">Large</option>
       </FontSizeSelect>
       <ColorPicker>
-        <ColorOption color="#000000" onClick={() => handleStyleChange('color', '#000000')} />
-        <ColorOption color="#FF0000" onClick={() => handleStyleChange('color', '#FF0000')} />
-        <ColorOption color="#00FF00" onClick={() => handleStyleChange('color', '#00FF00')} />
-        <ColorOption color="#0000FF" onClick={() => handleStyleChange('color', '#0000FF')} />
+        <ColorOption color="#000000" onClick={() => handleStyleChange("color", "#000000")} />
+        <ColorOption color="#FF0000" onClick={() => handleStyleChange("color", "#FF0000")} />
+        <ColorOption color="#00FF00" onClick={() => handleStyleChange("color", "#00FF00")} />
+        <ColorOption color="#0000FF" onClick={() => handleStyleChange("color", "#0000FF")} />
       </ColorPicker>
     </ToolbarContainer>
   );
@@ -63,7 +63,7 @@ const ToolbarButton = styled.button`
   width: 32px;
   height: 32px;
   border: none;
-  background-color: ${(props) => (props.active ? '#e0e0e0' : 'transparent')};
+  background-color: ${(props) => (props.active ? "#e0e0e0" : "transparent")};
   cursor: pointer;
   margin-right: 5px;
   border-radius: 4px;

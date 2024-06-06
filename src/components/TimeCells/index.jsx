@@ -1,39 +1,39 @@
 import {
   useCallback, useEffect, useRef, useState,
-} from 'react';
-import styled from 'styled-components';
-import { v4 as uuidV4 } from 'uuid';
+} from "react";
+import styled from "styled-components";
+import { v4 as uuidV4 } from "uuid";
 
-import TimeCell from '../TimeCell';
-import Modal from '../../shared/Modal';
-import ScheduleModal from '../ScheduleModal';
-import ScheduleForm from '../ScheduleForm';
-import ToastPopup from '../../shared/Toast';
+import TimeCell from "../TimeCell";
+import Modal from "../../shared/Modal";
+import ScheduleModal from "../ScheduleModal";
+import ScheduleForm from "../ScheduleForm";
+import ToastPopup from "../../shared/Toast";
 
-import useScheduleStore from '../../store/schedules';
-import useCalendarStore from '../../store/calender';
-import useClipboardStore from '../../store/clipboard';
-import usePlanStore from '../../store/plans';
+import useScheduleStore from "../../store/schedules";
+import useCalendarStore from "../../store/calender";
+import useClipboardStore from "../../store/clipboard";
+import usePlanStore from "../../store/plans";
 
-import initTimeMap from '../../utils/createTimeMap';
-import useClickOutside from '../../utils/useClickOutside';
-import fetchRemoveSchedule from '../../services/schedule/fetRemoveSchedule';
-import fetchRemovePlan from '../../services/plan/fetchRemovePlan';
-import getTimeRange from '../../utils/getTimeRange';
-import calculatePasteSchedule from '../../utils/calculateScheduleTime';
-import validPossiblePasteTime from '../../utils/validPossiblePasteTime';
-import validOverlapTime from '../../utils/validOverlaptime';
+import initTimeMap from "../../utils/createTimeMap";
+import useClickOutside from "../../utils/useClickOutside";
+import fetchRemoveSchedule from "../../services/schedule/fetRemoveSchedule";
+import fetchRemovePlan from "../../services/plan/fetchRemovePlan";
+import getTimeRange from "../../utils/getTimeRange";
+import calculatePasteSchedule from "../../utils/calculateScheduleTime";
+import validPossiblePasteTime from "../../utils/validPossiblePasteTime";
+import validOverlapTime from "../../utils/validOverlaptime";
 
 function TimeCells() {
-  const [startCell, setStartCell] = useState({ index: '', time: '' });
-  const [endCell, setEndCell] = useState({ index: '', time: '' });
+  const [startCell, setStartCell] = useState({ index: "", time: "" });
+  const [endCell, setEndCell] = useState({ index: "", time: "" });
   const [selectedCells, setSelectedCells] = useState([]);
   const [timeMap, setTimeMap] = useState(initTimeMap());
   const [isDragging, setIsDragging] = useState(false);
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-  const [toast, setToast] = useState({ status: false, message: '' });
+  const [toast, setToast] = useState({ status: false, message: "" });
 
   const { selectedDate } = useCalendarStore();
   const {
@@ -48,8 +48,8 @@ function TimeCells() {
 
   const clearTimeSelection = () => {
     setSelectedCells([]);
-    setStartCell({ index: '', time: '' });
-    setEndCell({ index: '', time: '' });
+    setStartCell({ index: "", time: "" });
+    setEndCell({ index: "", time: "" });
     setIsDragging(false);
   };
 
@@ -119,13 +119,13 @@ function TimeCells() {
       return;
     }
 
-    const isHasSchedule = (timeMap.get(startCell.time).schedule !== '')
-      || (timeMap.get(timeCellInfo.time).schedule !== '');
+    const isHasSchedule = (timeMap.get(startCell.time).schedule !== "")
+      || (timeMap.get(timeCellInfo.time).schedule !== "");
 
     if (isHasSchedule) {
       const selectedTimeList = getTimeRange(startCell.time, timeCellInfo.time);
 
-      const emptyTimeList = selectedTimeList.filter((time) => timeMap.get(time).schedule === '');
+      const emptyTimeList = selectedTimeList.filter((time) => timeMap.get(time).schedule === "");
       const emptyTimeIndex = emptyTimeList.map((time) => timeMap.get(time).index);
 
       setStartCell({
@@ -175,7 +175,7 @@ function TimeCells() {
       return;
     }
 
-    setEndCell({ time: '', index: '' });
+    setEndCell({ time: "", index: "" });
 
     handleDragStart(timeCellInfo);
   };
@@ -267,7 +267,7 @@ function TimeCells() {
       deleteSchedule(deleteTarget);
     }
 
-    const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+    const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
     if (memberUser) {
       if (deleteTarget.isSynced) {
@@ -287,7 +287,7 @@ function TimeCells() {
 
     setIsModalOpen(false);
     setIsSecondModalOpen(false);
-    setToast({ status: true, message: '일정이 정상적으로 삭제되었습니다.' });
+    setToast({ status: true, message: "일정이 정상적으로 삭제되었습니다." });
 
     clearTimeSelection();
   };
@@ -296,7 +296,7 @@ function TimeCells() {
     const copyTarget = timeMap.get(startCell.time).schedule;
 
     setCopiedSchedule(copyTarget);
-    setToast({ status: true, message: '일정이 복사되었습니다.' });
+    setToast({ status: true, message: "일정이 복사되었습니다." });
     setIsModalOpen(false);
 
     clearTimeSelection();
@@ -312,7 +312,7 @@ function TimeCells() {
     const isNonOverlapTime = validOverlapTime(copiedSchedule, newSchedule);
 
     if (!isPossiblePasteTime || !isNonOverlapTime) {
-      setToast({ status: true, message: '일정이 존재하는 시간이 포함되어있습니다.' });
+      setToast({ status: true, message: "일정이 존재하는 시간이 포함되어있습니다." });
       setIsModalOpen(false);
 
       clearTimeSelection();
@@ -328,7 +328,7 @@ function TimeCells() {
     }
 
     setIsModalOpen(false);
-    setToast({ status: true, message: '일정이 붙여넣기 되었습니다.' });
+    setToast({ status: true, message: "일정이 붙여넣기 되었습니다." });
 
     clearClipboard();
   };

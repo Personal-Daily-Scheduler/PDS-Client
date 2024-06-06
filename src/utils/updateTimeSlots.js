@@ -1,4 +1,4 @@
-import getTimeRange from './getTimeRange';
+import getTimeRange from "./getTimeRange";
 
 const updateTimeSlots = (timeSlots, scheduleObject) => {
   const targetTimeSlots = new Map(timeSlots);
@@ -8,11 +8,11 @@ const updateTimeSlots = (timeSlots, scheduleObject) => {
   for (const [key, value] of timeSlots) {
     const { timeList, schedule } = value;
 
-    if (schedule !== '' && schedule.scheduleId === scheduleId) {
+    if (schedule !== "" && schedule.scheduleId === scheduleId) {
       timeList.forEach((scheduleTime) => {
         targetTimeSlots.set(scheduleTime, {
           timeList: [],
-          schedule: '',
+          schedule: "",
         });
       });
 

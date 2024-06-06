@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 function CommonButton({
   children, width, height, onClick,
@@ -12,8 +12,8 @@ function CommonButton({
 }
 
 const StyledButton = styled.button`
-  width: ${(props) => props.width || '100%'};
-  height: ${(props) => props.height || '48px'};
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "48px"};
   border: none;
   border-radius: 8px;
   background-color: #1877f2;

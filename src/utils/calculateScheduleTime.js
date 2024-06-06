@@ -1,8 +1,8 @@
-import { v4 as uuidV4 } from 'uuid';
+import { v4 as uuidV4 } from "uuid";
 
-import differenceTime from './differenceTime';
-import timeToMinutes from './timeToMinutes';
-import minutesToTime from './minutesToTime';
+import differenceTime from "./differenceTime";
+import timeToMinutes from "./timeToMinutes";
+import minutesToTime from "./minutesToTime";
 
 const calculatePasteSchedule = (pasteStartTime, targetEvent) => {
   const { startTime, endTime } = targetEvent;

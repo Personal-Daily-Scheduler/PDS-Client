@@ -1,15 +1,15 @@
-import generateApiUri from '../../utils/generateURI';
+import generateApiUri from "../../utils/generateURI";
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
-const API_URI = generateApiUri(SERVER_URI, 'auth/signup');
+const API_URI = generateApiUri(SERVER_URI, "auth/signup");
 
 const fetchSignUp = async (username, email, password) => {
   try {
     const response = await fetch(API_URI, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username,

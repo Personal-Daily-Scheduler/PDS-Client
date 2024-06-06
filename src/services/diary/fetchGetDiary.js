@@ -1,4 +1,4 @@
-import generateApiUri from '../../utils/generateURI';
+import generateApiUri from "../../utils/generateURI";
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
@@ -7,9 +7,9 @@ const fetchUserDiaries = async (user) => {
 
   try {
     const response = await fetch(BASE_URI, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.token}`,
       },
     });
@@ -22,7 +22,7 @@ const fetchUserDiaries = async (user) => {
 
     return userDiaries;
   } catch (error) {
-    console.error('Error fetching diary from database:', error);
+    console.error("Error fetching diary from database:", error);
 
     return null;
   }

@@ -1,4 +1,4 @@
-import generateApiUri from '../../utils/generateURI';
+import generateApiUri from "../../utils/generateURI";
 
 const SERVER_URI = import.meta.env.VITE_BACKEND_BASE_URI;
 
@@ -7,23 +7,23 @@ const fetchRemoveSchedule = async (scheduleObject, memberUser) => {
 
   try {
     const response = await fetch(BASE_URI, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${memberUser.token}`,
       },
       body: JSON.stringify({ scheduleId: scheduleObject.scheduleId }),
     });
 
     if (!response.ok) {
-      console.error('Failed to delete plan from database');
+      console.error("Failed to delete plan from database");
     }
 
     const responseJson = await response.json();
 
     return responseJson;
   } catch (error) {
-    console.error('Error deleting plan from database:', error);
+    console.error("Error deleting plan from database:", error);
   }
 };
 

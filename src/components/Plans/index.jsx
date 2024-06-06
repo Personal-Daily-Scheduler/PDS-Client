@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
-import Modal from '../../shared/Modal';
-import PlanForm from '../PlanForm';
-import Plan from '../PlanContent';
+import Modal from "../../shared/Modal";
+import PlanForm from "../PlanForm";
+import Plan from "../PlanContent";
 
-import useCalendarStore from '../../store/calender';
-import usePlanStore from '../../store/plans';
+import useCalendarStore from "../../store/calender";
+import usePlanStore from "../../store/plans";
 
 function Plans() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });

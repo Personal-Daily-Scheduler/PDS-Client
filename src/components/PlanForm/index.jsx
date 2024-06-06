@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { v4 as uuidv4 } from "uuid";
 
-import IconTextButton from '../../shared/IconButton';
-import TimeComponent from '../TimeSlots';
-import ColorPicker from '../ColorPicker';
-import Input from '../../shared/Input/Index';
-import CommonButton from '../../shared/Button';
-import ToastPopup from '../../shared/Toast';
+import IconTextButton from "../../shared/IconButton";
+import TimeComponent from "../TimeSlots";
+import ColorPicker from "../ColorPicker";
+import Input from "../../shared/Input/Index";
+import CommonButton from "../../shared/Button";
+import ToastPopup from "../../shared/Toast";
 
-import fetchPostSchedule from '../../services/schedule/fetchPostSchedule';
-import fetchEditSchedule from '../../services/schedule/fetchEditSchedules';
-import fetchUpdatePlan from '../../services/plan/fetchUpdatePlan';
-import fetchPostPlan from '../../services/plan/fetchPostPlan';
-import removeIcon from '../../assets/close_button_hover.png';
-import addIcon from '../../assets/add_icon.png';
-import checkedIcon from '../../assets/checked_icon.png';
+import fetchPostSchedule from "../../services/schedule/fetchPostSchedule";
+import fetchEditSchedule from "../../services/schedule/fetchEditSchedules";
+import fetchUpdatePlan from "../../services/plan/fetchUpdatePlan";
+import fetchPostPlan from "../../services/plan/fetchPostPlan";
+import removeIcon from "../../assets/close_button_hover.png";
+import addIcon from "../../assets/add_icon.png";
+import checkedIcon from "../../assets/checked_icon.png";
 
-import useCalendarStore from '../../store/calender';
-import useScheduleStore from '../../store/schedules';
-import usePlanStore from '../../store/plans';
+import useCalendarStore from "../../store/calender";
+import useScheduleStore from "../../store/schedules";
+import usePlanStore from "../../store/plans";
 
 function PlanForm({ plan, onClose, separatorIndex = null }) {
   const [isClickedAddTime, setIsClickedAddTime] = useState(false);
-  const [colorCode, setColorCode] = useState('#0A7EED');
-  const [description, setDescription] = useState('');
+  const [colorCode, setColorCode] = useState("#0A7EED");
+  const [description, setDescription] = useState("");
   const [isSynced, setIsSynced] = useState(false);
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [title, setTitle] = useState('');
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [title, setTitle] = useState("");
   const [toast, setToast] = useState({});
 
   const { setPlan } = usePlanStore();
@@ -37,29 +37,29 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
 
   useEffect(() => {
     if (plan) {
-      setTitle(plan.title || '');
-      setDescription(plan.description || '');
-      setStartTime(plan.startTime || '');
-      setEndTime(plan.endTime || '');
-      setColorCode(plan.colorCode || '#0A7EED');
+      setTitle(plan.title || "");
+      setDescription(plan.description || "");
+      setStartTime(plan.startTime || "");
+      setEndTime(plan.endTime || "");
+      setColorCode(plan.colorCode || "#0A7EED");
       setIsSynced(plan.isSynced || false);
     }
   }, [plan]);
 
   const handleInputChange = (type, value) => {
-    if (type === 'title') {
+    if (type === "title") {
       setTitle(value);
     }
 
-    if (type === 'description') {
+    if (type === "description") {
       setDescription(value);
     }
 
-    if (type === 'startTime') {
+    if (type === "startTime") {
       setStartTime(value);
     }
 
-    if (type === 'endTime') {
+    if (type === "endTime") {
       setEndTime(value);
     }
   };
@@ -68,7 +68,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
     e.preventDefault();
 
     if (!title) {
-      setToast({ status: true, message: '제목을 반드시 입력해야 합니다.' });
+      setToast({ status: true, message: "제목을 반드시 입력해야 합니다." });
 
       return;
     }
@@ -109,7 +109,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
           setPlan(newPlanObject, separatorIndex);
         }
 
-        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+        const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
         if (memberUser) {
           if (isSynced) {
@@ -120,7 +120,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
           }
         }
 
-        setToast({ status: true, message: 'Plan이 정상적으로 수정되었습니다.' });
+        setToast({ status: true, message: "Plan이 정상적으로 수정되었습니다." });
 
         onClose();
 
@@ -128,13 +128,13 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
       } if (!startTime && !endTime) {
         setPlan(newPlanObject, separatorIndex);
 
-        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+        const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
         if (memberUser) {
           await fetchUpdatePlan(newPlanObject, memberUser);
         }
 
-        setToast({ status: true, message: '새로운 Plan이 정상적으로 추가되었습니다.' });
+        setToast({ status: true, message: "새로운 Plan이 정상적으로 추가되었습니다." });
 
         onClose();
 
@@ -174,7 +174,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
           setPlan(newPlanObject, separatorIndex);
         }
 
-        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+        const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
         if (memberUser) {
           if (isSynced) {
@@ -191,7 +191,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
       } if (!startTime && !endTime) {
         setPlan(newPlanObject, separatorIndex);
 
-        const memberUser = JSON.parse(sessionStorage.getItem('authenticatedUser'));
+        const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
         if (memberUser) {
           await fetchPostPlan(newPlanObject, memberUser);
@@ -204,22 +204,22 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
     }
 
     if (!startTime) {
-      setToast({ status: true, message: '시작 시간이 비어있습니다.' });
+      setToast({ status: true, message: "시작 시간이 비어있습니다." });
 
       return;
     }
 
     if (!endTime) {
-      setToast({ status: true, message: '종료 시간이 비어있습니다.' });
+      setToast({ status: true, message: "종료 시간이 비어있습니다." });
     }
   };
 
   const handleClickTimeButton = (e, type) => {
     e.preventDefault();
 
-    if (type === 'removeTime') {
-      setStartTime('');
-      setEndTime('');
+    if (type === "removeTime") {
+      setStartTime("");
+      setEndTime("");
     }
 
     setIsClickedAddTime(!isClickedAddTime);
@@ -231,28 +231,28 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
 
   return (
     <>
-      <h3>{plan ? 'Edit a Plan' : 'Add a Plan'}</h3>
+      <h3>{plan ? "Edit a Plan" : "Add a Plan"}</h3>
       <Input
         label="Title"
         type="text"
         placeholder="이벤트 이름을 입력하세요"
-        onChange={(e) => handleInputChange('title', e.target.value)}
+        onChange={(e) => handleInputChange("title", e.target.value)}
         value={title}
-        size={{ width: '235px', height: '32px' }}
+        size={{ width: "235px", height: "32px" }}
       />
       <Input
         label="Description"
         type="text"
         placeholder="이벤트 상세 내용을 입력하세요"
-        onChange={(e) => handleInputChange('description', e.target.value)}
+        onChange={(e) => handleInputChange("description", e.target.value)}
         value={description}
-        size={{ width: '235px', height: '32px' }}
+        size={{ width: "235px", height: "32px" }}
       />
       <Label>Time</Label>
       {(isClickedAddTime || (plan && (startTime && endTime))) ? (
         <>
           <TimeWrapper>
-            <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, 'removeTime')} />
+            <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, "removeTime")} />
             {isSynced ? (
               <SyncedWrapper>
                 <CheckedIcon src={checkedIcon} alt="Checked Icon" />
@@ -279,12 +279,12 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
           </TimeComponent>
         </>
       ) : (
-        <IconTextButton iconSrc={addIcon} text="Add Time" onClick={(e) => handleClickTimeButton(e, 'addTime')} />
+        <IconTextButton iconSrc={addIcon} text="Add Time" onClick={(e) => handleClickTimeButton(e, "addTime")} />
       )}
       <Label>Color</Label>
       <ColorPicker onChange={(e) => setColorCode(e)} />
       <CommonButton width="235px" height="25px" onClick={handleSubmitForm}>
-        { plan ? 'Save edit' : 'Save Changes' }
+        { plan ? "Save edit" : "Save Changes" }
       </CommonButton>
       {toast.status && (
         <ToastPopup setToast={setToast} message={toast.message} />
@@ -328,7 +328,7 @@ const ToggleButton = styled.div`
   position: relative;
   width: 40px;
   height: 20px;
-  background-color: ${(props) => (props.isSynced ? '#4CAF50' : '#ccc')};
+  background-color: ${(props) => (props.isSynced ? "#4CAF50" : "#ccc")};
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -337,7 +337,7 @@ const ToggleButton = styled.div`
 const ToggleThumb = styled.div`
   position: absolute;
   top: 2px;
-  left: ${(props) => (props.isSynced ? '22px' : '2px')};
+  left: ${(props) => (props.isSynced ? "22px" : "2px")};
   width: 16px;
   height: 16px;
   background-color: white;

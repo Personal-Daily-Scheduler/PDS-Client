@@ -1,4 +1,4 @@
-import getTimeRange from './getTimeRange';
+import getTimeRange from "./getTimeRange";
 
 const setTimeMap = (timeMap, scheduleObject) => {
   const targetTimeMap = new Map(timeMap);

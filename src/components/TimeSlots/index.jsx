@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { v4 as uuidV4 } from 'uuid';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { v4 as uuidV4 } from "uuid";
 
-import createTimeSlots from '../../utils/createTimeSlots';
-import sliceTimeSlots from '../../utils/sliceTimeSlots';
-import openedIcon from '../../assets/opened_icon.png';
-import closedIcon from '../../assets/closed_icon.png';
+import createTimeSlots from "../../utils/createTimeSlots";
+import sliceTimeSlots from "../../utils/sliceTimeSlots";
+import openedIcon from "../../assets/opened_icon.png";
+import closedIcon from "../../assets/closed_icon.png";
 
 function TimeComponent({ handleTimeChange, time }) {
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [isClickedStartTime, setIsClickedStartTime] = useState(false);
   const [isClickedEndTime, setIsClickedEndTime] = useState(false);
 
@@ -20,34 +20,34 @@ function TimeComponent({ handleTimeChange, time }) {
 
     const selectedTime = e.target.textContent;
 
-    if (type === 'startTime') {
+    if (type === "startTime") {
       if (endTime && endTime < selectedTime) {
-        handleTimeChange('startTime', selectedTime);
-        handleTimeChange('endTime', '');
+        handleTimeChange("startTime", selectedTime);
+        handleTimeChange("endTime", "");
 
         setStartTime(selectedTime);
-        setEndTime('');
+        setEndTime("");
 
         return;
       }
 
-      handleTimeChange('startTime', selectedTime);
+      handleTimeChange("startTime", selectedTime);
 
       setStartTime(selectedTime);
     }
 
-    if (type === 'endTime') {
+    if (type === "endTime") {
       if (startTime && startTime > selectedTime) {
-        handleTimeChange('endTime', selectedTime);
-        handleTimeChange('startTime', '');
+        handleTimeChange("endTime", selectedTime);
+        handleTimeChange("startTime", "");
 
         setEndTime(selectedTime);
-        setStartTime('');
+        setStartTime("");
 
         return;
       }
 
-      handleTimeChange('endTime', selectedTime);
+      handleTimeChange("endTime", selectedTime);
 
       setEndTime(selectedTime);
     }
@@ -56,19 +56,19 @@ function TimeComponent({ handleTimeChange, time }) {
   const handleTimeSelectButton = (e, type) => {
     e.preventDefault();
 
-    if (type === 'startTime') {
+    if (type === "startTime") {
       setIsClickedStartTime(!isClickedStartTime);
       setIsClickedEndTime(false);
     }
 
-    if (type === 'endTime') {
+    if (type === "endTime") {
       setIsClickedEndTime(!isClickedEndTime);
       setIsClickedStartTime(false);
     }
   };
 
   useEffect(() => {
-    if (time && (startTime === '' && endTime === '')) {
+    if (time && (startTime === "" && endTime === "")) {
       setStartTime(time.startTime);
       setEndTime(time.endTime);
     }
@@ -78,7 +78,7 @@ function TimeComponent({ handleTimeChange, time }) {
     <TimeWrapper>
       <TimeSelectRow>
         {isClickedStartTime ? (
-          <TimeSelect className="opened" onClick={(e) => handleTimeSelectButton(e, 'startTime')}>
+          <TimeSelect className="opened" onClick={(e) => handleTimeSelectButton(e, "startTime")}>
             {startTime}
             <img
               src={openedIcon}
@@ -88,7 +88,7 @@ function TimeComponent({ handleTimeChange, time }) {
             />
           </TimeSelect>
         ) : (
-          <TimeSelect className="closed" onClick={(e) => handleTimeSelectButton(e, 'startTime')}>
+          <TimeSelect className="closed" onClick={(e) => handleTimeSelectButton(e, "startTime")}>
             {startTime}
             <img
               src={closedIcon}
@@ -100,7 +100,7 @@ function TimeComponent({ handleTimeChange, time }) {
         )}
         <TimeSelectDivider>-</TimeSelectDivider>
         {isClickedEndTime ? (
-          <TimeSelect className="opened" onClick={(e) => handleTimeSelectButton(e, 'endTime')}>
+          <TimeSelect className="opened" onClick={(e) => handleTimeSelectButton(e, "endTime")}>
             {endTime}
             <img
               src={isClickedEndTime ? openedIcon : closedIcon}
@@ -110,7 +110,7 @@ function TimeComponent({ handleTimeChange, time }) {
             />
           </TimeSelect>
         ) : (
-          <TimeSelect className="closed" onClick={(e) => handleTimeSelectButton(e, 'endTime')}>
+          <TimeSelect className="closed" onClick={(e) => handleTimeSelectButton(e, "endTime")}>
             {endTime}
             <img
               src={isClickedEndTime ? openedIcon : closedIcon}
@@ -126,7 +126,7 @@ function TimeComponent({ handleTimeChange, time }) {
           {timeGroups.map((group) => (
             <TimeSlotRow key={uuidV4()}>
               {group.map((timeString) => (
-                <TimeButton key={uuidV4()} onClick={(e) => handleClickTimeSlot(e, 'startTime')}>
+                <TimeButton key={uuidV4()} onClick={(e) => handleClickTimeSlot(e, "startTime")}>
                   {timeString}
                 </TimeButton>
               ))}
@@ -139,7 +139,7 @@ function TimeComponent({ handleTimeChange, time }) {
           {sliceTimeSlots(createTimeSlots(startTime), 4).map((group) => (
             <TimeSlotRow key={uuidV4()}>
               {group.map((timeString) => (
-                <TimeButton key={uuidV4()} onClick={(e) => handleClickTimeSlot(e, 'endTime')}>
+                <TimeButton key={uuidV4()} onClick={(e) => handleClickTimeSlot(e, "endTime")}>
                   {timeString}
                 </TimeButton>
               ))}
