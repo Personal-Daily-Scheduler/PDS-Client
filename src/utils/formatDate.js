@@ -1,4 +1,4 @@
-function formatDateToYYYYMMDD(dateString) {
+const formatDateToYYYYMMDD = (dateString) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -7,6 +7,6 @@ function formatDateToYYYYMMDD(dateString) {
   const formattedDate = `${year}-${month}-${day}`;
 
   return formattedDate;
-}
+};
 
 export default formatDateToYYYYMMDD;
