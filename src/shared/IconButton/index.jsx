@@ -15,7 +15,7 @@ const Button = styled.button`
   align-items: center;
   background:none;
   color: black;
-  border: 1px solid black;
+  border: 1px solid white;
   border-radius: 5px;
   padding: 2px;
   margin-right: 3px;
@@ -23,7 +23,7 @@ const Button = styled.button`
   box-sizing: border-box;
 
   &:hover {
-    border: 1px solid white;
+    border: 1px solid black;
     color: black;
   }
 `;
