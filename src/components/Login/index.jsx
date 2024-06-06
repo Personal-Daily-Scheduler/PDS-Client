@@ -160,6 +160,12 @@ function Login() {
         onChange={(e) => handleInputChange(e, 'username')}
       >
       </Input>
+      {signUpError.visible && (
+        <ErrorMessage
+          setMessage={setSignUpError}
+          content={signUpError.message}
+        />
+      )}
     </>
   );
 
@@ -218,6 +224,12 @@ function Login() {
         onChange={(e) => handleInputChange(e, 'password')}
       >
       </Input>
+      {signUpError.visible && (
+        <ErrorMessage
+          setMessage={setSignUpError}
+          content={signUpError.message}
+        />
+      )}
     </div>
   );
 
@@ -232,10 +244,10 @@ function Login() {
             <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
             <ButtonLine>
               <StyledButton selected={selectedOption === 'guest'} onClick={() => handleButtonClick('guest')}>
-                Guest Checkout
+                Guest Login
               </StyledButton>
               <StyledButton selected={selectedOption === 'signIn'} onClick={() => handleButtonClick('signIn')}>
-                Sign In
+                Member Login
               </StyledButton>
             </ButtonLine>
           </>
