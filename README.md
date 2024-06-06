@@ -501,8 +501,8 @@ function onTextSelect() {
     const range = selection.getRangeAt(0);
     
     // <span> 요소에 스타일을 적용
-    const newNode = document.createElement('span');
-    newNode.style.fontWeight = 'bold';
+    const newNode = document.createElement("span");
+    newNode.style.fontWeight = "bold";
     
     // 선택된 텍스트를 <span> 요소로 감싼다.
     range.surroundContents(newNode);
