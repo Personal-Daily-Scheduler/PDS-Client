@@ -98,7 +98,7 @@ function Plans() {
 
   return (
     <PlansContainer>
-      <h2>Plan</h2>
+      <Title>Plan</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>
@@ -135,9 +135,15 @@ function Plans() {
   );
 }
 
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px auto;
+`;
+
 const PlansContainer = styled.div`
   min-width: 240px;
-  margin: 20px;
+  margin: 10px 0;
   border: none;
   border-radius: 8px;
   width: 280px;
@@ -148,7 +154,7 @@ const PlansContainer = styled.div`
   position: relative;
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  padding: 20px;
+  padding: 10px;
 `;
 
 const AddButton = styled.button`

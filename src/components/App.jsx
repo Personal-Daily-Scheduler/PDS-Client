@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 
 import Login from "./Login";
@@ -7,78 +6,30 @@ import Layout from "./Layout";
 import Plans from "./Plans";
 import Schedules from "./Schedules";
 import TextEditor from "./See";
-import MobileError from "./MobileError";
 
 function App() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const isMobileDevice = () => {
-      const { userAgent } = navigator;
-
-      const mobileEnvironment = ["Mobi", "Android", "iPhone"];
-
-      for (const keyword of mobileEnvironment) {
-        if (userAgent.includes(keyword)) {
-          return true;
-        }
-      }
-
-      return false;
-    };
-
-    const isMobile = isMobileDevice();
-
-    if (isMobile) {
-      navigate("/mobileError");
-    }
-  }, [navigate]);
-
   return (
     <>
       <GlobalStyle />
-      <Main>
-        <Routes>
-          <Route path="/" exact element={<Login />} />
-          <Route element={<Layout />}>
-            <Route
-              path="/users"
-              exact
-              element={(
-                <Wrapper>
-                  <Plans />
-                  <Schedules />
-                  <TextEditor />
-                </Wrapper>
-              )}
-            />
-          </Route>
-          <Route path="/mobileError" element={<MobileError />} />
-        </Routes>
-      </Main>
-      <MobileNotification>
-        <MobileError />
-      </MobileNotification>
+      <Routes>
+        <Route path="/" exact element={<Login />} />
+        <Route element={<Layout />}>
+          <Route
+            path="/users"
+            exact
+            element={(
+              <Wrapper>
+                <Plans className="horizontal" />
+                <Schedules className="horizontal" />
+                <TextEditor className="horizontal vertical" />
+              </Wrapper>
+            )}
+          />
+        </Route>
+      </Routes>
     </>
   );
 }
-
-const Main = styled.div`
-  @media screen and (max-width: 600px) {
-    display: none;
-  }
-`;
-
-const MobileNotification = styled.div`
-  @media screen and (max-width: 600px) {
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
-  }
-
-  display: none;
-`;
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -89,8 +40,53 @@ const GlobalStyle = createGlobalStyle`
 
 const Wrapper = styled.div`
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
+  flex-wrap: nowrap;
+  transition: all 0.3s ease-in-out;
+
+  .horizontal {
+    flex-basis: calc(33.33% - 20px);
+    background-color: #f1f1f1;
+    margin: 0;
+    margin-right: 20px;
+    text-align: center;
+    transition: flex-basis 0.3s ease-in-out;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    @media screen and (max-width: 900px) and (min-width: 651px) {
+      flex-basis: calc(50% - 10px);
+      margin-right: 10px;
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    @media screen and (max-width: 650px) {
+      flex-basis: 100%;
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  }
+
+  .vertical {
+    @media screen and (max-width: 900px) {
+      flex-basis: 100%;
+      margin-right: 0;
+    }
+  }
+
+  @media screen and (max-width: 900px) {
+    flex-wrap: wrap;
+  }
+
+  @media screen and (max-width: 650px) {
+    flex-direction: column;
+  }
 `;
 
 export default App;

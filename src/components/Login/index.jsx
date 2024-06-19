@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -13,20 +13,54 @@ import fetchSignUp from "../../services/user/fetchSignUp";
 import fetchLogin from "../../services/user/fetchLogin";
 import signUpValidate from "../../services/signupValidate";
 import loginValidate from "../../services/loginValidate";
-
 import useUserStore from "../../store/user";
 
 function Login() {
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedOption, setSelectedOption] = useState("signIn");
+  const [touchStartX, setTouchStartX] = useState(0);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [signUpError, setSignUpError] = useState({ message: "", visible: false });
+  const [showContentRight, setShowContentRight] = useState(false);
+  const navigate = useNavigate();
 
   const { setUser, setToken } = useUserStore();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileScreen = window.innerWidth <= 748;
+      setIsMobile(isMobileScreen);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  const handleStartButtonClick = () => {
+    setShowContentRight(true);
+  };
+
+  const handleTouchStart = (event) => {
+    setTouchStartX(event.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (event) => {
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchDiffX = touchEndX - touchStartX;
+
+    if (touchDiffX > 50) {
+      setShowContentRight(false);
+    } else if (touchDiffX < -50) {
+      setShowContentRight(true);
+    }
+  };
 
   const handleButtonClick = (option) => {
     setUsername("");
@@ -232,57 +266,127 @@ function Login() {
 
   return (
     <Container>
-      <Wrapper className="content-left">
-        <MainImage src={mainImage} alt="Main Image" />
-      </Wrapper>
-      <Wrapper className="content-right">
-        {selectedOption !== "signUp" ? (
-          <>
-            <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
-            <ButtonLine>
-              <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
-                Guest Login
-              </StyledButton>
-              <StyledButton selected={selectedOption === "signIn"} onClick={() => handleButtonClick("signIn")}>
-                Member Login
-              </StyledButton>
-            </ButtonLine>
-          </>
-        ) : (
-          <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
-        )}
-        <LoginContentWrapper>
-          {selectedOption === "guest" && renderGuestForm()}
-          {selectedOption === "signIn" && renderUserForm()}
-          {selectedOption === "signUp" && renderSighUpForm()}
-        </LoginContentWrapper>
-        {selectedOption !== "signUp" ? (
-          <>
-            <DescriptionWrapper>
-              <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
-              <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
-            </DescriptionWrapper>
-            <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
-              Login
+      {!isMobile ? (
+        <>
+          <Wrapper className="content-left">
+            <MainImage src={mainImage} alt="Main Image" />
+          </Wrapper>
+          <Wrapper className="content-right">
+            {selectedOption !== "signUp" ? (
+              <>
+                <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
+                <ButtonLine>
+                  <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
+                    Guest Login
+                  </StyledButton>
+                  <StyledButton selected={selectedOption === "signIn"} onClick={() => handleButtonClick("signIn")}>
+                    Member Login
+                  </StyledButton>
+                </ButtonLine>
+              </>
+            ) : (
+              <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
+            )}
+            <LoginContentWrapper>
+              {selectedOption === "guest" && renderGuestForm()}
+              {selectedOption === "signIn" && renderUserForm()}
+              {selectedOption === "signUp" && renderSighUpForm()}
+            </LoginContentWrapper>
+            {selectedOption !== "signUp" ? (
+              <>
+                <DescriptionWrapper>
+                  <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
+                  <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
+                </DescriptionWrapper>
+                <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
+                  Login
+                </CommonButton>
+              </>
+            ) : (
+              <>
+                <DescriptionWrapper>
+                  <TextWrapper>이미 계정이 있으신가요?</TextWrapper>
+                  <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
+                </DescriptionWrapper>
+                <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
+                  SignUp
+                </CommonButton>
+              </>
+            )}
+            <GoogleSignInContainer>
+              Or sign in with
+              <Link to="*">Google</Link>
+              <GoogleLogo src={googleLogoImage} alt="Google Logo" />
+            </GoogleSignInContainer>
+          </Wrapper>
+        </>
+      ) : (
+        !showContentRight ? (
+          <Wrapper
+            className="content-left"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            <MainImage src={mainImage} alt="Main Image" />
+            <CommonButton onClick={handleStartButtonClick}>
+              시작하기
             </CommonButton>
-          </>
+          </Wrapper>
         ) : (
-          <>
-            <DescriptionWrapper>
-              <TextWrapper>이미 계정이 있으신가요?</TextWrapper>
-              <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
-            </DescriptionWrapper>
-            <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
-              SignUp
-            </CommonButton>
-          </>
-        )}
-        <GoogleSignInContainer>
-          Or sign in with
-          <Link to="*">Google</Link>
-          <GoogleLogo src={googleLogoImage} alt="Google Logo" />
-        </GoogleSignInContainer>
-      </Wrapper>
+          <Wrapper
+            className="content-right"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {selectedOption !== "signUp" ? (
+              <>
+                <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
+                <ButtonLine>
+                  <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
+                    Guest Login
+                  </StyledButton>
+                  <StyledButton selected={selectedOption === "signIn"} onClick={() => handleButtonClick("signIn")}>
+                    Member Login
+                  </StyledButton>
+                </ButtonLine>
+              </>
+            ) : (
+              <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
+            )}
+            <LoginContentWrapper>
+              {selectedOption === "guest" && renderGuestForm()}
+              {selectedOption === "signIn" && renderUserForm()}
+              {selectedOption === "signUp" && renderSighUpForm()}
+            </LoginContentWrapper>
+            {selectedOption !== "signUp" ? (
+              <>
+                <DescriptionWrapper>
+                  <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
+                  <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
+                </DescriptionWrapper>
+                <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
+                  Login
+                </CommonButton>
+              </>
+            ) : (
+              <>
+                <DescriptionWrapper>
+                  <TextWrapper>이미 계정이 있으신가요?</TextWrapper>
+                  <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
+                </DescriptionWrapper>
+                <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
+                  SignUp
+                </CommonButton>
+              </>
+            )}
+            <GoogleSignInContainer>
+              Or sign in with
+              <Link to="*">Google</Link>
+              <GoogleLogo src={googleLogoImage} alt="Google Logo" />
+            </GoogleSignInContainer>
+          </Wrapper>
+        )
+      )}
     </Container>
   );
 }
@@ -359,6 +463,16 @@ const Container = styled.div`
   .content-right {
     flex: 1;
     background-color: #ffffff;
+  }
+
+  @media (max-width: 800px) {
+    .content-left {
+      display: none;
+    }
+
+    .content-right {
+      flex: 1 1 100%;
+    }
   }
 `;
 

@@ -1,7 +1,7 @@
 import React, {
   useRef, useState, useCallback, useLayoutEffect, useEffect,
 } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { v4 as uuidV4 } from "uuid";
 
 import ToastPopup from "../../shared/Toast";
@@ -329,7 +329,7 @@ function See() {
   return (
     <>
       <SeeContainer>
-        <h2>See</h2>
+        <Title>See</Title>
         <EditorWrapper>
           <EditorContainer>
             <Toolbar>
@@ -362,6 +362,7 @@ function See() {
                 <ColorOption color="#00FF00" onClick={() => handleStyleChange("color", "#00FF00")} />
                 <ColorOption color="#0000FF" onClick={() => handleStyleChange("color", "#0000FF")} />
               </ColorPicker>
+              <SubmitButton className="responsive-submit" onClick={handleSubmit}>Submit</SubmitButton>
             </Toolbar>
             <EditorContent
               contentEditable
@@ -377,7 +378,7 @@ function See() {
             onEmojiSelect={handleEmojiSelect}
             showEmojiPicker={showEmojiPicker}
           />
-          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+          <SubmitButton className="normal-submit" onClick={handleSubmit}>Submit</SubmitButton>
         </EditorWrapper>
       </SeeContainer>
       {toast.status && (
@@ -386,6 +387,12 @@ function See() {
     </>
   );
 }
+
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px auto;
+`;
 
 const SeeContainer = styled.div`
   margin: 20px;
@@ -400,6 +407,13 @@ const SeeContainer = styled.div`
   background-color: #ffffff;
   padding: 20px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+
+  @media screen and (max-width: 900px) {
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 const ColorPicker = styled.div`
@@ -454,6 +468,11 @@ const EditorWrapper = styled.div`
   justify-content: center;
   height: 600px;
   background-color: #f5f5f5;
+
+  @media screen and (max-width: 900px) {
+    height: calc(30vh - 100px);
+    width: 100%;
+  }
 `;
 
 const EditorContainer = styled.div`
@@ -464,6 +483,10 @@ const EditorContainer = styled.div`
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 900px) {
+    width: 100%;
+  }
 `;
 
 const Toolbar = styled.div`
@@ -475,6 +498,11 @@ const Toolbar = styled.div`
   background-color: #f0f0f0;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+
+  @media screen and (max-width: 900px) {
+    margin: 0 20px;
+    justify-content: space-between;
+  }
 `;
 
 const ToolbarButton = styled.button`
@@ -527,8 +555,35 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: background-color 0.2s;
 
+  ${({ className }) => className === "responsive-submit" && css`
+    display: none;
+
+    @media screen and (max-width: 900px) {
+      display: block;
+      margin: 0 0 0 20px;
+    }
+  `}
+
+  ${({ className }) => className === "normal-submit" && css`
+    display: block;
+
+    @media screen and (max-width: 900px) {
+      display: none;
+    }
+  `}
+
   &:hover {
     background-color: #0056b3;
+  }
+  
+  @media screen and (max-width: 900px) {
+    .normal-submit {
+      display: none;
+    }
+
+    .responsive-submit {
+      display: flex;
+    }
   }
 `;
 

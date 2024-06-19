@@ -24,7 +24,7 @@ function Schedules() {
 
   return (
     <SchedulesContainer>
-      <h2>Do</h2>
+      <Title>Do</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={modalPosition}>
@@ -36,8 +36,15 @@ function Schedules() {
   );
 }
 
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px auto;
+`;
+
 const SchedulesContainer = styled.div`
-  margin: 20px;
+  display: flex;
+  margin: 10px 5px;
   border: none;
   border-radius: 8px;
   width: 280px;
