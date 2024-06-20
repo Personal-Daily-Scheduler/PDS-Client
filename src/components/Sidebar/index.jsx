@@ -7,22 +7,27 @@ import CustomCalendar from "../Calendar";
 import calendarIcon from "../../assets/calendar_icon.png";
 import profileIcon from "../../assets/profile_icon.png";
 import logoutIcon from "../../assets/logout_icon.png";
+import sidebarIcon from "../../assets/hamburger_icon.png";
+import SidebarCloseIcon from "../../assets/toggle_close_icon.png";
 
 import useScheduleStore from "../../store/schedules";
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
 import useDiaryStore from "../../store/diary";
 import useUserStore from "../../store/user";
+import useMobileStore from "../../store/useMobileStore";
+import IconTextButton from "../../shared/IconButton";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
   const { username, clearUser } = useUserStore();
   const { clearCalendar } = useCalendarStore();
   const { clearSchedules } = useScheduleStore();
   const { clearPlan } = usePlanStore();
   const { clearDiary } = useDiaryStore();
+  const { isMobile } = useMobileStore();
   const navigate = useNavigate();
-
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleLogout = () => {
     sessionStorage.removeItem("authenticatedUser");
@@ -40,10 +45,12 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   };
 
   return (
-    <SidebarContainer isSidebarOpen={isSidebarOpen}>
-      <ToggleButton isSidebarOpen={isSidebarOpen} onClick={toggleSidebar}>
-        {isSidebarOpen ? "×" : "☰"}
-      </ToggleButton>
+    <SidebarContainer isSidebarOpen={isSidebarOpen} isMobile={isMobile}>
+      {!isMobile && (
+        <ToggleButton isSidebarOpen={isSidebarOpen}>
+          <IconTextButton iconSrc={isSidebarOpen ? SidebarCloseIcon : sidebarIcon} onClick={toggleSidebar} size="20px" />
+        </ToggleButton>
+      )}
       {isSidebarOpen && (
         <>
           <ProfileWrapper>
@@ -73,9 +80,8 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
-  width: ${({ isSidebarOpen }) => (isSidebarOpen ? "250px" : "20px")};
+  width: ${({ isSidebarOpen, isMobile }) => (isSidebarOpen ? "250px" : isMobile ? "0px" : "40px")};
   background-color: #f5f5f5;
-  padding: 20px;
   transition: width 0.3s ease;
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 `;
@@ -86,7 +92,7 @@ const ToggleButton = styled.button`
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  margin-bottom: 20px;
+  margin: 20px 0;
   align-self: ${({ isSidebarOpen }) => (isSidebarOpen ? "flex-end" : "center")};
 `;
 
