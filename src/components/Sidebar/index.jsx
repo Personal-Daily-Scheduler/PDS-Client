@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -20,6 +20,8 @@ import IconTextButton from "../../shared/IconButton";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const { username, clearUser } = useUserStore();
   const { clearCalendar } = useCalendarStore();
@@ -44,8 +46,30 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
     setIsCalendarOpen(!isCalendarOpen);
   };
 
+  const handleTouchStart = (event) => {
+    touchStartX.current = event.touches[0].clientX;
+  };
+
+  const handleTouchMove = (event) => {
+    touchEndX.current = event.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const touchDistance = touchEndX.current - touchStartX.current;
+
+    if (touchDistance < -50 && isSidebarOpen) {
+      toggleSidebar();
+    }
+  };
+
   return (
-    <SidebarContainer isSidebarOpen={isSidebarOpen} isMobile={isMobile}>
+    <SidebarContainer
+      isSidebarOpen={isSidebarOpen}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      isMobile={isMobile}
+    >
       {!isMobile && (
         <ToggleButton isSidebarOpen={isSidebarOpen}>
           <IconTextButton iconSrc={isSidebarOpen ? SidebarCloseIcon : sidebarIcon} onClick={toggleSidebar} size="20px" />
