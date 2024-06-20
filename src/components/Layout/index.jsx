@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -17,10 +17,14 @@ import useCalendarStore from "../../store/calender";
 import useUserStore from "../../store/user";
 import usePlanStore from "../../store/plans";
 import useScheduleStore from "../../store/schedules";
+import useMobileStore from "../../store/useMobileStore";
 
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  const leftEdgeAreaRef = useRef(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const closeWelcomeModal = () => {
     setIsWelcomeModalOpen(false);
@@ -31,11 +35,44 @@ function Layout() {
   const { setPlan } = usePlanStore();
   const { setSchedule } = useScheduleStore();
   const { saveDiary } = useDiaryStore();
+  const { isMobile } = useMobileStore();
 
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const isLeftEdgeTouch = (userTouchX) => {
+    const leftEdgeAreaEl = leftEdgeAreaRef.current;
+
+    if (leftEdgeAreaEl) {
+      const { left, right } = leftEdgeAreaEl.getBoundingClientRect();
+
+      return left <= userTouchX && userTouchX <= right;
+    }
+
+    return false;
+  };
+
+  const handleLeftEdgeTouchStart = (e) => {
+    if (!isSidebarOpen && isLeftEdgeTouch(e.touches[0].clientX)) {
+      touchStartX.current = e.touches[0].clientX;
+    }
+  };
+
+  const handleLeftEdgeTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleLeftEdgeTouchEnd = () => {
+    if (!isSidebarOpen && isLeftEdgeTouch(touchStartX.current)) {
+      const distance = touchEndX.current - touchStartX.current;
+
+      if (distance > 50) {
+        setIsSidebarOpen(true);
+      }
+    }
   };
 
   const fetchSchedules = async (user) => {
@@ -116,10 +153,16 @@ function Layout() {
           <Welcome handleClick={closeWelcomeModal} />
         </SimpleModal>
       )}
-      <Header></Header>
-      <Container>
+      <Header isSidebarOpen={isSidebarOpen} onClickSidebarToggle={toggleSidebar}></Header>
+      <Container isMobile={isMobile}>
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <Content isSidebarOpen={isSidebarOpen}>
+        <Content
+          isSidebarOpen={isSidebarOpen}
+          onTouchStart={handleLeftEdgeTouchStart}
+          onTouchMove={handleLeftEdgeTouchMove}
+          onTouchEnd={handleLeftEdgeTouchEnd}
+        >
+          <LeftEdgeArea ref={leftEdgeAreaRef} />
           <Outlet />
         </Content>
       </Container>
@@ -129,9 +172,9 @@ function Layout() {
 
 const Container = styled.div`
   display: flex;
-  height: calc(100vh - 90px);
+  height: ${({ isMobile }) => (isMobile ? "calc(100vh - 60px)" : "calc(100vh - 90px)")};
   overflow-y: auto;
-  margin-top: 80px;
+  margin-top: ${({ isMobile }) => (isMobile ? "60px" : "80px")};
 `;
 
 const Content = styled.main`
@@ -144,6 +187,14 @@ const Content = styled.main`
   overflow-y: auto;
   max-width: 1100px;
   transition: margin-left 0.3s ease;
+`;
+
+const LeftEdgeArea = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
 `;
 
 export default Layout;
