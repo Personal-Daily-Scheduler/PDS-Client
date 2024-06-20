@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-function IconTextButton({ iconSrc, text, onClick }) {
+function IconTextButton({
+  iconSrc, text, onClick, size,
+}) {
   return (
     <Button onClick={onClick}>
-      <Icon src={iconSrc} alt="Icon" />
+      <Icon src={iconSrc} alt="Icon" iconSize={size} />
       { text && <ButtonText>{text}</ButtonText>}
     </Button>
   );
@@ -29,8 +31,8 @@ const Button = styled.button`
 `;
 
 const Icon = styled.img`
-  width: 13px;
-  height: 13px;
+  width: ${(props) => (props.iconSize || "13px")};
+  height: ${(props) => (props.iconSize || "13px")};
 `;
 
 const ButtonText = styled.span`
