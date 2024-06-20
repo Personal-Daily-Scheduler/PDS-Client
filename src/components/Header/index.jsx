@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import formatDateToYYYYMMDD from "../../utils/formatDate";
 import IconTextButton from "../../shared/IconButton";
+import CustomCalendar from "../Calendar";
 
 import pdsLogo from "../../assets/pds_logo.png";
 import todayIcon from "../../assets/today_icon.png";
@@ -47,45 +48,52 @@ function Header({ onClickSidebarToggle, isSidebarOpen }) {
   };
 
   return (
-    <HeaderContainer mobileMode={isMobile}>
-      {isMobile ? (
-        <>
-          {isSidebarOpen ? (
-            <IconTextButton iconSrc={sidebarToggleCloseIcon} onClick={onClickSidebarToggle} size="25px"></IconTextButton>
-          ) : (
-            <IconTextButton iconSrc={menuIcon} onClick={onClickSidebarToggle} size="25px"></IconTextButton>
-          )}
-          <MobileDate>{selectedDate}</MobileDate>
-          {isOpenedCalendar ? (
-            <IconTextButton iconSrc={openedIcon} onClick={(e) => handleCalendarToggleButton()} size="30px"></IconTextButton>
-          ) : (
-            <IconTextButton iconSrc={closedIcon} onClick={(e) => handleCalendarToggleButton()} size="30px"></IconTextButton>
-          )}
-          <DateContainer>
-            <ArrowButton onClick={() => handleDateChange("prev")}>{"<"}</ArrowButton>
-            <ArrowButton onClick={() => handleDateChange("next")}>{">"}</ArrowButton>
-            <IconTextButton iconSrc={todayIcon} onClick={handleTodayClick} size="30px" />
-          </DateContainer>
-        </>
-      ) : (
-        <>
-          <Logo>
-            <PDSLogo src={pdsLogo} alt="PDS Logo" />
-            <Title>P.D.S</Title>
-          </Logo>
-          <DateContainer>
-            <TodayButton onClick={handleTodayClick}>
-              <img src={todayIcon} alt="Today Icon" />
-              <span>Today</span>
-            </TodayButton>
-            <ArrowButton onClick={() => handleDateChange("prev")}>{"<"}</ArrowButton>
-            <h2>{selectedDate}</h2>
-            <ArrowButton onClick={() => handleDateChange("next")}>{">"}</ArrowButton>
-          </DateContainer>
-        </>
-      )}
+    <>
+      <HeaderContainer mobileMode={isMobile}>
+        {isMobile ? (
+          <>
+            {isSidebarOpen ? (
+              <IconTextButton iconSrc={sidebarToggleCloseIcon} onClick={onClickSidebarToggle} size="25px"></IconTextButton>
+            ) : (
+              <IconTextButton iconSrc={menuIcon} onClick={onClickSidebarToggle} size="25px"></IconTextButton>
+            )}
+            <MobileDate>{selectedDate}</MobileDate>
+            {isOpenedCalendar ? (
+              <IconTextButton iconSrc={openedIcon} onClick={(e) => handleCalendarToggleButton()} size="30px"></IconTextButton>
+            ) : (
+              <IconTextButton iconSrc={closedIcon} onClick={(e) => handleCalendarToggleButton()} size="30px"></IconTextButton>
+            )}
+            <DateContainer>
+              <ArrowButton onClick={() => handleDateChange("prev")}>{"<"}</ArrowButton>
+              <ArrowButton onClick={() => handleDateChange("next")}>{">"}</ArrowButton>
+              <IconTextButton iconSrc={todayIcon} onClick={handleTodayClick} size="30px" />
+            </DateContainer>
+          </>
+        ) : (
+          <>
+            <Logo>
+              <PDSLogo src={pdsLogo} alt="PDS Logo" />
+              <Title>P.D.S</Title>
+            </Logo>
+            <DateContainer>
+              <TodayButton onClick={handleTodayClick}>
+                <img src={todayIcon} alt="Today Icon" />
+                <span>Today</span>
+              </TodayButton>
+              <ArrowButton onClick={() => handleDateChange("prev")}>{"<"}</ArrowButton>
+              <h2>{selectedDate}</h2>
+              <ArrowButton onClick={() => handleDateChange("next")}>{">"}</ArrowButton>
+            </DateContainer>
+          </>
+        )}
 
-    </HeaderContainer>
+      </HeaderContainer>
+      {(isMobile && isOpenedCalendar) && (
+        <CalendarWrapper mobileMode={isMobile}>
+          <CustomCalendar width="400px" />
+        </CalendarWrapper>
+      )}
+    </>
   );
 }
 
@@ -162,6 +170,17 @@ const TodayButton = styled.button`
   span {
     font-size: 16px;
   }
+`;
+
+const CalendarWrapper = styled.div`
+  position: absolute;
+  top: ${(props) => (props.mobileMode ? "60px" : "80px")};
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
 `;
 
 export default Header;

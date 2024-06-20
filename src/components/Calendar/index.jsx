@@ -8,7 +8,7 @@ import useCalendarStore from "../../store/calender";
 
 import formatDateToYYYYMMDD from "../../utils/formatDate";
 
-function CustomCalendar() {
+function CustomCalendar({ width }) {
   const [markDate, setMarkDate] = useState([]);
 
   const { selectedDate, setSelectedDate } = useCalendarStore();
@@ -25,7 +25,7 @@ function CustomCalendar() {
   }, [allDates]);
 
   return (
-    <CalendarWrapper>
+    <CalendarWrapper width={width}>
       <Calendar
         onChange={handleDateClick}
         value={selectedDate}
@@ -42,8 +42,10 @@ function CustomCalendar() {
 
 const CalendarWrapper = styled.div`
   overflow-y: auto;
-  border-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
   border: 1px solid black;
+  width: ${(props) => props.width};
   
   .highlight {
     background: #f3a95f;
