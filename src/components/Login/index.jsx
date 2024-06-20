@@ -13,10 +13,11 @@ import fetchSignUp from "../../services/user/fetchSignUp";
 import fetchLogin from "../../services/user/fetchLogin";
 import signUpValidate from "../../services/signupValidate";
 import loginValidate from "../../services/loginValidate";
+
 import useUserStore from "../../store/user";
+import useMobileStore from "../../store/useMobileStore";
 
 function Login() {
-  const [isMobile, setIsMobile] = useState(false);
   const [selectedOption, setSelectedOption] = useState("signIn");
   const [touchStartX, setTouchStartX] = useState(0);
   const [username, setUsername] = useState("");
@@ -28,20 +29,7 @@ function Login() {
   const navigate = useNavigate();
 
   const { setUser, setToken } = useUserStore();
-
-  useEffect(() => {
-    const checkMobile = () => {
-      const isMobileScreen = window.innerWidth <= 748;
-      setIsMobile(isMobileScreen);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, []);
+  const { isMobile } = useMobileStore();
 
   const handleStartButtonClick = () => {
     setShowContentRight(true);
@@ -181,14 +169,15 @@ function Login() {
     }
   };
 
-  const renderGuestForm = () => (
-    <>
+  const renderGuestForm = (size) => (
+    <GuestLogin>
       <Input
         label="Nickname"
         type="text"
         value={username}
         placeholder="Enter your Nickname"
         onChange={(e) => handleInputChange(e, "username")}
+        size={size ? { width: size.width, height: size.height } : 0}
       >
       </Input>
       {signUpError.visible && (
@@ -197,17 +186,18 @@ function Login() {
           content={signUpError.message}
         />
       )}
-    </>
+    </GuestLogin>
   );
 
-  const renderSighUpForm = () => (
-    <div>
+  const renderSighUpForm = (size) => (
+    <SignUp>
       <Input
         label="Username"
         type="text"
         value={username}
         placeholder="Enter your username"
         onChange={(e) => handleInputChange(e, "username")}
+        size={size ? { width: size.width, height: size.height } : 0}
       />
       <Input
         label="Email"
@@ -215,6 +205,7 @@ function Login() {
         value={email}
         placeholder="Enter your email"
         onChange={(e) => handleInputChange(e, "email")}
+        size={size ? { width: size.width, height: size.height } : 0}
       />
       <Input
         label="Password"
@@ -222,6 +213,7 @@ function Login() {
         value={password}
         placeholder="Enter your password"
         onChange={(e) => handleInputChange(e, "password")}
+        size={size ? { width: size.width, height: size.height } : 0}
       />
       <Input
         label="Confirm Password"
@@ -229,6 +221,7 @@ function Login() {
         value={confirmPassword}
         placeholder="Confirm your password"
         onChange={(e) => handleInputChange(e, "confirmPassword")}
+        size={size ? { width: size.width, height: size.height } : 0}
       />
       {signUpError.visible && (
         <ErrorMessage
@@ -236,16 +229,17 @@ function Login() {
           content={signUpError.message}
         />
       )}
-    </div>
+    </SignUp>
   );
 
-  const renderUserForm = () => (
-    <div>
+  const renderUserForm = (size) => (
+    <MemberLogin>
       <Input
         label="Email"
         type="email"
         placeholder="Enter your email"
         onChange={(e) => handleInputChange(e, "email")}
+        size={size ? { width: size.width, height: size.height } : 0}
       >
       </Input>
       <Input
@@ -253,6 +247,7 @@ function Login() {
         type="password"
         placeholder="Enter your password"
         onChange={(e) => handleInputChange(e, "password")}
+        size={size ? { width: size.width, height: size.height } : 0}
       >
       </Input>
       {signUpError.visible && (
@@ -261,7 +256,7 @@ function Login() {
           content={signUpError.message}
         />
       )}
-    </div>
+    </MemberLogin>
   );
 
   return (
@@ -328,7 +323,7 @@ function Login() {
             onTouchEnd={handleTouchEnd}
           >
             <MainImage src={mainImage} alt="Main Image" />
-            <CommonButton onClick={handleStartButtonClick}>
+            <CommonButton width="350px" onClick={handleStartButtonClick}>
               시작하기
             </CommonButton>
           </Wrapper>
@@ -341,7 +336,7 @@ function Login() {
             {selectedOption !== "signUp" ? (
               <>
                 <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
-                <ButtonLine>
+                <ButtonLine isMobileScreen={isMobile}>
                   <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
                     Guest Login
                   </StyledButton>
@@ -354,9 +349,9 @@ function Login() {
               <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
             )}
             <LoginContentWrapper>
-              {selectedOption === "guest" && renderGuestForm()}
-              {selectedOption === "signIn" && renderUserForm()}
-              {selectedOption === "signUp" && renderSighUpForm()}
+              {selectedOption === "guest" && renderGuestForm({ width: "350px", height: "50px" })}
+              {selectedOption === "signIn" && renderUserForm({ width: "350px", height: "50px" })}
+              {selectedOption === "signUp" && renderSighUpForm({ width: "350px", height: "50px" })}
             </LoginContentWrapper>
             {selectedOption !== "signUp" ? (
               <>
@@ -364,7 +359,7 @@ function Login() {
                   <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
                   <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
                 </DescriptionWrapper>
-                <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
+                <CommonButton width="350px" height="50px" onClick={handleClickLoginButton}>
                   Login
                 </CommonButton>
               </>
@@ -374,7 +369,7 @@ function Login() {
                   <TextWrapper>이미 계정이 있으신가요?</TextWrapper>
                   <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
                 </DescriptionWrapper>
-                <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
+                <CommonButton width="350px" height="50px" onClick={handleClickLoginButton}>
                   SignUp
                 </CommonButton>
               </>
@@ -390,6 +385,24 @@ function Login() {
     </Container>
   );
 }
+
+const SignUp = styled.div`
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const MemberLogin = styled.div`
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const GuestLogin = styled.div`
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const TextWrapper = styled.div`
   display: flex;
@@ -427,7 +440,7 @@ const ButtonText = styled.button`
 const ButtonLine = styled.div`
   background-color: #f0f4f8;
   padding: 10px;
-  width: 400px;
+  width: ${(props) => (props.isMobileScreen ? "350px" : "400px")};
   border: none;
   border-radius: 8px;
   display: flex;
@@ -463,16 +476,6 @@ const Container = styled.div`
   .content-right {
     flex: 1;
     background-color: #ffffff;
-  }
-
-  @media (max-width: 800px) {
-    .content-left {
-      display: none;
-    }
-
-    .content-right {
-      flex: 1 1 100%;
-    }
   }
 `;
 
