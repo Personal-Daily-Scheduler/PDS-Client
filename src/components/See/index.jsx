@@ -12,8 +12,9 @@ import fetchPostDiary from "../../services/diary/fetchPostDiary";
 
 import useCalendarStore from "../../store/calender";
 import useDiaryStore from "../../store/diary";
+import useMobileStore from "../../store/useMobileStore";
 
-function See() {
+function See({ viewMode }) {
   const [toast, setToast] = useState({});
   const [diaryId, setDiaryId] = useState("");
   const [activeBold, setActiveBold] = useState(false);
@@ -28,6 +29,7 @@ function See() {
 
   const { selectedDate } = useCalendarStore();
   const { diaryByDates, saveDiary } = useDiaryStore();
+  const { isMobile } = useMobileStore();
 
   const getDiaries = () => {
     const dailyDiary = diaryByDates[selectedDate];
@@ -328,8 +330,9 @@ function See() {
 
   return (
     <>
-      <SeeContainer>
+      <SeeContainer isMobile={isMobile} viewMode={viewMode}>
         <Title>See</Title>
+        <SubmitButton className="responsive-submit" onClick={handleSubmit}>Submit</SubmitButton>
         <EditorWrapper>
           <EditorContainer>
             <Toolbar>
@@ -362,7 +365,6 @@ function See() {
                 <ColorOption color="#00FF00" onClick={() => handleStyleChange("color", "#00FF00")} />
                 <ColorOption color="#0000FF" onClick={() => handleStyleChange("color", "#0000FF")} />
               </ColorPicker>
-              <SubmitButton className="responsive-submit" onClick={handleSubmit}>Submit</SubmitButton>
             </Toolbar>
             <EditorContent
               contentEditable
@@ -395,22 +397,22 @@ const Title = styled.div`
 `;
 
 const SeeContainer = styled.div`
-  margin: 20px;
   border: none;
   border-radius: 8px;
-  width: 280px;
+  width: ${({ isMobile }) => (isMobile ? "100%" : "300px")};
+  height: ${({ isMobile }) => (isMobile ? "17vh" : "calc(100vh - 160px)")};
   display: flex;
   flex-direction: column;
   text-align: center;
   align-items: center;
   position: relative;
   background-color: #ffffff;
-  padding: 20px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  margin: ${({ isMobile }) => (isMobile ? "10px 0 0 0 " : "0")};
 
-  @media screen and (max-width: 900px) {
-    width: auto;
-    max-width: 100%;
+  @media (max-width: 980px) and (min-width: 748px) {
+    height: 23vh;
+    width: 100%;
     margin: 0;
     padding: 0;
   }
@@ -465,33 +467,31 @@ const EditorWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 600px;
+  height: calc(100% - 50px);
   background-color: #f5f5f5;
+  width: 100%;
 
-  @media screen and (max-width: 900px) {
-    height: calc(30vh - 100px);
-    width: 100%;
+  @media (max-width: 980px) and (min-width: 748px) {
+    height: calc(100% - 50px);
   }
 `;
 
 const EditorContainer = styled.div`
-  width: 280px;
-  height: 600px;
+  width: 100%;
+  height: 200px;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
   display: flex;
   flex-direction: column;
-
-  @media screen and (max-width: 900px) {
-    width: 100%;
-  }
 `;
 
 const Toolbar = styled.div`
   display: flex;
   align-items: center;
+  width: 90%;
   justify-content: flex-start;
   padding: 5px;
   border-bottom: 1px solid #e0e0e0;
@@ -529,7 +529,10 @@ const Icon = styled.span`
 `;
 
 const EditorContent = styled.div`
+  text-align: left;
   flex: 1;
+  width: 90%;
+  height:
   padding: 16px;
   overflow-y: auto;
   font-size: 16px;
@@ -545,12 +548,12 @@ const FontSizeSelect = styled.select`
 
 const SubmitButton = styled.button`
   margin-top: 16px;
-  padding: 8px 16px;
+  padding: 8px;
   border: none;
   border-radius: 4px;
   background-color: #007bff;
   color: #ffffff;
-  font-size: 16px;
+  font-size: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -558,32 +561,26 @@ const SubmitButton = styled.button`
   ${({ className }) => className === "responsive-submit" && css`
     display: none;
 
-    @media screen and (max-width: 900px) {
+    @media (max-width: 980px) {
       display: block;
       margin: 0 0 0 20px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
   `}
 
   ${({ className }) => className === "normal-submit" && css`
     display: block;
 
-    @media screen and (max-width: 900px) {
+    @media (max-width: 980px) {
       display: none;
     }
   `}
 
   &:hover {
     background-color: #0056b3;
-  }
-  
-  @media screen and (max-width: 900px) {
-    .normal-submit {
-      display: none;
-    }
-
-    .responsive-submit {
-      display: flex;
-    }
   }
 `;
 
