@@ -5,7 +5,7 @@ import Modal from "../../shared/Modal";
 import ScheduleForm from "../ScheduleForm";
 import TimeCells from "../TimeCells";
 
-function Schedules() {
+function Schedules({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,7 +23,7 @@ function Schedules() {
   };
 
   return (
-    <SchedulesContainer>
+    <SchedulesContainer viewMode={viewMode}>
       <Title>Do</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
@@ -31,7 +31,7 @@ function Schedules() {
           <ScheduleForm onSubmit={submitScheduleForm} />
         </Modal>
       )}
-      <TimeCells></TimeCells>
+      <TimeCells viewMode={viewMode}></TimeCells>
     </SchedulesContainer>
   );
 }
@@ -44,10 +44,11 @@ const Title = styled.div`
 
 const SchedulesContainer = styled.div`
   display: flex;
-  margin: 10px 5px;
   border: none;
   border-radius: 8px;
-  width: 280px;
+  width: ${({ viewMode }) => (viewMode === "home" ? "50%" : "280px")};
+  height: ${({ viewMode }) => (viewMode === "home" ? "calc(100vh - 330px)" : "calc(100vh - 120px)")}; ;
+  min-width: 170px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,7 +56,10 @@ const SchedulesContainer = styled.div`
   position: relative;
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  padding: 20px;
+
+  @media (max-width: 980px) and (min-width: 748px) {
+    height: calc(100vh - 320px);
+  }
 `;
 
 const AddButton = styled.button`
@@ -64,8 +68,8 @@ const AddButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
   border-radius: 4px;
   font-size: 16px;
   transition: background-color 0.3s ease;
