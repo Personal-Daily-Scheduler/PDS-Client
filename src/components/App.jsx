@@ -10,10 +10,22 @@ import TextEditor from "./See";
 import TabUI from "./TabUI";
 
 import useMobileStore from "../store/useMobileStore";
+import Modal from "../shared/Modal";
+import PlanForm from "./PlanForm";
 
 function App() {
-  const [viewMode, setViewMode] = useState("all");
+  const [viewMode, setViewMode] = useState("home");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { isMobile, setIsMobile } = useMobileStore();
+
+  const handleOpenModal = (e) => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -43,12 +55,28 @@ function App() {
             exact
             element={(
               <>
-                <Wrapper>
-                  {(viewMode === "all" || viewMode === "plans") && <Plans />}
-                  {(viewMode === "all" || viewMode === "schedules") && <Schedules />}
-                  {(viewMode === "all" || viewMode === "editor") && <TextEditor />}
+                <Wrapper viewMode={viewMode}>
+                  {(isMobile && viewMode === "home") ? (
+                    <>
+                      <Plans viewMode={viewMode} />
+                      <Schedules viewMode={viewMode} />
+                      <TextEditor viewMode={viewMode} />
+                    </>
+                  ) : (
+                    <>
+                      {(viewMode === "home" || viewMode === "plans") && <Plans />}
+                      {(viewMode === "home" || viewMode === "schedules") && <Schedules />}
+                      {(viewMode === "home" || viewMode === "editor") && <TextEditor />}
+                    </>
+                  )}
                 </Wrapper>
-                {isMobile && <TabUI onViewModeChange={handleViewModeChange} />}
+                {isMobile && <TabUI onClickAddPlan={handleOpenModal} onViewModeChange={handleViewModeChange} />}
+                {isModalOpen
+                  && (
+                  <Modal onClose={handleCloseModal} darkBackground>
+                    <PlanForm onClose={handleCloseModal} />
+                  </Modal>
+                  )}
               </>
             )}
           />
@@ -67,7 +95,9 @@ const GlobalStyle = createGlobalStyle`
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({ viewMode }) => (viewMode === "home" ? "space-between" : "center")};
+  flex-wrap: wrap;
+  min-width: 360px;
 `;
 
 export default App;
