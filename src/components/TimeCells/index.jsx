@@ -24,7 +24,7 @@ import calculatePasteSchedule from "../../utils/calculateScheduleTime";
 import validPossiblePasteTime from "../../utils/validPossiblePasteTime";
 import validOverlapTime from "../../utils/validOverlaptime";
 
-function TimeCells() {
+function TimeCells({ viewMode }) {
   const [startCell, setStartCell] = useState({ index: "", time: "" });
   const [endCell, setEndCell] = useState({ index: "", time: "" });
   const [selectedCells, setSelectedCells] = useState([]);
@@ -368,10 +368,10 @@ function TimeCells() {
       <CellContainer>
         <HoursWrapper>
           {hoursArray.map((hour) => (
-            <TimeCell key={hour} hour={hour}>{hour}</TimeCell>
+            <TimeCell key={hour} hour={hour} viewMode={viewMode}>{hour}</TimeCell>
           ))}
         </HoursWrapper>
-        <TimeWrapper ref={timeSlots}>
+        <TimeWrapper viewMode={viewMode} ref={timeSlots}>
           {[...timeMap.entries()].map(([key, value]) => (
             <TimeCell
               key={uuidV4()}
@@ -387,6 +387,7 @@ function TimeCells() {
               })}
               isDragging={selectedCells.includes(value.index)}
               schedule={value.schedule}
+              viewMode={viewMode}
             />
           ))}
         </TimeWrapper>
@@ -398,34 +399,11 @@ function TimeCells() {
   );
 }
 
-const Outside = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 30px;
-  margin-bottom: 10px;
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #e0e0e0;
-  }
-
-  &:active {
-    background-color: #d0d0d0;
-  }
-`;
-
 const CellContainer = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  width: 100%
 `;
 
 const HoursWrapper = styled.div`
@@ -439,11 +417,11 @@ const HoursWrapper = styled.div`
 `;
 
 const TimeWrapper = styled.div`
+  width: ${({ viewMode }) => (viewMode === "home" ? "150px" : "222px")};
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   overflow: hidden;
   display: flex;
-  width: 222px;
   flex-wrap: wrap;
 `;
 
