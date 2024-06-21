@@ -4,17 +4,20 @@ import styled from "styled-components";
 import Description from "../Description";
 
 import diaryIcon from "../../assets/diary_icon.png";
+import useMobileStore from "../../store/useMobileStore";
 
 function Welcome({ handleClick }) {
+  const { isMobile } = useMobileStore();
+
   return (
-    <Wrapper>
+    <Wrapper isMobile={isMobile}>
       <IconImage src={diaryIcon} alt="welcome-modal-icon" />
       <TextWrapper>
         <h1 className="title">환영합니다!</h1>
         <Description
           className="description"
           size="large"
-          text="PDS 다이어리에 오신 것을 환영합니다. \n 이곳에서는 일기를 작성하고, 일정을 관리하며, \n 시간을 집약적으로 활용할 수 있습니다. \n 시작해볼까요?"
+          text={isMobile ? "PDS 다이어리에 오신 것을 환영합니다" : "PDS 다이어리에 오신 것을 환영합니다. \n 이곳에서는 일기를 작성하고, 일정을 관리하며, \n 시간을 집약적으로 활용할 수 있습니다. \n 시작해볼까요?"}
         />
       </TextWrapper>
       <StyledButton onClick={handleClick}>
@@ -46,14 +49,14 @@ const StyledButton = styled.button`
 `;
 
 const IconImage = styled.img`
-  width: 100px;
-  height: 100px;
+  width: ${({ isMobile }) => (isMobile ? "80px" : "100px")};
+  height:  ${({ isMobile }) => (isMobile ? "80px" : "100px")};
 `;
 
 const Wrapper = styled.div`
   position: relative;
-  width: 600px;
-  height: 300px;
+  width: ${({ isMobile }) => (isMobile ? "200px" : "600px")};
+  height: ${({ isMobile }) => (isMobile ? "200px" : "300px")};
   display: flex;
   flex-direction: column;
   justify-content: center;
