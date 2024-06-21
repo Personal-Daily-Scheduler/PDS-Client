@@ -8,7 +8,7 @@ import Plan from "../PlanContent";
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
 
-function Plans() {
+function Plans({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [separatorIndex, setSeparatorIndex] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -97,7 +97,7 @@ function Plans() {
   };
 
   return (
-    <PlansContainer>
+    <PlansContainer viewMode={viewMode}>
       <Title>Plan</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
@@ -138,15 +138,15 @@ function Plans() {
 const Title = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
-  margin: 5px auto;
+  margin: 5px;
 `;
 
 const PlansContainer = styled.div`
-  min-width: 240px;
-  margin: 10px 0;
+  margin: 0;
   border: none;
   border-radius: 8px;
-  width: 280px;
+  width: ${({ viewMode }) => (viewMode === "home" ? "50%" : "280px")};
+  height: ${({ viewMode }) => (viewMode === "home" ? "calc(100vh -  330px)" : "calc(100vh - 120px)")}; ;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -154,7 +154,10 @@ const PlansContainer = styled.div`
   position: relative;
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  padding: 10px;
+
+  @media (max-width: 980px) and (min-width: 748px) {
+    height: calc(100vh - 320px);
+  }
 `;
 
 const AddButton = styled.button`
@@ -163,8 +166,8 @@ const AddButton = styled.button`
   border: none;
   cursor: pointer;
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
   border-radius: 4px;
   font-size: 16px;
   transition: background-color 0.3s ease;
@@ -177,9 +180,9 @@ const AddButton = styled.button`
 const PlansList = styled.ul`
   list-style: none;
   padding: 0;
-  max-height: 560px;
+  max-height: 100%;
   overflow-y: auto;
-  width: 100%;
+  width: 95%;
 `;
 
 const PlanItem = styled.li`

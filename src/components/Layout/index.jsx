@@ -20,7 +20,7 @@ import useScheduleStore from "../../store/schedules";
 import useMobileStore from "../../store/useMobileStore";
 
 function Layout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
   const leftEdgeAreaRef = useRef(null);
   const touchStartX = useRef(0);
@@ -180,7 +180,7 @@ const Container = styled.div`
 const Content = styled.main`
   border-top: 2px solid #d9d9d9;
   flex-grow: 1;
-  padding: 20px;
+  padding: 10px;
   margin: 0 auto;
   justify-content: center;
   align-items: center;
