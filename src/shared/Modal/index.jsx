@@ -11,15 +11,19 @@ function Modal({
   const [position, setPosition] = useState(style);
 
   useEffect(() => {
-    const modalHeight = modalRef.current.offsetHeight;
-    const viewportHeight = window.innerHeight;
+    if (style) {
+      const modalHeight = modalRef.current.offsetHeight;
+      const viewportHeight = window.innerHeight;
 
-    if (position.top + modalHeight > viewportHeight) {
-      const newTop = Math.max(viewportHeight - modalHeight - 20, 0);
+      if (position.top + modalHeight > viewportHeight) {
+        const newTop = Math.max(viewportHeight - modalHeight - 20, 0);
 
-      setPosition({ ...style, top: newTop });
+        setPosition({ ...style, top: newTop });
+      }
+    } else {
+      setPosition({ left: "50%", top: "50%", transform: "translate(-50%, -50%)" });
     }
-  }, [onClose, position.top]);
+  }, [onClose, position, style]);
 
   return (
     <ModalOverlay darkBackground={darkBackground}>
