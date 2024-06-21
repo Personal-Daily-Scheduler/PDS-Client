@@ -10,12 +10,12 @@ import TextEditorIcon from "../../assets/texteditor_icon.png";
 import AddIcon from "../../assets/add_icon.png";
 import TodayIcon from "../../assets/today_icon_2.png";
 
-function TabUI({ onViewModeChange }) {
+function TabUI({ onViewModeChange, onClickAddPlan }) {
   return (
     <TabContainer>
-      <IconTextButton iconSrc={AddIcon} size="30px"></IconTextButton>
-      <IconTextButton iconSrc={HomeIcon} size="30px" onClick={(e) => onViewModeChange("all")}></IconTextButton>
+      <IconTextButton iconSrc={HomeIcon} size="30px" onClick={(e) => onViewModeChange("home")}></IconTextButton>
       <IconTextButton iconSrc={ScheduleIcon} size="30px" onClick={(e) => onViewModeChange("schedules")}></IconTextButton>
+      <IconTextButton iconSrc={AddIcon} size="30px" onClick={(e) => onClickAddPlan()}></IconTextButton>
       <IconTextButton iconSrc={TimeCellIcon} size="30px" onClick={(e) => onViewModeChange("plans")}></IconTextButton>
       <IconTextButton iconSrc={TextEditorIcon} size="30px" onClick={(e) => onViewModeChange("editor")}></IconTextButton>
       <IconTextButton iconSrc={TodayIcon} size="30px"></IconTextButton>
