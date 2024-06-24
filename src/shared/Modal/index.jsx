@@ -7,27 +7,56 @@ import closeButtonDefault from "../../assets/close_button.png";
 function Modal({
   onClose, children, style, darkBackground, borderRadius,
 }) {
+  const [position, setPosition] = useState(null);
+
   const modalRef = useRef(null);
-  const [position, setPosition] = useState(style);
 
   useEffect(() => {
     if (style) {
-      const modalHeight = modalRef.current.offsetHeight;
+      const { left, top } = style;
+      const { offsetHeight } = modalRef.current;
+
       const viewportHeight = window.innerHeight;
 
-      if (position.top + modalHeight > viewportHeight) {
-        const newTop = Math.max(viewportHeight - modalHeight - 20, 0);
+      if (style.top + offsetHeight > viewportHeight) {
+        const newTop = Math.max(viewportHeight - offsetHeight - 20, 0);
 
-        setPosition({ ...style, top: newTop });
+        setPosition({
+          left,
+          top: newTop,
+        });
+      } else {
+        setPosition({
+          left,
+          top,
+        });
       }
     } else {
-      setPosition({ left: "50%", top: "50%", transform: "translate(-50%, -50%)" });
+      setPosition({
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      });
     }
-  }, [onClose, position, style]);
+  }, [style, children]);
+
+  const onClickModalOverlay = (e) => {
+    const isClickedInX = () => position.left <= e.clientX && e.clientX <= position.left + modalRef.current.offsetWidth;
+    const isClickedInY = () => position.top <= e.clientY && e.clientY <= position.top + modalRef.current.offsetHeight;
+
+    if (!(isClickedInX() && isClickedInY())) {
+      onClose();
+    }
+  };
 
   return (
-    <ModalOverlay darkBackground={darkBackground}>
-      <ModalContent ref={modalRef} style={position} borderRadius={borderRadius}>
+    <ModalOverlay onClick={onClickModalOverlay} darkBackground={darkBackground}>
+      <ModalContent
+        onClick={(e) => e.stopPropagation()}
+        ref={modalRef}
+        style={position}
+        borderRadius={borderRadius}
+      >
         {children}
         <CloseButton onClick={onClose}></CloseButton>
       </ModalContent>
