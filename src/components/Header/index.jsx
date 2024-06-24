@@ -21,6 +21,13 @@ function Header({ onClickSidebarToggle, isSidebarOpen }) {
   const { selectedDate, setSelectedDate } = useCalendarStore();
   const { isMobile } = useMobileStore();
 
+  const handleClickToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    onClickSidebarToggle();
+  };
+
   const handleDateChange = (direction) => {
     const currentDate = new Date(selectedDate);
 
@@ -44,6 +51,7 @@ function Header({ onClickSidebarToggle, isSidebarOpen }) {
     const todayDate = new Date();
 
     const formattedDate = formatDateToYYYYMMDD(todayDate);
+
     setSelectedDate(formattedDate);
   };
 
@@ -53,9 +61,9 @@ function Header({ onClickSidebarToggle, isSidebarOpen }) {
         {isMobile ? (
           <>
             {isSidebarOpen ? (
-              <IconTextButton iconSrc={sidebarToggleCloseIcon} onClick={onClickSidebarToggle} size="25px"></IconTextButton>
+              <IconTextButton iconSrc={sidebarToggleCloseIcon} onClick={handleClickToggle} size="25px"></IconTextButton>
             ) : (
-              <IconTextButton iconSrc={menuIcon} onClick={onClickSidebarToggle} size="25px"></IconTextButton>
+              <IconTextButton iconSrc={menuIcon} onClick={handleClickToggle} size="25px"></IconTextButton>
             )}
             <MobileDate>{selectedDate}</MobileDate>
             {isOpenedCalendar ? (

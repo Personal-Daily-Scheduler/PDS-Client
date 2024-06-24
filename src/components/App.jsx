@@ -19,12 +19,11 @@ function App() {
 
   const { isMobile, setIsMobile } = useMobileStore();
 
-  const handleOpenModal = (e) => {
-    setIsModalOpen(true);
-  };
+  const handleModalToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsModalOpen(!isModalOpen);
   };
 
   useEffect(() => {
@@ -76,11 +75,11 @@ function App() {
                     </>
                   )}
                 </Wrapper>
-                {isMobile && <TabUI onClickAddPlan={handleOpenModal} onViewModeChange={handleViewModeChange} />}
+                {isMobile && <TabUI onClickAddPlan={handleModalToggle} onViewModeChange={handleViewModeChange} />}
                 {isModalOpen
                   && (
-                  <Modal onClose={handleCloseModal} darkBackground>
-                    <PlanForm onClose={handleCloseModal} />
+                  <Modal onClose={handleModalToggle} darkBackground>
+                    <PlanForm onClose={handleModalToggle} />
                   </Modal>
                   )}
               </>
