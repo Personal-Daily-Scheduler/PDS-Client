@@ -22,9 +22,6 @@ import useMobileStore from "../../store/useMobileStore";
 function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
-  const leftEdgeAreaRef = useRef(null);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
 
   const closeWelcomeModal = () => {
     setIsWelcomeModalOpen(false);
@@ -41,38 +38,6 @@ function Layout() {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const isLeftEdgeTouch = (userTouchX) => {
-    const leftEdgeAreaEl = leftEdgeAreaRef.current;
-
-    if (leftEdgeAreaEl) {
-      const { left, right } = leftEdgeAreaEl.getBoundingClientRect();
-
-      return left <= userTouchX && userTouchX <= right;
-    }
-
-    return false;
-  };
-
-  const handleLeftEdgeTouchStart = (e) => {
-    if (!isSidebarOpen && isLeftEdgeTouch(e.touches[0].clientX)) {
-      touchStartX.current = e.touches[0].clientX;
-    }
-  };
-
-  const handleLeftEdgeTouchMove = (e) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleLeftEdgeTouchEnd = () => {
-    if (!isSidebarOpen && isLeftEdgeTouch(touchStartX.current)) {
-      const distance = touchEndX.current - touchStartX.current;
-
-      if (distance > 50) {
-        setIsSidebarOpen(true);
-      }
-    }
   };
 
   const fetchSchedules = async (user) => {
@@ -156,13 +121,7 @@ function Layout() {
       <Header isSidebarOpen={isSidebarOpen} onClickSidebarToggle={toggleSidebar}></Header>
       <Container isMobile={isMobile}>
         <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <Content
-          isSidebarOpen={isSidebarOpen}
-          onTouchStart={handleLeftEdgeTouchStart}
-          onTouchMove={handleLeftEdgeTouchMove}
-          onTouchEnd={handleLeftEdgeTouchEnd}
-        >
-          <LeftEdgeArea ref={leftEdgeAreaRef} />
+        <Content>
           <Outlet />
         </Content>
       </Container>
@@ -172,7 +131,7 @@ function Layout() {
 
 const Container = styled.div`
   display: flex;
-  height: ${({ isMobile }) => (isMobile ? "calc(100vh - 60px)" : "calc(100vh - 90px)")};
+  height: ${({ isMobile }) => (isMobile ? "calc(100vh - 120px)" : "calc(100vh - 80px)")};
   overflow-y: auto;
   margin-top: ${({ isMobile }) => (isMobile ? "60px" : "80px")};
 `;
@@ -181,20 +140,10 @@ const Content = styled.main`
   border-top: 2px solid #d9d9d9;
   flex-grow: 1;
   padding: 10px;
-  margin: 0 auto;
   justify-content: center;
   align-items: center;
   overflow-y: auto;
-  max-width: 1100px;
   transition: margin-left 0.3s ease;
-`;
-
-const LeftEdgeArea = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 20px;
 `;
 
 export default Layout;
