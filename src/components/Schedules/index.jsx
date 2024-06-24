@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import Modal from "../../shared/Modal";
@@ -11,6 +11,24 @@ function Schedules({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isMobile } = useMobileStore();
+  const [containerHeight, setContainerHeight] = useState(0);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const updateContainerHeight = () => {
+      if (containerRef.current) {
+        setContainerHeight(containerRef.current.offsetHeight);
+      }
+    };
+
+    updateContainerHeight();
+
+    window.addEventListener("resize", updateContainerHeight);
+
+    return () => {
+      window.removeEventListener("resize", updateContainerHeight);
+    };
+  }, []);
 
   const handleOpenModal = (e) => {
     setModalPosition({ left: e.clientX, top: e.clientY });
@@ -26,7 +44,7 @@ function Schedules({ viewMode }) {
   };
 
   return (
-    <SchedulesContainer viewMode={viewMode}>
+    <SchedulesContainer ref={containerRef} viewMode={viewMode}>
       <Title>Do</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
@@ -34,7 +52,7 @@ function Schedules({ viewMode }) {
           <ScheduleForm onSubmit={submitScheduleForm} />
         </Modal>
       )}
-      <TimeCells viewMode={viewMode}></TimeCells>
+      <TimeCells viewMode={viewMode} containerHeight={containerHeight}></TimeCells>
     </SchedulesContainer>
   );
 }

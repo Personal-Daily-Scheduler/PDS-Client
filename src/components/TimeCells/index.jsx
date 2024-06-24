@@ -24,7 +24,7 @@ import calculatePasteSchedule from "../../utils/calculateScheduleTime";
 import validPossiblePasteTime from "../../utils/validPossiblePasteTime";
 import validOverlapTime from "../../utils/validOverlaptime";
 
-function TimeCells({ viewMode }) {
+function TimeCells({ viewMode, containerHeight }) {
   const [startCell, setStartCell] = useState({ index: "", time: "" });
   const [endCell, setEndCell] = useState({ index: "", time: "" });
   const [selectedCells, setSelectedCells] = useState([]);
@@ -236,12 +236,6 @@ function TimeCells({ viewMode }) {
     }
   };
 
-  const submitScheduleForm = () => {
-    clearTimeSelection();
-    setIsSecondModalOpen(false);
-    setIsModalOpen(false);
-  };
-
   const hoursArray = Array.from({ length: 24 }, (_, index) => index);
 
   const handleOpenSecondModal = () => {
@@ -363,7 +357,7 @@ function TimeCells({ viewMode }) {
           />
         </Modal>
       )}
-      <CellContainer>
+      <CellContainer containerHeight={containerHeight}>
         <HoursWrapper>
           {hoursArray.map((hour) => (
             <TimeCell key={hour} hour={hour} viewMode={viewMode}>{hour}</TimeCell>
@@ -401,7 +395,8 @@ const CellContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-  width: 100%
+  width: 100%;
+  height: ${({ containerHeight }) => `calc(${containerHeight}px - 50px)`}
 `;
 
 const HoursWrapper = styled.div`

@@ -40,7 +40,7 @@ const HoursCell = styled.div`
   justify-content: center;
   align-items: center;
   width: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "35px" : "45px" : "35px")};
-  height: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "18px" : "30px" : "30px")};
+  height: calc(100% / 24);
   font-size: 12px;
   color: black;
   background-color: ${({ hour }) => (parseInt(hour, 10) < 12 ? "#fad3d3" : "#d8e0f9")};
@@ -59,7 +59,7 @@ const HoursCell = styled.div`
 
 const TimeCellWrapper = styled.div`
   width: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "23px" : "32px" : "35px")};
-  height: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "18px" : "30px" : "30px")};
+  height: calc(100% / 26);
   margin: 0;
   border: 0.5px solid ${({ isDragging, schedule }) => (
     isDragging ? schedule ? changeColor(schedule.colorCode, 15) : changeColor("#f0f1f4", 10) : schedule ? changeColor(schedule.colorCode, 10) : changeColor("#f0f1f4", 10)
@@ -77,7 +77,6 @@ const TimeCellWrapper = styled.div`
 
   @media (max-width: 980px) and (min-width: 748px) {
     width: 36px;
-    height: 22px;
   }
 `;
 
