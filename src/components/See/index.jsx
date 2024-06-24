@@ -399,7 +399,7 @@ const Title = styled.div`
 const SeeContainer = styled.div`
   border: none;
   border-radius: 8px;
-  width: ${({ isMobile }) => (isMobile ? "100%" : "300px")};
+  width: ${({ isMobile }) => (isMobile ? "100%" : "33%")};
   height: ${({ isMobile, viewMode }) => (isMobile ? viewMode === "home" ? "calc((100vh - 120px) * 0.35)" : "calc(100vh - 150px)" : "calc(100vh - 120px)")};
   display: flex;
   flex-direction: column;
