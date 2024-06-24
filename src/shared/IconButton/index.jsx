@@ -31,8 +31,8 @@ const Button = styled.button`
 `;
 
 const Icon = styled.img`
-  width: ${(props) => (props.iconSize || "13px")};
-  height: ${(props) => (props.iconSize || "13px")};
+  width: ${({ iconSize }) => iconSize || "13px"};
+  height: ${({ iconSize }) => iconSize || "13px"};
 `;
 
 const ButtonText = styled.span`
