@@ -19,9 +19,9 @@ function TimeCell({
       <HoursCell hour={hour} isMobile={isMobile} viewMode={viewMode}>{formatHour(hour)}</HoursCell>
     ) : (
       <TimeCellWrapper
-        onMouseDown={onMouseDown}
-        onMouseUp={handleMouseup}
-        onMouseEnter={() => onMouseEnter(id)}
+        onPointerDown={onMouseDown}
+        onPointerUp={handleMouseup}
+        onPointerEnter={() => onMouseEnter(id)}
         isDragging={isDragging}
         schedule={schedule}
         viewMode={viewMode}
