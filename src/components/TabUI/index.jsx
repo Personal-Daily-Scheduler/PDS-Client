@@ -4,8 +4,8 @@ import styled from "styled-components";
 import IconTextButton from "../../shared/IconButton";
 
 import HomeIcon from "../../assets/home_button_icon.png";
-import ScheduleIcon from "../../assets/schedule_icon.png";
-import TimeCellIcon from "../../assets/timecell_button_icon.png";
+import ScheduleIcon from "../../assets/timecell_button_icon.png";
+import TimeCellIcon from "../../assets/schedule_icon.png";
 import TextEditorIcon from "../../assets/texteditor_icon.png";
 import AddIcon from "../../assets/add_icon.png";
 import TodayIcon from "../../assets/today_icon_2.png";
