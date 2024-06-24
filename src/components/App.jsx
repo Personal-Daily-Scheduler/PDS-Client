@@ -29,6 +29,12 @@ function App() {
 
   useEffect(() => {
     const handleResize = () => {
+      if (window.innerWidth <= 748) {
+        setIsMobile(true);
+      } else {
+        setViewMode("home");
+      }
+
       setIsMobile(window.innerWidth <= 748);
     };
 
