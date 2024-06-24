@@ -400,7 +400,7 @@ const SeeContainer = styled.div`
   border: none;
   border-radius: 8px;
   width: ${({ isMobile }) => (isMobile ? "100%" : "300px")};
-  height: ${({ isMobile }) => (isMobile ? "17vh" : "calc(100vh - 160px)")};
+  height: ${({ isMobile }) => (isMobile ? "calc((100vh - 120px) * 0.35)" : "calc(100vh - 160px)")};
   display: flex;
   flex-direction: column;
   text-align: center;

@@ -7,6 +7,7 @@ import Plan from "../PlanContent";
 
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
+import useMobileStore from "../../store/useMobileStore";
 
 function Plans({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
@@ -20,6 +21,7 @@ function Plans({ viewMode }) {
 
   const { selectedDate } = useCalendarStore();
   const { planByDates } = usePlanStore();
+  const { isMobile } = useMobileStore();
 
   const getPlanContents = () => {
     const eventList = [];
@@ -101,7 +103,7 @@ function Plans({ viewMode }) {
       <Title>Plan</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
-        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground>
+        <Modal onClose={handleCloseModal} style={isMobile ? undefined : modalPosition} darkBackground>
           {selectedPlan ? (
             <PlanForm plan={selectedPlan} onClose={handleCloseModal} />
           ) : (
@@ -146,7 +148,7 @@ const PlansContainer = styled.div`
   border: none;
   border-radius: 8px;
   width: ${({ viewMode }) => (viewMode === "home" ? "50%" : "280px")};
-  height: ${({ viewMode }) => (viewMode === "home" ? "calc(100vh -  330px)" : "calc(100vh - 120px)")}; ;
+  height: ${({ viewMode }) => (viewMode === "home" ? "calc((100vh - 120px) * 0.6)" : "calc(100vh - 120px)")}; ;
   display: flex;
   flex-direction: column;
   text-align: center;

@@ -5,9 +5,12 @@ import Modal from "../../shared/Modal";
 import ScheduleForm from "../ScheduleForm";
 import TimeCells from "../TimeCells";
 
+import useMobileStore from "../../store/useMobileStore";
+
 function Schedules({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isMobile } = useMobileStore();
 
   const handleOpenModal = (e) => {
     setModalPosition({ left: e.clientX, top: e.clientY });
@@ -27,7 +30,7 @@ function Schedules({ viewMode }) {
       <Title>Do</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
-        <Modal onClose={handleCloseModal} style={modalPosition}>
+        <Modal onClose={handleCloseModal} style={isMobile ? undefined : modalPosition}>
           <ScheduleForm onSubmit={submitScheduleForm} />
         </Modal>
       )}
@@ -47,7 +50,7 @@ const SchedulesContainer = styled.div`
   border: none;
   border-radius: 8px;
   width: ${({ viewMode }) => (viewMode === "home" ? "50%" : "280px")};
-  height: ${({ viewMode }) => (viewMode === "home" ? "calc(100vh - 330px)" : "calc(100vh - 120px)")}; ;
+  height: ${({ viewMode }) => (viewMode === "home" ? "calc((100vh - 120px) * 0.6)" : "calc(100vh - 120px)")}; ;
   min-width: 170px;
   display: flex;
   flex-direction: column;
