@@ -14,9 +14,9 @@ import useScheduleStore from "../../store/schedules";
 import useCalendarStore from "../../store/calender";
 import useClipboardStore from "../../store/clipboard";
 import usePlanStore from "../../store/plans";
+import useMobileStore from "../../store/useMobileStore";
 
 import initTimeMap from "../../utils/createTimeMap";
-import useClickOutside from "../../utils/useClickOutside";
 import fetchRemoveSchedule from "../../services/schedule/fetRemoveSchedule";
 import fetchRemovePlan from "../../services/plan/fetchRemovePlan";
 import getTimeRange from "../../utils/getTimeRange";
@@ -35,7 +35,6 @@ function TimeCells({ viewMode }) {
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [toast, setToast] = useState({ status: false, message: "" });
 
-  const { selectedDate } = useCalendarStore();
   const {
     timeMaps, setSchedule, scheduleByDates, deleteSchedule,
   } = useScheduleStore();
@@ -43,6 +42,8 @@ function TimeCells({ viewMode }) {
     isCopied, copiedSchedule, clearClipboard, setCopiedSchedule,
   } = useClipboardStore();
   const { deletePlan, setPlan } = usePlanStore();
+  const { isMobile } = useMobileStore();
+  const { selectedDate } = useCalendarStore();
 
   const timeSlots = useRef();
 
@@ -52,10 +53,6 @@ function TimeCells({ viewMode }) {
     setEndCell({ index: "", time: "" });
     setIsDragging(false);
   };
-
-  const close = useCallback(() => clearTimeSelection());
-
-  useClickOutside(timeSlots, close, isModalOpen);
 
   useEffect(() => {
     if (selectedDate && scheduleByDates[selectedDate]) {
@@ -83,7 +80,12 @@ function TimeCells({ viewMode }) {
   };
 
   const handleOpenModal = (e) => {
-    setModalPosition({ left: e.clientX, top: e.clientY });
+    if (isMobile) {
+      setModalPosition({ left: e.clientX - 70, top: e.clientY });
+    } else {
+      setModalPosition({ left: e.clientX, top: e.clientY });
+    }
+
     setIsModalOpen(true);
   };
 
@@ -334,30 +336,26 @@ function TimeCells({ viewMode }) {
   };
 
   const taskModal = () => (
-    timeMap.get(startCell.time).schedule && timeMap.get(endCell.time).schedule ? (
-      <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
+    <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
+      {timeMap.get(startCell.time).schedule && timeMap.get(endCell.time).schedule ? (
         <ScheduleModal onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} onCopy={handleClickCopy} />
-      </Modal>
-    ) : (
-      isCopied ? (
-        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
-          <ScheduleModal onCreate={handleOpenSecondModal} onPaste={handleClickPaste} />
-        </Modal>
       ) : (
-        <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
+        isCopied ? (
+          <ScheduleModal onCreate={handleOpenSecondModal} onPaste={handleClickPaste} />
+        ) : (
           <ScheduleModal onCreate={handleOpenSecondModal} />
-        </Modal>
-      )
-    )
+        )
+      )}
+    </Modal>
   );
 
   return (
     <>
       {isModalOpen && taskModal()}
       {isSecondModalOpen && (
-        <Modal onClose={handleCloseSecondModal} style={secondModalPosition} darkBackground={false}>
+        <Modal onClose={handleCloseSecondModal} style={isMobile ? undefined : secondModalPosition} darkBackground={false}>
           <ScheduleForm
-            onSubmit={submitScheduleForm}
+            onSubmit={handleCloseSecondModal}
             time={{
               startTime: startCell.time,
               endTime: endCell.time,
