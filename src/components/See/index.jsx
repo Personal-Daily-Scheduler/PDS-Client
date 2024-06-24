@@ -400,7 +400,7 @@ const SeeContainer = styled.div`
   border: none;
   border-radius: 8px;
   width: ${({ isMobile }) => (isMobile ? "100%" : "300px")};
-  height: ${({ isMobile }) => (isMobile ? "calc((100vh - 120px) * 0.35)" : "calc(100vh - 160px)")};
+  height: ${({ isMobile, viewMode }) => (isMobile ? viewMode === "home" ? "calc((100vh - 120px) * 0.35)" : "calc(100vh - 150px)" : "calc(100vh - 120px)")};
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -467,7 +467,7 @@ const EditorWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100% - 50px);
+  height: 90%;
   background-color: #f5f5f5;
   width: 100%;
 
@@ -478,7 +478,7 @@ const EditorWrapper = styled.div`
 
 const EditorContainer = styled.div`
   width: 100%;
-  height: 200px;
+  height: 100%;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
