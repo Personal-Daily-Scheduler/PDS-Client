@@ -2,8 +2,14 @@ import React from "react";
 import styled from "styled-components";
 
 function Input({
-  label, type, placeholder, description, value, onChange, size,
+  label, type, placeholder, description, value, onChange, size, onEnterDown,
 }) {
+  const handleKeyDown = (e) => {
+    if (onEnterDown && e.key === "Enter") {
+      onEnterDown(e);
+    }
+  };
+
   return (
     <InputContainer>
       <InputLabel>{label}</InputLabel>
@@ -13,6 +19,7 @@ function Input({
         value={value}
         onChange={onChange}
         size={size}
+        onKeyDown={handleKeyDown}
       />
       {description && <InputDescription>{description}</InputDescription>}
     </InputContainer>

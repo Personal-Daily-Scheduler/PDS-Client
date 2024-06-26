@@ -177,6 +177,7 @@ function Login() {
         value={username}
         placeholder="Enter your Nickname"
         onChange={(e) => handleInputChange(e, "username")}
+        onEnterDown={handleClickLoginButton}
         size={size ? { width: size.width, height: size.height } : 0}
       >
       </Input>
@@ -221,6 +222,7 @@ function Login() {
         value={confirmPassword}
         placeholder="Confirm your password"
         onChange={(e) => handleInputChange(e, "confirmPassword")}
+        onEnterDown={handleClickLoginButton}
         size={size ? { width: size.width, height: size.height } : 0}
       />
       {signUpError.visible && (
@@ -247,6 +249,7 @@ function Login() {
         type="password"
         placeholder="Enter your password"
         onChange={(e) => handleInputChange(e, "password")}
+        onEnterDown={handleClickLoginButton}
         size={size ? { width: size.width, height: size.height } : 0}
       >
       </Input>
