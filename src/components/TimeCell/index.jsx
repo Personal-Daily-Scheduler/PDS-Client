@@ -28,7 +28,7 @@ function TimeCell({
         isMobile={isMobile}
       >
         {schedule.startTime === id.time && (
-          <ScheduleTitle>{schedule.title}</ScheduleTitle>
+          <ScheduleTitle schedule={schedule}>{schedule.title}</ScheduleTitle>
         )}
       </TimeCellWrapper>
     )
@@ -65,7 +65,7 @@ const TimeCellWrapper = styled.div`
     isDragging ? schedule ? changeColor(schedule.colorCode, 15) : changeColor("#f0f1f4", 10) : schedule ? changeColor(schedule.colorCode, 10) : changeColor("#f0f1f4", 10)
   )};
   background-color: ${({ isDragging, schedule }) => (
-    isDragging ? schedule ? changeColor(schedule.colorCode, 10) : "#f0f1f4" : schedule ? schedule.colorCode : "#ffffff"
+    isDragging ? schedule ? changeColor(schedule.colorCode, 10) : "#f0f1f4" : schedule ? schedule.completed ? changeColor(schedule.colorCode, 50, true) : schedule.colorCode : "#ffffff"
   )};
   overflow: visible;
 
@@ -86,6 +86,8 @@ const ScheduleTitle = styled.div`
   margin-left: 5px;
   border-radius: 4px;
   display: flex;
+  color: ${({ schedule }) => (schedule.completed ? "#898989" : "#000000")};
+  text-decoration: ${({ schedule }) => (schedule && schedule.completed ? "line-through" : "none")};
   align-items: center;
   position: relative;
 `;
