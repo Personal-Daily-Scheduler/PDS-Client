@@ -334,11 +334,7 @@ function TimeCells({ viewMode, containerHeight }) {
       {timeMap.get(startCell.time).schedule && timeMap.get(endCell.time).schedule ? (
         <ScheduleModal onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} onCopy={handleClickCopy} />
       ) : (
-        isCopied ? (
-          <ScheduleModal onCreate={handleOpenSecondModal} onPaste={handleClickPaste} />
-        ) : (
-          <ScheduleModal onCreate={handleOpenSecondModal} />
-        )
+        <ScheduleModal onCreate={handleOpenSecondModal} onPaste={isCopied ? handleClickPaste : undefined} />
       )}
     </Modal>
   );

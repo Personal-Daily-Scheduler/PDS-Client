@@ -26,7 +26,7 @@ const updateTimeMap = (timeMap, scheduleObject) => {
 
   newTimeRange.forEach((time) => {
     targetTimeMap.set(time, {
-      index: timeMap.get(time).index,
+      ...timeMap.get(time),
       schedule: scheduleObject,
     });
   });
