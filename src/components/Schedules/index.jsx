@@ -10,9 +10,11 @@ import useMobileStore from "../../store/useMobileStore";
 function Schedules({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { isMobile } = useMobileStore();
   const [containerHeight, setContainerHeight] = useState(0);
+
   const containerRef = useRef(null);
+
+  const { isMobile } = useMobileStore();
 
   useEffect(() => {
     const updateContainerHeight = () => {
@@ -44,7 +46,7 @@ function Schedules({ viewMode }) {
   };
 
   return (
-    <SchedulesContainer ref={containerRef} viewMode={viewMode}>
+    <SchedulesContainer ref={containerRef} isMobile={isMobile} viewMode={viewMode}>
       <Title>Do</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
@@ -52,7 +54,7 @@ function Schedules({ viewMode }) {
           <ScheduleForm onSubmit={submitScheduleForm} />
         </Modal>
       )}
-      <TimeCells viewMode={viewMode} containerHeight={containerHeight}></TimeCells>
+      <TimeCells containerHeight={containerHeight}></TimeCells>
     </SchedulesContainer>
   );
 }
@@ -67,8 +69,8 @@ const SchedulesContainer = styled.div`
   display: flex;
   border: none;
   border-radius: 8px;
-  width: ${({ viewMode }) => (viewMode === "home" ? "50%" : "33%")};
-  height: ${({ viewMode }) => (viewMode === "home" ? "calc((100vh - 120px) * 0.6)" : "calc(100vh - 120px)")}; ;
+  width: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "50%" : "300px" : "33%")};
+  height: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "calc((100vh - 120px) * 0.6)" : "calc(100vh - 150px)" : "calc(100vh - 120px)")};
   min-width: 170px;
   display: flex;
   flex-direction: column;

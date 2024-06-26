@@ -86,6 +86,7 @@ function Plans({ viewMode }) {
 
     draggingItem.current = dragOverItem.current;
     dragOverItem.current = null;
+
     setPlanList(planListCopy);
   };
 
@@ -99,7 +100,7 @@ function Plans({ viewMode }) {
   };
 
   return (
-    <PlansContainer viewMode={viewMode}>
+    <PlansContainer viewMode={viewMode} isMobile={isMobile}>
       <Title>Plan</Title>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
@@ -147,8 +148,8 @@ const PlansContainer = styled.div`
   margin: 0;
   border: none;
   border-radius: 8px;
-  width: ${({ viewMode }) => (viewMode === "home" ? "50%" : "33%")};
-  height: ${({ viewMode }) => (viewMode === "home" ? "calc((100vh - 120px) * 0.6)" : "calc(100vh - 120px)")}; ;
+  width: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "50%" : "300px" : "33%")};
+  height: ${({ viewMode, isMobile }) => (isMobile ? viewMode === "home" ? "calc((100vh - 120px) * 0.6)" : "calc(100vh - 150px)" : "calc(100vh - 120px)")}; ;
   display: flex;
   flex-direction: column;
   text-align: center;
