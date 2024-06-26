@@ -12,6 +12,35 @@ import updateTimeSlots from "../utils/updateTimeSlots";
 const scheduleStore = (set) => ({
   scheduleByDates: {},
   timeMaps: initTimeMap(),
+  setCompletedSchedule: (scheduleObject) => set((state) => {
+    const {
+      scheduleId, selectedDate, completed,
+    } = scheduleObject;
+
+    const completedSchedule = {
+      ...scheduleObject,
+      completed: !completed,
+    };
+
+    state.scheduleByDates[selectedDate].schedules[scheduleId].schedule = completedSchedule;
+
+    const newTimeSlots = updateTimeSlots(
+      state.scheduleByDates[selectedDate].timeSlots,
+      completedSchedule,
+    );
+
+    state.scheduleByDates[selectedDate].timeSlots = newTimeSlots;
+
+    const updatedTimeMap = updateTimeMap(
+      state.timeMaps,
+      completedSchedule,
+    );
+
+    return {
+      scheduleByDates: { ...state.scheduleByDates },
+      timeMaps: updatedTimeMap,
+    };
+  }),
   deleteSchedule: (scheduleObject) => {
     const {
       scheduleId, selectedDate, startTime, endTime,

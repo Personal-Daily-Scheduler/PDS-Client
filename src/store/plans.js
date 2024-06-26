@@ -5,7 +5,7 @@ const planStore = (set) => ({
   userId: null,
   planByDates: {},
   allDates: [],
-  setCompleted: (date, planId) => set((state) => {
+  setCompletedPlan: (date, planId) => set((state) => {
     state.planByDates[date][planId] = {
       ...state.planByDates[date][planId],
       completed: !state.planByDates[date][planId].completed,

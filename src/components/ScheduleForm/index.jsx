@@ -67,11 +67,11 @@ function ScheduleForm({ onSubmit, time }) {
       const objectId = uuidV4();
 
       const eventContent = {
-        selectedDate, title, description, startTime, endTime, colorCode, isSynced,
+        selectedDate, title, description, startTime, endTime, colorCode, isSynced, completed: false,
       };
 
       const newPlan = {
-        planId: objectId, ...eventContent, completed: false,
+        planId: objectId, ...eventContent,
       };
 
       const newSchedule = {

@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import checkedIcon from "../../assets/checked_icon.png";
-import fetchRemovePlan from "../../services/plan/fetchRemovePlan";
-import fetchUpdatePlan from "../../services/plan/fetchUpdatePlan";
 import dragIndicator from "../../assets/drag_indicator_icon.png";
 import syncedIcon from "../../assets/synced_icon.png";
+import fetchRemovePlan from "../../services/plan/fetchRemovePlan";
+import fetchRemoveSchedule from "../../services/schedule/fetRemoveSchedule";
+import fetchEditSchedule from "../../services/schedule/fetchEditSchedules";
+import fetchUpdatePlan from "../../services/plan/fetchUpdatePlan";
 
 import usePlanStore from "../../store/plans";
 import useCalendarStore from "../../store/calender";
@@ -17,20 +19,34 @@ function Plan({
   const [isDragging, setIsDragging] = useState(false);
 
   const { selectedDate } = useCalendarStore();
-  const { deletePlan, setCompleted } = usePlanStore();
-  const { deleteSchedule } = useScheduleStore();
+  const { deletePlan, setCompletedPlan } = usePlanStore();
+  const { deleteSchedule, setCompletedSchedule } = useScheduleStore();
 
   const handleClickCompleted = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    setCompleted(selectedDate, plan.planId);
+    const { planId, completed, ...rest } = plan;
+
+    const completedPlan = { ...plan, completed: !completed };
+    const completedSchedule = { scheduleId: planId, completed, ...rest };
+
+    if (plan.isSynced) {
+      setCompletedSchedule(completedSchedule);
+      setCompletedPlan(selectedDate, plan.planId);
+    } else {
+      setCompletedPlan(selectedDate, plan.planId);
+    }
 
     const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
     if (memberUser) {
-      plan.completed = !plan.completed;
-      await fetchUpdatePlan(plan, memberUser);
+      if (plan.isSynced) {
+        await fetchEditSchedule(completedSchedule, memberUser);
+        await fetchUpdatePlan(completedPlan, memberUser);
+      } else {
+        await fetchUpdatePlan(completedPlan, memberUser);
+      }
     }
   };
 
@@ -38,31 +54,37 @@ function Plan({
     e.preventDefault();
     e.stopPropagation();
 
-    if (plan.isSynced) {
-      const { planId, completed, ...rest } = plan;
+    const { planId, isSynced, ...rest } = plan;
 
-      deletePlan(selectedDate, plan.planId);
+    const targetSchedule = {
+      scheduleId: planId,
+      isSynced,
+      ...rest,
+    };
 
-      const targetSchedule = {
-        scheduleId: planId,
-        ...rest,
-      };
-
+    if (isSynced) {
+      deletePlan(selectedDate, planId);
       deleteSchedule(targetSchedule);
     } else {
-      deletePlan(selectedDate, plan.planId);
+      deletePlan(selectedDate, planId);
     }
 
     const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
 
     if (memberUser) {
-      await fetchRemovePlan(plan, memberUser);
+      if (isSynced) {
+        await fetchRemovePlan(plan, memberUser);
+        await fetchRemoveSchedule(targetSchedule, memberUser);
+      } else {
+        await fetchRemovePlan(plan, memberUser);
+      }
     }
   };
 
   const handleClickPlanContent = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
     onClick(e, plan);
   };
 
@@ -72,8 +94,8 @@ function Plan({
   };
 
   const handleDragEnter = (e) => {
-    onDragEnter(e, index);
     setIsDragging(false);
+    onDragEnter(e, index);
   };
 
   return (
