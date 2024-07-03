@@ -185,54 +185,24 @@ function TimeCells({ viewMode, containerHeight }) {
   const handleMouseEnter = (timeCell) => {
     if (isDragging) {
       setEndCell(timeCell);
-      setSelectedCells((selectedIndexes) => {
-        selectedIndexes.sort((a, b) => a - b);
 
-        const startIndex = selectedIndexes[0];
-        const endIndex = selectedIndexes[selectedIndexes.length - 1];
+      if (timeCell.index === startCell.index) {
+        return;
+      }
 
-        const isNewlySelectedIndex = !selectedIndexes.includes(timeCell.index);
+      const isForwardDrag = startCell.index < timeCell.index;
 
-        if (isNewlySelectedIndex) {
-          const isForwardSelection = timeCell.index > startIndex && timeCell.index > endIndex;
+      const selectedList = isForwardDrag ? (
+        Array.from({
+          length: timeCell.index - startCell.index + 1,
+        }, (_, index) => index + startCell.index)
+      ) : (
+        Array.from({
+          length: startCell.index - timeCell.index + 1,
+        }, (_, index) => index + timeCell.index)
+      );
 
-          if (isForwardSelection) {
-            if (startCell > endCell) {
-              return Array.from({
-                length: timeCell.index - startCell.index + 1,
-              }, (_, index) => index + startCell.index);
-            }
-
-            return Array.from({
-              length: timeCell.index - startIndex + 1,
-            }, (_, index) => index + startIndex);
-          }
-
-          const isBackwardSelection = timeCell.index < startIndex && timeCell.index < endIndex;
-
-          if (isBackwardSelection) {
-            return Array.from({
-              length: startCell.index - timeCell.index + 1,
-            }, (_, index) => index + timeCell.index);
-          }
-        }
-
-        const isWithinSelection = startIndex < timeCell.index && endIndex > timeCell.index;
-
-        if (isWithinSelection && timeCell.index < endCell.index) {
-          return Array.from({
-            length: timeCell.index - startIndex + 1,
-          }, (_, index) => index + startIndex);
-        }
-
-        if (isWithinSelection && timeCell.index > endCell.index) {
-          return Array.from({
-            length: endIndex - timeCell.index + 1,
-          }, (_, index) => index + timeCell.index);
-        }
-
-        return [timeCell.index];
-      });
+      setSelectedCells([...selectedList]);
     }
   };
 
