@@ -8,10 +8,12 @@ import Plans from "./Plans";
 import Schedules from "./Schedules";
 import TextEditor from "./See";
 import TabUI from "./TabUI";
-
-import useMobileStore from "../store/useMobileStore";
 import Modal from "../shared/Modal";
 import PlanForm from "./PlanForm";
+
+import NotoSansKR from "../assets/fonts/NotoSansKR-VariableFont_wght.ttf";
+
+import useMobileStore from "../store/useMobileStore";
 
 function App() {
   const [viewMode, setViewMode] = useState("home");
@@ -92,6 +94,11 @@ function App() {
 }
 
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: "Noto Sans KR";
+    src: url(${NotoSansKR}) format('truetype');
+  }
+
   body {
     margin: 0;
     padding: 0;
