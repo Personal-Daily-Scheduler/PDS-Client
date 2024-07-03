@@ -20,6 +20,7 @@ import checkedIcon from "../../assets/checked_icon.png";
 import useCalendarStore from "../../store/calender";
 import useScheduleStore from "../../store/schedules";
 import usePlanStore from "../../store/plans";
+import Tooltip from "../Tooltip";
 
 function PlanForm({ plan, onClose, separatorIndex = null }) {
   const [isClickedAddTime, setIsClickedAddTime] = useState(false);
@@ -253,6 +254,7 @@ function PlanForm({ plan, onClose, separatorIndex = null }) {
         <>
           <TimeWrapper>
             <IconTextButton iconSrc={removeIcon} text="Remove Time" onClick={(e) => handleClickTimeButton(e, "removeTime")} />
+            <Tooltip message="Plan의 일정과 Schedule의 일정을 동기화 할 수 있습니다." />
             {isSynced ? (
               <SyncedWrapper>
                 <CheckedIcon src={checkedIcon} alt="Checked Icon" />

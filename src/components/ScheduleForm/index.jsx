@@ -15,6 +15,7 @@ import checkedIcon from "../../assets/checked_icon.png";
 import usePlanStore from "../../store/plans";
 import useCalendarStore from "../../store/calender";
 import useScheduleStore from "../../store/schedules";
+import Tooltip from "../Tooltip";
 
 function ScheduleForm({ onSubmit, time }) {
   const [title, setTitle] = useState("");
@@ -136,6 +137,7 @@ function ScheduleForm({ onSubmit, time }) {
               <ToggleThumb isSynced={isSynced} />
             </ToggleButton>
           </ToggleWrapper>
+          <Tooltip message="Plan의 일정과 Schedule의 일정을 동기화 할 수 있습니다." />
         </ToggleContainer>
       </Label>
       {time ? (

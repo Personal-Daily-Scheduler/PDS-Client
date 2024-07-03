@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Modal from "../../shared/Modal";
 import PlanForm from "../PlanForm";
 import Plan from "../PlanContent";
+import Tooltip from "../Tooltip";
 
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
@@ -101,7 +102,10 @@ function Plans({ viewMode }) {
 
   return (
     <PlansContainer viewMode={viewMode} isMobile={isMobile}>
-      <Title>Plan</Title>
+      <PlansHeader>
+        <Title>Plan</Title>
+        <Tooltip message="하루 일정을 To Do List 형태로 관리할 수 있어요" />
+      </PlansHeader>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={isMobile ? undefined : modalPosition} darkBackground>
@@ -138,12 +142,6 @@ function Plans({ viewMode }) {
   );
 }
 
-const Title = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 5px;
-`;
-
 const PlansContainer = styled.div`
   margin: 0;
   border: none;
@@ -161,6 +159,19 @@ const PlansContainer = styled.div`
   @media (max-width: 980px) and (min-width: 748px) {
     height: calc(100vh - 320px);
   }
+`;
+
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px;
+`;
+
+const PlansHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
 `;
 
 const AddButton = styled.button`

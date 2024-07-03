@@ -6,6 +6,7 @@ import ScheduleForm from "../ScheduleForm";
 import TimeCells from "../TimeCells";
 
 import useMobileStore from "../../store/useMobileStore";
+import Tooltip from "../Tooltip";
 
 function Schedules({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
@@ -47,7 +48,10 @@ function Schedules({ viewMode }) {
 
   return (
     <SchedulesContainer ref={containerRef} isMobile={isMobile} viewMode={viewMode}>
-      <Title>Do</Title>
+      <SchedulesHeader>
+        <Title>Do</Title>
+        <Tooltip message="10분 단위로 일정을 추가할 수 있어요" />
+      </SchedulesHeader>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (
         <Modal onClose={handleCloseModal} style={isMobile ? undefined : modalPosition}>
@@ -58,12 +62,6 @@ function Schedules({ viewMode }) {
     </SchedulesContainer>
   );
 }
-
-const Title = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 5px auto;
-`;
 
 const SchedulesContainer = styled.div`
   display: flex;
@@ -83,6 +81,19 @@ const SchedulesContainer = styled.div`
   @media (max-width: 980px) and (min-width: 748px) {
     height: calc(100vh - 320px);
   }
+`;
+
+const SchedulesHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px auto;
 `;
 
 const AddButton = styled.button`

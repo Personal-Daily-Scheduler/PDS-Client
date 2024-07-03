@@ -13,6 +13,7 @@ import fetchPostDiary from "../../services/diary/fetchPostDiary";
 import useCalendarStore from "../../store/calender";
 import useDiaryStore from "../../store/diary";
 import useMobileStore from "../../store/useMobileStore";
+import Tooltip from "../Tooltip";
 
 function See({ viewMode }) {
   const [toast, setToast] = useState({});
@@ -331,7 +332,10 @@ function See({ viewMode }) {
   return (
     <>
       <SeeContainer isMobile={isMobile} viewMode={viewMode}>
-        <Title>See</Title>
+        <SeeHeader>
+          <Title>See</Title>
+          <Tooltip message="하루 일과를 회고하며 간단한 텍스트를 작성할 수 있어요" />
+        </SeeHeader>
         <SubmitButton className="responsive-submit" onClick={handleSubmit}>Submit</SubmitButton>
         <EditorWrapper>
           <EditorContainer>
@@ -390,12 +394,6 @@ function See({ viewMode }) {
   );
 }
 
-const Title = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 5px auto;
-`;
-
 const SeeContainer = styled.div`
   border: none;
   border-radius: 8px;
@@ -415,6 +413,36 @@ const SeeContainer = styled.div`
     width: 100%;
     margin: 0;
     padding: 0;
+  }
+`;
+
+const SeeHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+const Title = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px auto;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  align-items: center;
+  width: 90%;
+  justify-content: flex-start;
+  padding: 5px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f0f0f0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+
+  @media screen and (max-width: 900px) {
+    margin: 0 20px;
+    justify-content: space-between;
   }
 `;
 
@@ -486,23 +514,6 @@ const EditorContainer = styled.div`
   align-items: center;
   display: flex;
   flex-direction: column;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  align-items: center;
-  width: 90%;
-  justify-content: flex-start;
-  padding: 5px;
-  border-bottom: 1px solid #e0e0e0;
-  background-color: #f0f0f0;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-
-  @media screen and (max-width: 900px) {
-    margin: 0 20px;
-    justify-content: space-between;
-  }
 `;
 
 const ToolbarButton = styled.button`
