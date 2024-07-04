@@ -9,6 +9,9 @@ import Tooltip from "../Tooltip";
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
 import useMobileStore from "../../store/useMobileStore";
+import CommonButton from "../../shared/Button";
+
+import emptyPlanState from "../../assets/empty_plan_image.png";
 
 function Plans({ viewMode }) {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
@@ -116,7 +119,15 @@ function Plans({ viewMode }) {
           )}
         </Modal>
       )}
-      {planList.length > 0 && (
+      {planList.length === 0 ? (
+        <EmptyPlanState>
+          <EmptyPlanImage src={emptyPlanState}></EmptyPlanImage>
+          <h2>추가된 일정이 없습니다.</h2>
+          <span>일정 추가 버튼을 눌러서</span>
+          <p>새로운 일정을 추가해보세요.</p>
+          <CommonButton onClick={handleOpenModal}>Create a Plan</CommonButton>
+        </EmptyPlanState>
+      ) : (
         <PlansList>
           {planList.map((plan, index) => (
             <>
@@ -141,6 +152,21 @@ function Plans({ viewMode }) {
     </PlansContainer>
   );
 }
+
+const EmptyPlanState = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 50%;
+  margin-top: 50px;
+  min-width: 230px;
+`;
+
+const EmptyPlanImage = styled.img`
+  height: 50%;
+`;
 
 const PlansContainer = styled.div`
   margin: 0;
