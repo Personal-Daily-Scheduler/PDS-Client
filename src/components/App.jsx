@@ -65,6 +65,12 @@ function App() {
                 <Wrapper viewMode={viewMode}>
                   {(isMobile && viewMode === "home") ? (
                     <>
+                      <BlurOverlay>
+                        <MessageWrapper>
+                          <h3>잠깐! 모바일 화면이신가요?</h3>
+                          <Message>{"브라우저에서만 제공되는 기능입니다.\n오늘 일정을 한 화면에 보기 원하시면 \n브라우저에서 접속해서 이용해주세요. 🥲"}</Message>
+                        </MessageWrapper>
+                      </BlurOverlay>
                       <Plans viewMode={viewMode} />
                       <Schedules viewMode={viewMode} />
                       <TextEditor viewMode={viewMode} />
@@ -78,12 +84,11 @@ function App() {
                   )}
                 </Wrapper>
                 {isMobile && <TabUI onClickAddPlan={handleModalToggle} onViewModeChange={handleViewModeChange} />}
-                {isModalOpen
-                  && (
+                {isModalOpen && (
                   <Modal onClose={handleModalToggle} darkBackground>
                     <PlanForm onClose={handleModalToggle} />
                   </Modal>
-                  )}
+                )}
               </>
             )}
           />
@@ -103,6 +108,44 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
   }
+`;
+
+const BlurOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 60px);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MessageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+  min-width: 300px;
+  height: 20%;
+  background-color: white;
+  padding: 20px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+`;
+
+const Message = styled.span`
+  justify-content: center;
+  display: flex;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 30px;
+  white-space: pre-wrap;
 `;
 
 const Wrapper = styled.div`
