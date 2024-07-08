@@ -32,6 +32,7 @@ module.exports = {
     "guard-for-in": "off",
     "no-nested-ternary": "off",
     "no-new": "off",
-    "max-len": "off"
+    "max-len": "off",
+    "no-trailing-spaces": "off",
   },
 }
