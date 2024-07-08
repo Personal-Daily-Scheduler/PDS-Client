@@ -54,6 +54,7 @@ function TimeCells({ viewMode, containerHeight }) {
     setStartCell({ index: "", time: "" });
     setEndCell({ index: "", time: "" });
     setIsDragging(false);
+    setIsScheduleClicked(false);
   };
 
   useEffect(() => {
@@ -71,117 +72,187 @@ function TimeCells({ viewMode, containerHeight }) {
   }, [selectedDate, scheduleByDates]);
 
   const handleCloseModal = () => {
+    setIsScheduleClicked(false);
     setIsModalOpen(false);
   };
 
-  const handleDragStart = (timeCell) => {
-    setStartCell(timeCell);
-    setSelectedCells([timeCell.index]);
-    setIsDragging(true);
-    handleCloseModal();
-  };
-
   const handleOpenModal = (e) => {
-    if (isMobile) {
-      setModalPosition({ left: e.clientX - 70, top: e.clientY });
-    } else {
-      setModalPosition({ left: e.clientX, top: e.clientY });
-    }
+    if (isDragging) {
+      if (isMobile) {
+        setModalPosition({ left: e.clientX - 70, top: e.clientY });
+      } else {
+        setModalPosition({ left: e.clientX, top: e.clientY });
+      }
 
-    setIsModalOpen(true);
+      setIsModalOpen(true);
+    } else {
+      setIsSecondModalOpen(true);
+    }
   };
 
   const handleDragEnd = (timeCellInfo, e) => {
-    const isDeselectedStart = !startCell.index && startCell.index !== 0;
+    e.preventDefault();
 
-    if (isDeselectedStart) {
-      return;
-    }
-
-    const isHasSchedules = (!!(timeMap.get(startCell.time).schedule)
-      && (timeMap.get(timeCellInfo.time).schedule));
-    const isSameSchedule = (timeMap.get(startCell.time).schedule)
-      === (timeMap.get(timeCellInfo.time).schedule);
-
-    if (isHasSchedules && isSameSchedule) {
-      const { startTime, endTime } = timeMap.get(timeCellInfo.time).schedule;
-
-      const startTimeIndex = timeMap.get(startTime).index;
-      const endTimeIndex = timeMap.get(endTime).index;
-
-      const scheduleIndexArray = Array.from({
-        length: endTimeIndex - startTimeIndex + 1,
-      }, (_, index) => index + startTimeIndex);
-
-      setSelectedCells(scheduleIndexArray);
-      setStartCell({ index: startTimeIndex, time: startTime });
-      setEndCell({ index: endTimeIndex, time: endTime });
-      setIsDragging(false);
-
-      handleOpenModal(e);
-
-      return;
-    }
-
-    const isHasSchedule = (timeMap.get(startCell.time).schedule !== "")
-      || (timeMap.get(timeCellInfo.time).schedule !== "");
-
-    if (isHasSchedule) {
-      const selectedTimeList = getTimeRange(startCell.time, timeCellInfo.time);
+    if (typeof timeCellInfo !== "object") {
+      const selectedTimeList = getTimeRange(startCell.time, endCell.time);
 
       const emptyTimeList = selectedTimeList.filter((time) => timeMap.get(time).schedule === "");
       const emptyTimeIndex = emptyTimeList.map((time) => timeMap.get(time).index);
 
-      setStartCell({
-        index: emptyTimeIndex[0],
-        time: emptyTimeList[0],
-      });
-      setEndCell({
-        index: emptyTimeIndex[emptyTimeIndex.length - 1],
-        time: emptyTimeList[emptyTimeList.length - 1],
-      });
-      setSelectedCells(emptyTimeIndex);
-      setIsDragging(false);
+      if (emptyTimeIndex.length !== 0) {
+        setStartCell({
+          index: emptyTimeIndex[0],
+          time: emptyTimeList[0],
+        });
+        setEndCell({
+          index: emptyTimeIndex[emptyTimeIndex.length - 1],
+          time: emptyTimeList[emptyTimeList.length - 1],
+        });
+        setSelectedCells(emptyTimeIndex);
+        setIsDragging(false);
 
-      handleOpenModal(e);
+        if (isMobile) {
+          setModalPosition({ left: e.clientX - 70, top: e.clientY });
+        } else {
+          setModalPosition({ left: e.clientX, top: e.clientY });
+        }
+
+        setIsModalOpen(true);
+      } else {
+        setToast({ status: true, message: "일정을 추가할수 있는 시간이 없습니다." });
+        setClickedSchedule(null);
+        setIsScheduleClicked(false);
+      }
 
       return;
     }
 
-    const start = Math.min(startCell.index, timeCellInfo.index);
-    const end = Math.max(startCell.index, timeCellInfo.index);
+    if (isScheduleClicked) {
+      const dragEndSchedule = timeMap.get(timeCellInfo.time).schedule;
 
-    const isReverseSelection = startCell.index > timeCellInfo.index;
+      if (dragEndSchedule !== "") {
+        if (dragEndSchedule === clickedSchedule) {
+          const { startTime, endTime } = dragEndSchedule;
 
-    if (isReverseSelection) {
-      setStartCell(timeCellInfo);
-      setEndCell(startCell);
+          const startTimeIndex = timeMap.get(startTime).index;
+          const endTimeIndex = timeMap.get(endTime).index;
+
+          const scheduleIndexList = getTimeIndexList(startTime, endTime);
+
+          setSelectedCells(scheduleIndexList);
+          setStartCell({ index: startTimeIndex, time: startTime });
+          setEndCell({ index: endTimeIndex, time: endTime });
+          setIsDragging(true);
+
+          if (isMobile) {
+            setModalPosition({ left: e.clientX - 70, top: e.clientY });
+          } else {
+            setModalPosition({ left: e.clientX, top: e.clientY });
+          }
+
+          setIsModalOpen(true);
+
+          return;
+        }
+
+        setToast({ status: true, message: "일정이 있는곳에는 드래그 할 수 없습니다." });
+
+        clearTimeSelection();
+
+        return;
+      }
+
+      const replaceSchedule = calculateReplaceSchedule(timeCellInfo.time, clickedSchedule);
+      const replaceScheduleTimeList = getTimeRange(replaceSchedule.startTime, replaceSchedule.endTime);
+
+      for (const scheduleTime of replaceScheduleTimeList) {
+        const isExistScheduleCell = timeMap.get(scheduleTime).schedule !== "";
+
+        if (isExistScheduleCell) {
+          setToast({ status: true, message: "일정이 있는곳에는 드래그 할 수 없습니다." });
+
+          clearTimeSelection();
+
+          return;
+        }
+      }
+      const newScheduleIndexList = getTimeIndexList(replaceSchedule.startTime, replaceSchedule.endTime);
+
+      const { scheduleId, ...rest } = replaceSchedule;
+
+      if (clickedSchedule.isSynced) {
+        setPlan({ planId: scheduleId, ...rest });
+      }
+
+      deleteSchedule(clickedSchedule);
+      setSelectedCells(newScheduleIndexList);
+      setSchedule(replaceSchedule);
+      setIsScheduleClicked(false);
     } else {
-      setEndCell(timeCellInfo);
+      const start = Math.min(startCell.index, timeCellInfo.index);
+      const end = Math.max(startCell.index, timeCellInfo.index);
+
+      const isReverseSelection = startCell.index > timeCellInfo.index;
+
+      if (isReverseSelection) {
+        setStartCell(timeCellInfo);
+        setEndCell(startCell);
+      } else {
+        setEndCell(timeCellInfo);
+      }
+
+      const selectedTimeList = getTimeRange(startCell.time, timeCellInfo.time);
+
+      for (let i = 0; i < selectedTimeList.length; i = +1) {
+        const selectedTime = selectedTimeList[i];
+
+        if (timeMap.get(selectedTime).schedule !== "") {
+          const emptyTimeCell = selectedTimeList.slice(0, i);
+          const emptyIndexList = emptyTimeCell.map((timeString) => timeMap.get(timeString).index).sort((a, b) => a - b);
+
+          setEndCell({
+            index: emptyIndexList[emptyIndexList.length - 1],
+            time: emptyTimeCell[emptyTimeCell.length - 1],
+          });
+          setSelectedCells(emptyIndexList);
+          setIsDragging(false);
+
+          handleOpenModal(e);
+
+          return;
+        }
+      }
+
+      const selectedIndexList = Array.from({ length: end - start + 1 }, (_, index) => start + index);
+
+      setSelectedCells(selectedIndexList);
+      setIsDragging(false);
+      handleOpenModal(e);
     }
-
-    const selectedIndexList = Array.from({ length: end - start + 1 }, (_, index) => start + index);
-
-    setSelectedCells(selectedIndexList);
-    setIsDragging(false);
-
-    handleOpenModal(e);
   };
 
   const handleCellClick = (timeCellInfo) => {
-    if (isModalOpen) {
-      return;
+    const selectedCellSchedule = timeMap.get(timeCellInfo.time).schedule;
+
+    if (selectedCellSchedule !== "") {
+      const { startTime, endTime } = selectedCellSchedule;
+
+      const selectedScheduleIndex = getTimeIndexList(startTime, endTime);
+
+      setIsScheduleClicked(true);
+      setClickedSchedule(selectedCellSchedule);
+      setSelectedCells(selectedScheduleIndex);
+      setStartCell({ time: startTime, index: selectedScheduleIndex[0] });
+      setEndCell({ time: endTime, index: selectedScheduleIndex[selectedScheduleIndex.length - 1] });
+    } else {
+      setStartCell(timeCellInfo);
+      setEndCell({ time: "", index: "" });
+      setIsScheduleClicked(false);
+      setSelectedCells([timeCellInfo.index]);
+      setIsDragging(true);
+
+      handleCloseModal();
     }
-
-    if (isDragging) {
-      handleDragEnd(timeCellInfo);
-
-      return;
-    }
-
-    setEndCell({ time: "", index: "" });
-
-    handleDragStart(timeCellInfo);
   };
 
   const handleMouseEnter = (timeCell) => {
@@ -365,12 +436,41 @@ function TimeCells({ viewMode, containerHeight }) {
   const taskModal = () => (
     <Modal onClose={handleCloseModal} style={modalPosition} darkBackground={false} borderRadius="20px">
       {timeMap.get(startCell.time).schedule && timeMap.get(endCell.time).schedule ? (
-        <ScheduleModal onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} onCopy={handleClickCopy} />
+        <ScheduleModal completed={timeMap.get(startCell.time).schedule.completed} onComplete={handleClickComplete} onCreate={handleOpenSecondModal} onDelete={handleDeleteButton} onCopy={handleClickCopy} />
       ) : (
         <ScheduleModal onCreate={handleOpenSecondModal} onPaste={isCopied ? handleClickPaste : undefined} />
       )}
     </Modal>
   );
+
+  const handleMouseOver = (e, hour) => {
+    e.preventDefault();
+
+    const startTimeString = hour.toString().length > 1 ? `${hour}:00` : `0${hour}:00`;
+    const endTimeString = hour.toString().length > 1 ? `${hour}:50` : `0${hour}:50`;
+
+    const startTimeIndex = timeMap.get(startTimeString).index;
+    const endTimeIndex = timeMap.get(endTimeString).index;
+
+    const scheduleIndexList = Array.from({
+      length: endTimeIndex - startTimeIndex + 1,
+    }, (_, index) => index + startTimeIndex);
+
+    setSelectedCells(scheduleIndexList);
+    setStartCell({ index: startTimeIndex, time: startTimeString });
+    setEndCell({ index: endTimeIndex, time: endTimeString });
+  };
+
+  const handleMouseOut = (e) => {
+    e.preventDefault();
+
+    setSelectedCells([]);
+  };
+
+  const handleScheduleSubmitButton = () => {
+    setIsModalOpen(false);
+    setIsSecondModalOpen(false);
+  };
 
   return (
     <>
@@ -378,7 +478,7 @@ function TimeCells({ viewMode, containerHeight }) {
       {isSecondModalOpen && (
         <Modal onClose={handleCloseSecondModal} style={isMobile ? undefined : secondModalPosition} darkBackground={false}>
           <ScheduleForm
-            onSubmit={handleCloseSecondModal}
+            onSubmit={handleScheduleSubmitButton}
             time={{
               startTime: startCell.time,
               endTime: endCell.time,
@@ -389,7 +489,7 @@ function TimeCells({ viewMode, containerHeight }) {
       <CellContainer containerHeight={containerHeight}>
         <HoursWrapper>
           {hoursArray.map((hour) => (
-            <TimeCell key={hour} hour={hour} viewMode={viewMode}>{hour}</TimeCell>
+            <TimeCell onDragEnd={handleDragEnd} onMouseOut={handleMouseOut} onMouseOver={handleMouseOver} key={hour} hour={hour} viewMode={viewMode}>{hour}</TimeCell>
           ))}
         </HoursWrapper>
         <TimeWrapper viewMode={viewMode} ref={timeSlots}>
