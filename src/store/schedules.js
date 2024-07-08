@@ -12,6 +12,38 @@ import updateTimeSlots from "../utils/updateTimeSlots";
 const scheduleStore = (set) => ({
   scheduleByDates: {},
   timeMaps: initTimeMap(),
+  isHovered: false,
+  setIsHovered: (planObject, boolean) => set((state) => {
+    const {
+      planId, isHovered, selectedDate, ...rest
+    } = planObject;
+
+    const hoveredSchedule = {
+      scheduleId: planId,
+      selectedDate,
+      isHovered: boolean,
+      ...rest,
+    };
+
+    state.scheduleByDates[selectedDate].schedules[planId].schedule = hoveredSchedule;
+
+    const newTimeSlots = updateTimeSlots(
+      state.scheduleByDates[selectedDate].timeSlots,
+      hoveredSchedule,
+    );
+
+    state.scheduleByDates[selectedDate].timeSlots = newTimeSlots;
+
+    const updatedTimeMap = updateTimeMap(
+      state.timeMaps,
+      hoveredSchedule,
+    );
+
+    return {
+      scheduleByDates: { ...state.scheduleByDates },
+      timeMaps: updatedTimeMap,
+    };
+  }),
   setCompletedSchedule: (scheduleObject) => set((state) => {
     const {
       scheduleId, selectedDate, completed,
