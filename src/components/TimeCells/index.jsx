@@ -1,6 +1,4 @@
-import {
-  useCallback, useEffect, useRef, useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuidV4 } from "uuid";
 
@@ -16,13 +14,17 @@ import useClipboardStore from "../../store/clipboard";
 import usePlanStore from "../../store/plans";
 import useMobileStore from "../../store/useMobileStore";
 
-import initTimeMap from "../../utils/createTimeMap";
 import fetchRemoveSchedule from "../../services/schedule/fetRemoveSchedule";
+import fetchEditSchedule from "../../services/schedule/fetchEditSchedules";
 import fetchRemovePlan from "../../services/plan/fetchRemovePlan";
-import getTimeRange from "../../utils/getTimeRange";
+import fetchUpdatePlan from "../../services/plan/fetchUpdatePlan";
 import calculatePasteSchedule from "../../utils/calculateScheduleTime";
 import validPossiblePasteTime from "../../utils/validPossiblePasteTime";
 import validOverlapTime from "../../utils/validOverlaptime";
+import initTimeMap from "../../utils/createTimeMap";
+import getTimeRange from "../../utils/getTimeRange";
+import getTimeIndexList from "../../utils/getTimeIndexList";
+import calculateReplaceSchedule from "../../utils/calculateReplaceSchedule";
 
 function TimeCells({ viewMode, containerHeight }) {
   const [startCell, setStartCell] = useState({ index: "", time: "" });
@@ -36,12 +38,12 @@ function TimeCells({ viewMode, containerHeight }) {
   const [toast, setToast] = useState({ status: false, message: "" });
 
   const {
-    timeMaps, setSchedule, scheduleByDates, deleteSchedule,
+    timeMaps, isScheduleClicked, clickedSchedule, setSchedule, scheduleByDates, deleteSchedule, setCompletedSchedule, setIsScheduleClicked, setClickedSchedule,
   } = useScheduleStore();
   const {
     isCopied, copiedSchedule, clearClipboard, setCopiedSchedule,
   } = useClipboardStore();
-  const { deletePlan, setPlan } = usePlanStore();
+  const { deletePlan, setPlan, setCompletedPlan } = usePlanStore();
   const { isMobile } = useMobileStore();
   const { selectedDate } = useCalendarStore();
 
@@ -265,6 +267,49 @@ function TimeCells({ viewMode, containerHeight }) {
     setToast({ status: true, message: "일정이 복사되었습니다." });
     setIsModalOpen(false);
 
+    clearTimeSelection();
+  };
+
+  const handleClickComplete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const targetSchedule = timeMap.get(startCell.time).schedule;
+
+    const {
+      scheduleId, isSynced, completed, ...rest
+    } = targetSchedule;
+
+    if (isSynced) {
+      setCompletedSchedule(targetSchedule);
+      setCompletedPlan(selectedDate, scheduleId);
+    } else {
+      setCompletedSchedule(targetSchedule);
+    }
+
+    if (completed) {
+      setToast({ status: true, message: "일정 완료를 취소하였습니다." });
+    } else {
+      setToast({ status: true, message: "일정을 완료처리 하였습니다." });
+    }
+
+    const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
+
+    const completedPlan = {
+      planId: scheduleId, isSynced, completed: !completed, ...rest,
+    };
+    const completedSchedule = { ...targetSchedule, completed: !completed };
+
+    if (memberUser) {
+      if (isSynced) {
+        await fetchEditSchedule(completedSchedule, memberUser);
+        await fetchUpdatePlan(completedPlan, memberUser);
+      } else {
+        await fetchEditSchedule(completedSchedule, memberUser);
+      }
+    }
+
+    setIsModalOpen(false);
     clearTimeSelection();
   };
 
