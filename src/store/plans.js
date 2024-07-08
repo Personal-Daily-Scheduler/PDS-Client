@@ -74,9 +74,12 @@ const planStore = (set) => ({
             }, {});
           }
         } else {
-          state.planByDates[selectedDate][planId] = {
-            ...state.planByDates[selectedDate][planId],
-            ...planObject,
+          state.planByDates[selectedDate] = {
+            ...state.planByDates[selectedDate],
+            [planId]: {
+              ...state.planByDates[selectedDate][planId],
+              ...planObject,
+            },
           };
         }
       } else {
