@@ -20,25 +20,26 @@ function Plan({
 
   const { selectedDate } = useCalendarStore();
   const { deletePlan, setCompletedPlan } = usePlanStore();
-  const { deleteSchedule, setCompletedSchedule } = useScheduleStore();
+  const { deleteSchedule, setIsHovered, setCompletedSchedule } = useScheduleStore();
 
   const handleClickCompleted = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     const { planId, completed, ...rest } = plan;
-
-    const completedPlan = { ...plan, completed: !completed };
-    const completedSchedule = { scheduleId: planId, completed, ...rest };
+    const targetSchedule = { scheduleId: planId, completed, ...rest };
 
     if (plan.isSynced) {
-      setCompletedSchedule(completedSchedule);
+      setCompletedSchedule(targetSchedule);
       setCompletedPlan(selectedDate, plan.planId);
     } else {
       setCompletedPlan(selectedDate, plan.planId);
     }
 
     const memberUser = JSON.parse(sessionStorage.getItem("authenticatedUser"));
+
+    const completedPlan = { ...plan, completed: !completed };
+    const completedSchedule = { ...targetSchedule, completed: !completed };
 
     if (memberUser) {
       if (plan.isSynced) {
@@ -98,13 +99,29 @@ function Plan({
     onDragEnter(e, index);
   };
 
+  const handleMouseOver = (e) => {
+    e.preventDefault();
+
+    if (plan.isSynced) {
+      setIsHovered(plan, true);
+    }
+  };
+
+  const handleMouseOut = (e) => {
+    e.preventDefault();
+
+    if (plan.isSynced) {
+      setIsHovered(plan, false);
+    }
+  };
+
   return (
     <PlanItemWrapper
       draggable
       onDragStart={handleDragStart}
       onDragEnter={handleDragEnter}
-      onDragOver={(e) => e.preventDefault()}
-      onDragEnd={(e) => e.preventDefault()}
+      onMouseEnter={handleMouseOver}
+      onMouseOut={handleMouseOut}
       color={plan.colorCode}
       onClick={handleClickPlanContent}
       isDragging={isDragging}
