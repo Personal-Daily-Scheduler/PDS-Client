@@ -2,12 +2,13 @@ import React from "react";
 import styled from "styled-components";
 
 function ScheduleModal({
-  onEdit, onDelete, onCreate, onCopy, onPaste,
+  onComplete, completed, onEdit, onDelete, onCreate, onCopy, onPaste,
 }) {
   return (
     <ModalContent>
+      {onComplete && <Button onClick={onComplete}>{completed ? "Unfinished❌" : "Finished✅"}</Button>}
       {onEdit && <Button onClick={onEdit}>Edit✏️</Button>}
-      {onDelete && <Button onClick={onDelete}>Delete❌</Button>}
+      {onDelete && <Button onClick={onDelete}>Delete🗑️</Button>}
       {onCreate && <Button onClick={onCreate}>Create📝</Button>}
       {onCopy && <Button onClick={onCopy}>Copy📑</Button>}
       {onPaste && <Button onClick={onPaste}>Paste📑</Button>}
@@ -29,7 +30,7 @@ const ModalContent = styled.div`
 const Button = styled.button`
   white-space:nowrap;
   font-size: 15px;
-  width: 80px;
+  width: max-content;
   height: 30px;
   background: none;
   background-color: white;
