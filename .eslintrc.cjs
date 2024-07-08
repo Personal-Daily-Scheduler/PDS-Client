@@ -34,5 +34,6 @@ module.exports = {
     "no-new": "off",
     "max-len": "off",
     "no-trailing-spaces": "off",
+    "indent": "off",
   },
 }
