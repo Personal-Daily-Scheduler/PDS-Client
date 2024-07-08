@@ -3,26 +3,44 @@ import styled from "styled-components";
 
 import changeColor from "../../utils/changeColor";
 import formatHour from "../../utils/formatHour";
+
 import useMobileStore from "../../store/useMobileStore";
+import useScheduleStore from "../../store/schedules";
 
 function TimeCell({
-  id, onDragEnd, isDragging, onMouseDown, onMouseEnter, schedule, hour, viewMode,
+  id, onDragEnd, isDragging, onMouseDown, onMouseEnter, onMouseOver, onMouseOut, schedule, hour, viewMode,
 }) {
   const { isMobile } = useMobileStore();
+  const { isScheduleClicked, clickedSchedule } = useScheduleStore();
 
-  const handleMouseup = (e) => {
+  const handleMouseClick = (e) => {
+    onDragEnd(hour, e);
+  };
+  
+  const handleMouseUp = (e) => {
     onDragEnd(id, e);
   };
 
   return (
     hour === 0 || hour ? (
-      <HoursCell hour={hour} isMobile={isMobile} viewMode={viewMode}>{formatHour(hour)}</HoursCell>
+      <HoursCell
+        onClick={handleMouseClick}
+        hour={hour}
+        isMobile={isMobile}
+        viewMode={viewMode} 
+        onMouseOut={onMouseOut}
+        onMouseOver={(e) => onMouseOver(e, hour)}
+      >
+        {formatHour(hour)}
+      </HoursCell>
     ) : (
       <TimeCellWrapper
-        onPointerDown={onMouseDown}
-        onPointerUp={handleMouseup}
-        onPointerEnter={() => onMouseEnter(id)}
         isDragging={isDragging}
+        isScheduleClicked={isScheduleClicked}
+        clickedSchedule={clickedSchedule}
+        onPointerDown={onMouseDown}
+        onPointerUp={handleMouseUp}
+        onPointerEnter={() => onMouseEnter(id)}
         schedule={schedule}
         viewMode={viewMode}
         isMobile={isMobile}
@@ -64,9 +82,34 @@ const TimeCellWrapper = styled.div`
   border: 0.5px solid ${({ isDragging, schedule }) => (
     isDragging ? schedule ? changeColor(schedule.colorCode, 15) : changeColor("#f0f1f4", 10) : schedule ? changeColor(schedule.colorCode, 10) : changeColor("#f0f1f4", 10)
   )};
-  background-color: ${({ isDragging, schedule }) => (
-    isDragging ? schedule ? changeColor(schedule.colorCode, 10) : "#f0f1f4" : schedule ? schedule.completed ? changeColor(schedule.colorCode, 50, true) : schedule.colorCode : "#ffffff"
-  )};
+  background-color: ${({
+ isDragging, schedule, isScheduleClicked, clickedSchedule, 
+}) => {
+    if (schedule.isHovered) {
+      return changeColor(schedule.colorCode, 20); 
+    } if (isDragging) {
+      if (isScheduleClicked) {
+        if (schedule) {
+          if (schedule.scheduleId === clickedSchedule.scheduleId) {
+            return changeColor(clickedSchedule.colorCode, 20); 
+          } 
+            return "#f94449";
+        } 
+          return changeColor(clickedSchedule.colorCode, 10, true);
+      } 
+        if (schedule) {
+          return changeColor(schedule.colorCode, 10);
+        } 
+          return "#f0f1f4";
+    } 
+      if (schedule) {
+        if (schedule.completed) {
+          return changeColor(schedule.colorCode, 50, true);
+        } 
+          return schedule.colorCode;
+      } 
+        return "#ffffff";
+  }};
   overflow: visible;
 
   &:hover {
