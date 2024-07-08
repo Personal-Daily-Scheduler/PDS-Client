@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
+import TutorialSwiper from "../Tutorial";
 import CommonButton from "../../shared/Button";
 import CommonTitle from "../../shared/Title";
 import Input from "../../shared/Input/Index";
 import ErrorMessage from "../../shared/ErrorMessage";
 
-import mainImage from "../../assets/main_image.png";
 import googleLogoImage from "../../assets/google_logo.png";
 import fetchSignUp from "../../services/user/fetchSignUp";
 import fetchLogin from "../../services/user/fetchLogin";
@@ -267,7 +267,7 @@ function Login() {
       {!isMobile ? (
         <>
           <Wrapper className="content-left">
-            <MainImage src={mainImage} alt="Main Image" />
+            <TutorialSwiper />
           </Wrapper>
           <Wrapper className="content-right">
             {selectedOption !== "signUp" ? (
@@ -320,16 +320,7 @@ function Login() {
         </>
       ) : (
         !showContentRight ? (
-          <Wrapper
-            className="content-left"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <MainImage src={mainImage} alt="Main Image" />
-            <CommonButton width="350px" onClick={handleStartButtonClick}>
-              시작하기
-            </CommonButton>
-          </Wrapper>
+          <TutorialSwiper onClickStartButton={handleStartButtonClick} />
         ) : (
           <Wrapper
             className="content-right"
@@ -416,6 +407,7 @@ const TextWrapper = styled.div`
   font-size: 14px;
   color: #707070;
 `;
+
 const MainImage = styled.img`
   max-width: 100%;
   max-height: 100%;
