@@ -12,6 +12,8 @@ import updateTimeSlots from "../utils/updateTimeSlots";
 const scheduleStore = (set) => ({
   scheduleByDates: {},
   timeMaps: initTimeMap(),
+  isScheduleClicked: false,
+  clickedSchedule: null,
   isHovered: false,
   setIsHovered: (planObject, boolean) => set((state) => {
     const {
@@ -44,6 +46,8 @@ const scheduleStore = (set) => ({
       timeMaps: updatedTimeMap,
     };
   }),
+  setIsScheduleClicked: (isClicked) => set({ isScheduleClicked: isClicked }),
+  setClickedSchedule: (schedule) => set({ clickedSchedule: schedule }),
   setCompletedSchedule: (scheduleObject) => set((state) => {
     const {
       scheduleId, selectedDate, completed,
