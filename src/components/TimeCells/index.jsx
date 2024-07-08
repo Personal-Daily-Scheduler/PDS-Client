@@ -185,7 +185,25 @@ function TimeCells({ viewMode, containerHeight }) {
   };
 
   const handleMouseEnter = (timeCell) => {
-    if (isDragging) {
+    const clickedCellSchedule = timeMap.get(timeCell.time).schedule;
+
+    if (isScheduleClicked) {
+      if (clickedCellSchedule) {
+        if (timeCell.time !== clickedCellSchedule.startTime) {
+          const { startTime, endTime } = calculatePasteSchedule(timeCell.time, clickedCellSchedule);
+
+          const newScheduleIndexList = getTimeIndexList(startTime, endTime);
+
+          setSelectedCells(newScheduleIndexList);
+        }
+      } else {
+        const { startTime, endTime } = calculatePasteSchedule(timeCell.time, clickedSchedule);
+
+        const newScheduleIndexList = getTimeIndexList(startTime, endTime);
+
+        setSelectedCells(newScheduleIndexList);
+      }
+    } else if (isDragging) {
       setEndCell(timeCell);
 
       if (timeCell.index === startCell.index) {
