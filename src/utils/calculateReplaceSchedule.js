@@ -8,14 +8,14 @@ const calculateReplaceSchedule = (replaceStartTime, targetEvent) => {
   const differenceMinutes = differenceTime(startTime, endTime);
   const replaceStartMinutes = timeToMinutes(replaceStartTime);
 
-  const pasteTargetTime = {
+  const replacedTime = {
     startTime: replaceStartTime,
     endTime: minutesToTime(replaceStartMinutes + differenceMinutes),
   };
 
   const updateSchedule = {
     ...targetEvent,
-    ...pasteTargetTime,
+    ...replacedTime,
   };
 
   return updateSchedule;
