@@ -172,10 +172,10 @@ function Login() {
   const renderGuestForm = (size) => (
     <GuestLogin>
       <Input
-        label="Nickname"
+        label="이름"
         type="text"
         value={username}
-        placeholder="Enter your Nickname"
+        placeholder="이름을 입력해주세요"
         onChange={(e) => handleInputChange(e, "username")}
         onEnterDown={handleClickLoginButton}
         size={size ? { width: size.width, height: size.height } : 0}
@@ -193,34 +193,34 @@ function Login() {
   const renderSighUpForm = (size) => (
     <SignUp>
       <Input
-        label="Username"
+        label="이름"
         type="text"
         value={username}
-        placeholder="Enter your username"
+        placeholder="이름을 입력해 주세요"
         onChange={(e) => handleInputChange(e, "username")}
         size={size ? { width: size.width, height: size.height } : 0}
       />
       <Input
-        label="Email"
+        label="이메일"
         type="email"
         value={email}
-        placeholder="Enter your email"
+        placeholder="이메일을 입력해 주세요"
         onChange={(e) => handleInputChange(e, "email")}
         size={size ? { width: size.width, height: size.height } : 0}
       />
       <Input
-        label="Password"
+        label="비밀번호"
         type="password"
         value={password}
-        placeholder="Enter your password"
+        placeholder="비밀번호를 입력해 주세요"
         onChange={(e) => handleInputChange(e, "password")}
         size={size ? { width: size.width, height: size.height } : 0}
       />
       <Input
-        label="Confirm Password"
+        label="비밀번호 확인"
         type="password"
         value={confirmPassword}
-        placeholder="Confirm your password"
+        placeholder="비밀번호를 한번 더 입력해 주세요"
         onChange={(e) => handleInputChange(e, "confirmPassword")}
         onEnterDown={handleClickLoginButton}
         size={size ? { width: size.width, height: size.height } : 0}
@@ -237,17 +237,17 @@ function Login() {
   const renderUserForm = (size) => (
     <MemberLogin>
       <Input
-        label="Email"
+        label="이메일"
         type="email"
-        placeholder="Enter your email"
+        placeholder="이메일을 입력해 주세요"
         onChange={(e) => handleInputChange(e, "email")}
         size={size ? { width: size.width, height: size.height } : 0}
       >
       </Input>
       <Input
-        label="Password"
+        label="비밀번호"
         type="password"
-        placeholder="Enter your password"
+        placeholder="비밀번호를 입력해 주세요"
         onChange={(e) => handleInputChange(e, "password")}
         onEnterDown={handleClickLoginButton}
         size={size ? { width: size.width, height: size.height } : 0}
@@ -272,18 +272,18 @@ function Login() {
           <Wrapper className="content-right">
             {selectedOption !== "signUp" ? (
               <>
-                <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
+                <CommonTitle mainTitle="안녕하세요" subTitle="원하시는 로그인 방식을 선택해주세요." />
                 <ButtonLine>
                   <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
-                    Guest Login
+                    게스트 로그인
                   </StyledButton>
                   <StyledButton selected={selectedOption === "signIn"} onClick={() => handleButtonClick("signIn")}>
-                    Member Login
+                    일반 회원 로그인
                   </StyledButton>
                 </ButtonLine>
               </>
             ) : (
-              <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
+              <CommonTitle mainTitle="회원가입" subTitle="PDS 다이어리에 오신것을 환영합니다." />
             )}
             <LoginContentWrapper>
               {selectedOption === "guest" && renderGuestForm()}
@@ -293,11 +293,11 @@ function Login() {
             {selectedOption !== "signUp" ? (
               <>
                 <DescriptionWrapper>
-                  <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
+                  <TextWrapper>아직 아이디가 없으세요?</TextWrapper>
                   <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
                 </DescriptionWrapper>
                 <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
-                  Login
+                  로그인
                 </CommonButton>
               </>
             ) : (
@@ -307,12 +307,12 @@ function Login() {
                   <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
                 </DescriptionWrapper>
                 <CommonButton width="400px" height="48px" onClick={handleClickLoginButton}>
-                  SignUp
+                  가입하기
                 </CommonButton>
               </>
             )}
             <GoogleSignInContainer>
-              Or sign in with
+              구글 계정으로 로그인하기
               <Link to="*">Google</Link>
               <GoogleLogo src={googleLogoImage} alt="Google Logo" />
             </GoogleSignInContainer>
@@ -329,18 +329,18 @@ function Login() {
           >
             {selectedOption !== "signUp" ? (
               <>
-                <CommonTitle mainTitle="Hello" subTitle="Please choose how you want to proceed" />
+                <CommonTitle mainTitle="안녕하세요" subTitle="원하시는 로그인 방식을 선택해주세요." />
                 <ButtonLine isMobileScreen={isMobile}>
                   <StyledButton selected={selectedOption === "guest"} onClick={() => handleButtonClick("guest")}>
-                    Guest Login
+                    게스트 로그인
                   </StyledButton>
                   <StyledButton selected={selectedOption === "signIn"} onClick={() => handleButtonClick("signIn")}>
-                    Member Login
+                    일반 회원 로그인
                   </StyledButton>
                 </ButtonLine>
               </>
             ) : (
-              <CommonTitle mainTitle="SignUp" subTitle="Create a new account to get started" />
+              <CommonTitle mainTitle="회원가입" subTitle="PDS 다이어리에 오신것을 환영합니다." />
             )}
             <LoginContentWrapper>
               {selectedOption === "guest" && renderGuestForm({ width: "350px", height: "50px" })}
@@ -350,11 +350,11 @@ function Login() {
             {selectedOption !== "signUp" ? (
               <>
                 <DescriptionWrapper>
-                  <TextWrapper>아직 아이디어가 없으세요?</TextWrapper>
+                  <TextWrapper>아직 아이디가 없으세요?</TextWrapper>
                   <ButtonText onClick={() => handleButtonClick("signUp")}>회원 가입 하기</ButtonText>
                 </DescriptionWrapper>
                 <CommonButton width="350px" height="50px" onClick={handleClickLoginButton}>
-                  Login
+                  로그인
                 </CommonButton>
               </>
             ) : (
@@ -364,12 +364,12 @@ function Login() {
                   <ButtonText onClick={() => handleButtonClick("signIn")}>로그인 하기</ButtonText>
                 </DescriptionWrapper>
                 <CommonButton width="350px" height="50px" onClick={handleClickLoginButton}>
-                  SignUp
+                  회원가입
                 </CommonButton>
               </>
             )}
             <GoogleSignInContainer>
-              Or sign in with
+              구글 계정으로 로그인하기
               <Link to="*">Google</Link>
               <GoogleLogo src={googleLogoImage} alt="Google Logo" />
             </GoogleSignInContainer>
