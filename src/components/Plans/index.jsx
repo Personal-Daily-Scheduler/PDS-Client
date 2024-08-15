@@ -5,6 +5,7 @@ import Modal from "../../shared/Modal";
 import PlanForm from "../PlanForm";
 import Plan from "../PlanContent";
 import Tooltip from "../Tooltip";
+import CommonTitle from "../../shared/Title";
 
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
@@ -122,10 +123,8 @@ function Plans({ viewMode }) {
       {planList.length === 0 ? (
         <EmptyPlanState>
           <EmptyPlanImage src={emptyPlanState}></EmptyPlanImage>
-          <h2>추가된 일정이 없습니다.</h2>
-          <span>일정 추가 버튼을 눌러서</span>
-          <p>새로운 일정을 추가해보세요.</p>
-          <CommonButton onClick={handleOpenModal}>Create a Plan</CommonButton>
+          <CommonTitle mainTitle="추가된 일정이 없습니다." subTitle={"일정 추가 버튼을 눌러서 \n 새로운 일정을 추가해보세요."} size="small" />
+          <CommonButton onClick={handleOpenModal}>새 일정 추가하기</CommonButton>
         </EmptyPlanState>
       ) : (
         <PlansList>
