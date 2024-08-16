@@ -8,17 +8,19 @@ import ScheduleIcon from "../../assets/timecell_button_icon.png";
 import TimeCellIcon from "../../assets/schedule_icon.png";
 import TextEditorIcon from "../../assets/texteditor_icon.png";
 import AddIcon from "../../assets/add_icon.png";
-import TodayIcon from "../../assets/today_icon_2.png";
 
-function TabUI({ onViewModeChange, onClickAddPlan }) {
+import useViewModeStore from "../../store/useViewModeStore";
+
+function TabUI({ onClickAddPlan }) {
+  const { setViewMode } = useViewModeStore();
+
   return (
     <TabContainer>
-      <IconTextButton iconSrc={HomeIcon} size="30px" onClick={(e) => onViewModeChange("home")}></IconTextButton>
-      <IconTextButton iconSrc={ScheduleIcon} size="30px" onClick={(e) => onViewModeChange("schedules")}></IconTextButton>
+      <IconTextButton iconSrc={HomeIcon} size="30px" onClick={() => setViewMode("home")}></IconTextButton>
+      <IconTextButton iconSrc={ScheduleIcon} size="30px" onClick={() => setViewMode("schedules")}></IconTextButton>
       <IconTextButton iconSrc={AddIcon} size="30px" onClick={onClickAddPlan}></IconTextButton>
-      <IconTextButton iconSrc={TimeCellIcon} size="30px" onClick={(e) => onViewModeChange("plans")}></IconTextButton>
-      <IconTextButton iconSrc={TextEditorIcon} size="30px" onClick={(e) => onViewModeChange("editor")}></IconTextButton>
-      <IconTextButton iconSrc={TodayIcon} size="30px"></IconTextButton>
+      <IconTextButton iconSrc={TimeCellIcon} size="30px" onClick={() => setViewMode("plans")}></IconTextButton>
+      <IconTextButton iconSrc={TextEditorIcon} size="30px" onClick={() => setViewMode("editor")}></IconTextButton>
     </TabContainer>
   );
 }

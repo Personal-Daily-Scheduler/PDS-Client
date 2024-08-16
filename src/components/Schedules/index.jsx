@@ -4,18 +4,20 @@ import styled from "styled-components";
 import Modal from "../../shared/Modal";
 import ScheduleForm from "../ScheduleForm";
 import TimeCells from "../TimeCells";
-
-import useMobileStore from "../../store/useMobileStore";
 import Tooltip from "../Tooltip";
 
-function Schedules({ viewMode }) {
+import useMobileStore from "../../store/useMobileStore";
+import useViewModeStore from "../../store/useViewModeStore";
+
+function Schedules() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  const containerRef = useRef(null);
-
   const { isMobile } = useMobileStore();
+  const { viewMode } = useViewModeStore();
+
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const updateContainerHeight = () => {
@@ -50,7 +52,7 @@ function Schedules({ viewMode }) {
     <SchedulesContainer ref={containerRef} isMobile={isMobile} viewMode={viewMode}>
       <SchedulesHeader>
         <Title>Do</Title>
-        <Tooltip message="10분 단위로 일정을 추가할 수 있어요" />
+        <Tooltip message={"일정을 추가하기 원하는 시간만큼 \n셀을 드래그 해보세요."} />
       </SchedulesHeader>
       <AddButton onClick={handleOpenModal}>+</AddButton>
       {isModalOpen && (

@@ -6,41 +6,71 @@ import formatHour from "../../utils/formatHour";
 
 import useMobileStore from "../../store/useMobileStore";
 import useScheduleStore from "../../store/schedules";
+import useViewModeStore from "../../store/useViewModeStore";
 
 function TimeCell({
-  id, onDragEnd, isDragging, onMouseDown, onMouseEnter, onMouseOver, onMouseOut, schedule, hour, viewMode,
+  onPointerDown, onPointerUp, onPointerEnter, onPointerOver, onPointerOut, id, isDragging, schedule, hour,
 }) {
   const { isMobile } = useMobileStore();
+  const { viewMode } = useViewModeStore();
   const { isScheduleClicked, clickedSchedule } = useScheduleStore();
 
   const handleMouseClick = (e) => {
-    onDragEnd(hour, e);
+    e.preventDefault();
+
+    onPointerUp(hour, e);
   };
   
-  const handleMouseUp = (e) => {
-    onDragEnd(id, e);
+  const handlePointerDown = (e) => {
+    e.preventDefault();
+
+    onPointerDown();
+  };
+
+  const handlePointerEnter = (e) => {
+    e.preventDefault();
+
+    onPointerEnter(id);
+  };
+
+  const handlePointerUp = (e) => {
+    e.preventDefault();
+
+    onPointerUp(id, e);
+  };
+
+  const handlePointerOver = (e) => {
+    e.preventDefault();
+
+    onPointerOver(e, hour);
+  };
+
+  const handlePointerOut = (e) => {
+    e.preventDefault();
+
+    onPointerOut();
   };
 
   return (
     hour === 0 || hour ? (
       <HoursCell
         onClick={handleMouseClick}
+        onPointerOut={handlePointerOut}
+        onPointerOver={handlePointerOver}
         hour={hour}
         isMobile={isMobile}
-        viewMode={viewMode} 
-        onMouseOut={onMouseOut}
-        onMouseOver={(e) => onMouseOver(e, hour)}
+        viewMode={viewMode}
       >
         {formatHour(hour)}
       </HoursCell>
     ) : (
       <TimeCellWrapper
+        onPointerDown={handlePointerDown}
+        onPointerEnter={handlePointerEnter}
+        onPointerUp={handlePointerUp}
         isDragging={isDragging}
         isScheduleClicked={isScheduleClicked}
         clickedSchedule={clickedSchedule}
-        onPointerDown={onMouseDown}
-        onPointerUp={handleMouseUp}
-        onPointerEnter={() => onMouseEnter(id)}
         schedule={schedule}
         viewMode={viewMode}
         isMobile={isMobile}
@@ -114,7 +144,7 @@ const TimeCellWrapper = styled.div`
 
   &:hover {
     background-color: ${({ isDragging, schedule }) => (
-    isDragging ? schedule ? changeColor(schedule.colorCode, 10) : "#928f8f" : schedule ? changeColor(schedule.colorCode, 10, true) : "#f0f1f4"
+    isDragging ? (schedule ? changeColor(schedule.colorCode, 10) : "#928f8f") : (schedule ? changeColor(schedule.colorCode, 10, true) : "#f0f1f4")
   )};
   }
 

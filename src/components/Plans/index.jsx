@@ -6,27 +6,29 @@ import PlanForm from "../PlanForm";
 import Plan from "../PlanContent";
 import Tooltip from "../Tooltip";
 import CommonTitle from "../../shared/Title";
+import CommonButton from "../../shared/Button";
 
 import useCalendarStore from "../../store/calender";
 import usePlanStore from "../../store/plans";
 import useMobileStore from "../../store/useMobileStore";
-import CommonButton from "../../shared/Button";
+import useViewModeStore from "../../store/useViewModeStore";
 
 import emptyPlanState from "../../assets/empty_plan_image.png";
 
-function Plans({ viewMode }) {
+function Plans() {
   const [modalPosition, setModalPosition] = useState({ left: 0, top: 0 });
   const [separatorIndex, setSeparatorIndex] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [planList, setPlanList] = useState([]);
 
-  const draggingItem = useRef();
-  const dragOverItem = useRef();
-
   const { selectedDate } = useCalendarStore();
   const { planByDates } = usePlanStore();
   const { isMobile } = useMobileStore();
+  const { viewMode } = useViewModeStore();
+
+  const draggingItem = useRef();
+  const dragOverItem = useRef();
 
   const getPlanContents = () => {
     const eventList = [];

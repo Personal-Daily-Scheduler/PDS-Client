@@ -5,6 +5,8 @@ import styled, { css } from "styled-components";
 import { v4 as uuidV4 } from "uuid";
 
 import ToastPopup from "../../shared/Toast";
+import Tooltip from "../Tooltip";
+
 import EmojiPicker from "../EmojiPicker";
 import focusContentEditableTextToEnd from "../../utils/focusContentEditable";
 import textEditorUtils from "../../utils/textEditor";
@@ -13,9 +15,9 @@ import fetchPostDiary from "../../services/diary/fetchPostDiary";
 import useCalendarStore from "../../store/calender";
 import useDiaryStore from "../../store/diary";
 import useMobileStore from "../../store/useMobileStore";
-import Tooltip from "../Tooltip";
+import useViewModeStore from "../../store/useViewModeStore";
 
-function See({ viewMode }) {
+function See() {
   const [toast, setToast] = useState({});
   const [diaryId, setDiaryId] = useState("");
   const [activeBold, setActiveBold] = useState(false);
@@ -28,6 +30,7 @@ function See({ viewMode }) {
   const editorRef = useRef(null);
   const selectionRef = useRef(null);
 
+  const { viewMode } = useViewModeStore();
   const { selectedDate } = useCalendarStore();
   const { diaryByDates, saveDiary } = useDiaryStore();
   const { isMobile } = useMobileStore();

@@ -14,19 +14,13 @@ import PlanForm from "./PlanForm";
 import NotoSansKR from "../assets/fonts/NotoSansKR-VariableFont_wght.ttf";
 
 import useMobileStore from "../store/useMobileStore";
+import useViewModeStore from "../store/useViewModeStore";
 
 function App() {
-  const [viewMode, setViewMode] = useState("home");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { viewMode, setViewMode } = useViewModeStore();
   const { isMobile, setIsMobile } = useMobileStore();
-
-  const handleModalToggle = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setIsModalOpen(!isModalOpen);
-  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,8 +41,11 @@ function App() {
     };
   }, [setIsMobile]);
 
-  const handleViewModeChange = (mode) => {
-    setViewMode(mode);
+  const handleModalToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsModalOpen(!isModalOpen);
   };
 
   return (
@@ -62,7 +59,7 @@ function App() {
             exact
             element={(
               <>
-                <Wrapper viewMode={viewMode}>
+                <Wrapper>
                   {(isMobile && viewMode === "home") ? (
                     <>
                       <BlurOverlay>
@@ -83,7 +80,7 @@ function App() {
                     </>
                   )}
                 </Wrapper>
-                {isMobile && <TabUI onClickAddPlan={handleModalToggle} onViewModeChange={handleViewModeChange} />}
+                {isMobile && <TabUI onClickAddPlan={handleModalToggle} />}
                 {isModalOpen && (
                   <Modal onClose={handleModalToggle} darkBackground>
                     <PlanForm onClose={handleModalToggle} />
